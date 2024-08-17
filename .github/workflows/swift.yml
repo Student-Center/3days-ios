@@ -1,0 +1,26 @@
+# This workflow will build a Swift project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
+
+name: Swift
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  run-unitTest:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Mise
+      run: |
+          curl https://mise.run | sh
+          mise install
+    - name: Install Tuist dependencies
+      run: mise x -- tuist install
+    - name: Run tests
+      run: mise x -- tuist test Weave2-UnitTest --no-selective-testing
