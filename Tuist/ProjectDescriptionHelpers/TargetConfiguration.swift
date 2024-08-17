@@ -17,7 +17,7 @@ public enum TargetName: String {
     case main = "Main"
 }
 
-extension TargetName {
+public extension TargetName {
     var projectPath: ProjectPath {
         switch self {
         case .devApp, .prodApp:
@@ -35,8 +35,16 @@ extension TargetName {
         return self.rawValue
     }
     
+    var unitTestName: String {
+        return "\(self.name)-UnitTest"
+    }
+    
     var sources: String {
         return "\(self.rawValue)/Sources/**"
+    }
+    
+    var testSources: String {
+        return "\(self.rawValue)/UnitTest/**"
     }
     
     var resources: String {

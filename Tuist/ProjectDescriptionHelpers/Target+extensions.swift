@@ -100,4 +100,17 @@ extension Target {
             settings: settings
         )
     }
+    
+    public static func makeUnitTest(
+        target: TargetName,
+        dependencies: [TargetDependency] = []
+    ) -> Target {
+        return .make(
+            name: target.unitTestName,
+            product: .unitTests,
+            bundleId: "com.studentcenter.weave2-\(target.name)-unitTest",
+            sources: ["\(target.testSources)"],
+            dependencies: dependencies
+        )
+    }
 }

@@ -10,6 +10,12 @@ let project: Project = .make(
             dependencies: [
                 .external(externalDependency: .alamofire)
             ]
+        ),
+        .makeUnitTest(
+            target: .coreKit,
+            dependencies: [
+                .target(name: .coreKit)
+            ]
         )
     ]
 )
