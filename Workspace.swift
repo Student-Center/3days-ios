@@ -45,7 +45,7 @@ let workspace = Workspace(
                 [
                     .testableTarget(
                         target: .project(
-                            path: ".\(ProjectPath.core.rawValue)",
+                            path: "./\(ProjectPath.core.rawValue)",
                             target: TargetName.coreKit.unitTestName
                         )
                     ),
