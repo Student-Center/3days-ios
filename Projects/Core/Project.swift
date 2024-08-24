@@ -8,6 +8,7 @@ let project: Project = .make(
         .make(
             target: .networkKit,
             dependencies: [
+                .target(name: .coreKit),
                 .external(externalDependency: .alamofire)
             ]
         ),

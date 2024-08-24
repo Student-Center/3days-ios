@@ -1,18 +1,5 @@
 import Foundation
 
-public enum ServerType: String {
-    case dev // db 개발, api 개발
-    case prod // db 상용, api 상용
-    
-    var baseURL: String {
-        switch self {
-        case .dev:
-            return "devURL"
-        case .prod:
-            return "prodURL"
-        }
-    }
-}
 
 public class ThisIsNetworkKit {
     public static func something() {
