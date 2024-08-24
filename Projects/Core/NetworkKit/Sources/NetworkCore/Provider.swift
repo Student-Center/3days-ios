@@ -9,6 +9,18 @@
 import Foundation
 import Alamofire
 
+fileprivate enum Provider {
+    static var session: Session = {
+        let configuration = URLSessionConfiguration.af.default
+        let monitor = NetworkLogger()
+        let session = Session(
+            configuration: configuration,
+            eventMonitors: [monitor]
+        )
+        return session
+    }()
+}
+
 extension EndpointType {
     private func baseURL() -> String {
         return ServerType.current.baseURL
@@ -21,7 +33,7 @@ extension EndpointType {
         
         switch method {
         case .get:
-            return AF.request(
+            return Provider.session.request(
                 urlString,
                 method: .get,
                 parameters: parameters?.toDictionary(),
@@ -30,7 +42,7 @@ extension EndpointType {
             )
         case .post:
             if let body {
-                return AF.request(
+                return Provider.session.request(
                     urlString,
                     method: method,
                     parameters: body,
@@ -38,7 +50,7 @@ extension EndpointType {
                     interceptor: interceptor
                 )
             } else {
-                return AF.request(
+                return Provider.session.request(
                     urlString,
                     method: .post,
                     headers: headers,
@@ -46,7 +58,7 @@ extension EndpointType {
                 )
             }
         default:
-            return AF.request(
+            return Provider.session.request(
                 urlString,
                 method: method,
                 headers: headers,
