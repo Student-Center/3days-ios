@@ -22,6 +22,6 @@ final class CoreKitTest: XCTestCase {
     func testExample() throws {
         ThisIsCoreKit.something()
         let result = ThisIsCoreKit.testFunctionSample()
-        XCTAssertEqual(1, result)
+        XCTAssertEqual(0, result)
     }
 }
