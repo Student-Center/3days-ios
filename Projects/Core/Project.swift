@@ -5,11 +5,13 @@ let project: Project = .make(
     name: "Core",
     targets: [
         .make(target: .coreKit),
+        .make(target: .model),
         .make(
             target: .networkKit,
             dependencies: [
                 .target(name: .coreKit),
-                .external(externalDependency: .alamofire)
+                .target(name: .model),
+                .external(.alamofire),
             ]
         ),
         .makeUnitTest(

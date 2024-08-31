@@ -13,7 +13,7 @@ import PackageDescription
 #endif
 
 let package = Package(
-    name: "Weave2_iOS",
+    name: "three-days-iOS",
     dependencies: [
         .package(
             url: "https://github.com/Alamofire/Alamofire",

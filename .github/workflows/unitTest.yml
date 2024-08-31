@@ -20,4 +20,4 @@ jobs:
     - name: Install Tuist dependencies
       run: mise x -- tuist install
     - name: Run tests
-      run: mise x -- tuist test Weave2-UnitTest --no-selective-testing
+      run: mise x -- tuist test three-days-UnitTest --no-selective-testing

@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let workspace = Workspace(
-    name: "Weave2",
+    name: "three-days-iOS",
     projects: [
         "Projects/App",
         "Projects/Core",
@@ -18,7 +18,7 @@ let workspace = Workspace(
     ],
     schemes: [
         .scheme(
-            name: "Weave2-dev",
+            name: "three-days-dev",
             buildAction: .buildAction(targets: [.project(path: "./Projects/App", target: AppConfig.dev.appName)]),
             runAction: .runAction(
                 configuration: .debug,
@@ -29,7 +29,7 @@ let workspace = Workspace(
             analyzeAction: .analyzeAction(configuration: .debug)
         ),
         .scheme(
-            name: "Weave2-prod",
+            name: "three-days-prod",
             buildAction: .buildAction(targets: [.project(path: "./Projects/App", target: AppConfig.prod.appName)]),
             runAction: .runAction(
                 configuration: .release,
@@ -40,7 +40,7 @@ let workspace = Workspace(
             analyzeAction: .analyzeAction(configuration: .release)
         ),
         .scheme(
-            name: "Weave2-UnitTest",
+            name: "three-days-UnitTest",
             testAction: .targets(
                 [
                     .testableTarget(
