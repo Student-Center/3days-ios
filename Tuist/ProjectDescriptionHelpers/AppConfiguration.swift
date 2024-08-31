@@ -26,15 +26,15 @@ public extension AppConfig {
     }
     
     var appName: String {
-        return "Weave-\(self.flag)"
+        return "three-days-\(self.flag)"
     }
     
     var appDisplayName: SettingValue {
         switch self {
         case .dev:
-            return "Weave-dev"
+            return "3days-dev"
         case .prod:
-            return "Weave"
+            return "3days"
         }
     }
 }

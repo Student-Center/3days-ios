@@ -11,6 +11,7 @@ public enum TargetName: String {
     case devApp = "DevApp"
     case prodApp = "ProdApp"
     case coreKit = "CoreKit"
+    case model = "Model"
     case networkKit = "NetworkKit"
     case designSystemKit = "DesignSystemKit"
     case componentsKit = "ComponentsKit"
@@ -22,7 +23,7 @@ public extension TargetName {
         switch self {
         case .devApp, .prodApp:
             return .app
-        case .coreKit, .networkKit:
+        case .coreKit, .networkKit, .model:
             return .core
         case .designSystemKit, .componentsKit:
             return .designSystem

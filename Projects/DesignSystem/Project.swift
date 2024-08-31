@@ -7,7 +7,7 @@ let project: Project = .make(
         .make(
             target: .designSystemKit,
             dependencies: [
-                .external(externalDependency: .nuke)
+                .external(.nuke)
             ]
         ),
         .make(

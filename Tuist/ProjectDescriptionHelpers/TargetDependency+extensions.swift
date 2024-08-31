@@ -2,7 +2,7 @@ import Foundation
 import ProjectDescription
 
 extension TargetDependency {
-    public static func external(externalDependency: ExternalDependency) -> TargetDependency {
+    public static func external(_ externalDependency: ExternalDependency) -> TargetDependency {
         return .external(name: externalDependency.rawValue)
     }
     
