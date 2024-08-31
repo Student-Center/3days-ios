@@ -15,6 +15,7 @@ import PackageDescription
 let package = Package(
     name: "three-days-iOS",
     dependencies: [
+        .package(path: "../OpenApiGenerator"),
         .package(
             url: "https://github.com/Alamofire/Alamofire",
             exact: "5.9.1"

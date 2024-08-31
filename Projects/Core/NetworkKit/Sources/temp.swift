@@ -1,5 +1,6 @@
 import Foundation
-
+import OpenapiGenerated
+import OpenAPIURLSession
 
 public class ThisIsNetworkKit {
     public static func something() {
@@ -17,5 +18,36 @@ public class ThisIsNetworkKit {
     
     public static var thisServer: ServerType {
         return serverType
+    }
+}
+
+public class API {
+    let client = Client(
+        serverURL: URL(string: ServerType.current.baseURL)!,
+        transport: URLSessionTransport()
+    )
+    
+    func something() {
+        Task {
+            do {
+                let response = try await client.post_sol_auth_sol_refresh(
+                    .init(
+                        body: .json(
+                            .init(
+                                refreshToken: ""
+                            )
+                        )
+                    )
+                )
+                switch response {
+                case .ok(let ok):
+                    print(try ok.body.json.accessToken)
+                case .unauthorized(let unauthorized):
+                    print(unauthorized)
+                case .undocumented(let statusCode, let undocumentedPayload):
+                    print(statusCode)
+                }
+            }
+        }
     }
 }
