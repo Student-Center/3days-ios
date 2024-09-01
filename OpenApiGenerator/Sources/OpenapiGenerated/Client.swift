@@ -10,7 +10,7 @@ import struct Foundation.Data
 import struct Foundation.Date
 #endif
 import HTTPTypes
-/// 사용자 인증, 회원가입, 토큰 관리를 위한 API
+/// 3days API 명세서
 public struct Client: APIProtocol {
     /// The underlying HTTP client.
     private let client: UniversalClient
@@ -38,65 +38,20 @@ public struct Client: APIProtocol {
     private var converter: Converter {
         client.converter
     }
-    /// 휴대폰 번호 인증 요청
+    /// SMS 인증 요청
     ///
-    /// 사용자의 휴대폰 번호로 인증 코드를 발송합니다.
+    /// - 회원 가입 또는 로그인 토큰 발급을 위한 SMS 인증을 요청합니다.
     ///
-    /// - Remark: HTTP `POST /auth/phone`.
-    /// - Remark: Generated from `#/paths//auth/phone/post`.
-    public func post_sol_auth_sol_phone(_ input: Operations.post_sol_auth_sol_phone.Input) async throws -> Operations.post_sol_auth_sol_phone.Output {
+    ///
+    /// - Remark: HTTP `POST /users/verifications`.
+    /// - Remark: Generated from `#/paths//users/verifications/post(requestVerification)`.
+    public func requestVerification(_ input: Operations.requestVerification.Input) async throws -> Operations.requestVerification.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.post_sol_auth_sol_phone.id,
+            forOperation: Operations.requestVerification.id,
             serializer: { input in
                 let path = try converter.renderedPath(
-                    template: "/auth/phone",
-                    parameters: []
-                )
-                var request: HTTPTypes.HTTPRequest = .init(
-                    soar_path: path,
-                    method: .post
-                )
-                suppressMutabilityWarning(&request)
-                let body: OpenAPIRuntime.HTTPBody?
-                switch input.body {
-                case let .json(value):
-                    body = try converter.setRequiredRequestBodyAsJSON(
-                        value,
-                        headerFields: &request.headerFields,
-                        contentType: "application/json; charset=utf-8"
-                    )
-                }
-                return (request, body)
-            },
-            deserializer: { response, responseBody in
-                switch response.status.code {
-                case 200:
-                    return .ok(.init())
-                case 400:
-                    return .badRequest(.init())
-                default:
-                    return .undocumented(
-                        statusCode: response.status.code,
-                        .init()
-                    )
-                }
-            }
-        )
-    }
-    /// 인증 코드 확인
-    ///
-    /// 사용자가 입력한 인증 코드의 유효성을 확인합니다.
-    ///
-    /// - Remark: HTTP `POST /auth/verify`.
-    /// - Remark: Generated from `#/paths//auth/verify/post`.
-    public func post_sol_auth_sol_verify(_ input: Operations.post_sol_auth_sol_verify.Input) async throws -> Operations.post_sol_auth_sol_verify.Output {
-        try await client.send(
-            input: input,
-            forOperation: Operations.post_sol_auth_sol_verify.id,
-            serializer: { input in
-                let path = try converter.renderedPath(
-                    template: "/auth/verify",
+                    template: "/users/verifications",
                     parameters: []
                 )
                 var request: HTTPTypes.HTTPRequest = .init(
@@ -121,9 +76,9 @@ public struct Client: APIProtocol {
             },
             deserializer: { response, responseBody in
                 switch response.status.code {
-                case 200:
+                case 201:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.post_sol_auth_sol_verify.Output.Ok.Body
+                    let body: Operations.requestVerification.Output.Created.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -133,7 +88,82 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.post_sol_auth_sol_verify.Output.Ok.Body.jsonPayload.self,
+                            Operations.requestVerification.Output.Created.Body.jsonPayload.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .created(.init(body: body))
+                case 400:
+                    return .badRequest(.init())
+                default:
+                    return .undocumented(
+                        statusCode: response.status.code,
+                        .init()
+                    )
+                }
+            }
+        )
+    }
+    /// SMS 인증 코드 확인
+    ///
+    /// - SMS 인증 요청 시 발급된 verificationId와 함께 인증 코드를 입력하여 인증을 완료합니다.
+    /// - 새 사용자의 경우 회원 가입을 위한 registerToken을 발급합니다.
+    /// - 기존 사용자의 경우 로그인을 위한 accessToken과 refreshToken을 발급합니다.
+    ///
+    ///
+    /// - Remark: HTTP `PUT /users/verifications/{verificationId}`.
+    /// - Remark: Generated from `#/paths//users/verifications/{verificationId}/put(verifyCode)`.
+    public func verifyCode(_ input: Operations.verifyCode.Input) async throws -> Operations.verifyCode.Output {
+        try await client.send(
+            input: input,
+            forOperation: Operations.verifyCode.id,
+            serializer: { input in
+                let path = try converter.renderedPath(
+                    template: "/users/verifications/{}",
+                    parameters: [
+                        input.path.verificationId
+                    ]
+                )
+                var request: HTTPTypes.HTTPRequest = .init(
+                    soar_path: path,
+                    method: .put
+                )
+                suppressMutabilityWarning(&request)
+                converter.setAcceptHeader(
+                    in: &request.headerFields,
+                    contentTypes: input.headers.accept
+                )
+                let body: OpenAPIRuntime.HTTPBody?
+                switch input.body {
+                case let .json(value):
+                    body = try converter.setRequiredRequestBodyAsJSON(
+                        value,
+                        headerFields: &request.headerFields,
+                        contentType: "application/json; charset=utf-8"
+                    )
+                }
+                return (request, body)
+            },
+            deserializer: { response, responseBody in
+                switch response.status.code {
+                case 200:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Operations.verifyCode.Output.Ok.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Operations.verifyCode.Output.Ok.Body.jsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -145,6 +175,8 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     return .badRequest(.init())
+                case 404:
+                    return .notFound(.init())
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
@@ -154,19 +186,21 @@ public struct Client: APIProtocol {
             }
         )
     }
-    /// 회원가입 완료
+    /// 회원 가입
     ///
-    /// Register Token과 사용자 프로필 정보를 이용하여 회원가입을 완료합니다.
+    /// - SMS 인증 시 발급된 registerToken을 이용하여 회원 가입을 완료합니다.
+    /// - 회원 가입 완료 시 accessToken과 refreshToken을 발급합니다.
     ///
-    /// - Remark: HTTP `POST /auth/register`.
-    /// - Remark: Generated from `#/paths//auth/register/post`.
-    public func post_sol_auth_sol_register(_ input: Operations.post_sol_auth_sol_register.Input) async throws -> Operations.post_sol_auth_sol_register.Output {
+    ///
+    /// - Remark: HTTP `POST /users`.
+    /// - Remark: Generated from `#/paths//users/post(registerUser)`.
+    public func registerUser(_ input: Operations.registerUser.Input) async throws -> Operations.registerUser.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.post_sol_auth_sol_register.id,
+            forOperation: Operations.registerUser.id,
             serializer: { input in
                 let path = try converter.renderedPath(
-                    template: "/auth/register",
+                    template: "/users",
                     parameters: []
                 )
                 var request: HTTPTypes.HTTPRequest = .init(
@@ -191,79 +225,14 @@ public struct Client: APIProtocol {
             },
             deserializer: { response, responseBody in
                 switch response.status.code {
-                case 200:
+                case 201:
+                    let headers: Operations.registerUser.Output.Created.Headers = .init(Location: try converter.getOptionalHeaderFieldAsURI(
+                        in: response.headerFields,
+                        name: "Location",
+                        as: Swift.String.self
+                    ))
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.post_sol_auth_sol_register.Output.Ok.Body
-                    let chosenContentType = try converter.bestContentType(
-                        received: contentType,
-                        options: [
-                            "application/json"
-                        ]
-                    )
-                    switch chosenContentType {
-                    case "application/json":
-                        body = try await converter.getResponseBodyAsJSON(
-                            Components.Schemas.TokenResponse.self,
-                            from: responseBody,
-                            transforming: { value in
-                                .json(value)
-                            }
-                        )
-                    default:
-                        preconditionFailure("bestContentType chose an invalid content type.")
-                    }
-                    return .ok(.init(body: body))
-                case 400:
-                    return .badRequest(.init())
-                default:
-                    return .undocumented(
-                        statusCode: response.status.code,
-                        .init()
-                    )
-                }
-            }
-        )
-    }
-    /// 액세스 토큰 갱신
-    ///
-    /// 리프레시 토큰을 이용하여 새로운 액세스 토큰을 발급받습니다.
-    ///
-    /// - Remark: HTTP `POST /auth/refresh`.
-    /// - Remark: Generated from `#/paths//auth/refresh/post`.
-    public func post_sol_auth_sol_refresh(_ input: Operations.post_sol_auth_sol_refresh.Input) async throws -> Operations.post_sol_auth_sol_refresh.Output {
-        try await client.send(
-            input: input,
-            forOperation: Operations.post_sol_auth_sol_refresh.id,
-            serializer: { input in
-                let path = try converter.renderedPath(
-                    template: "/auth/refresh",
-                    parameters: []
-                )
-                var request: HTTPTypes.HTTPRequest = .init(
-                    soar_path: path,
-                    method: .post
-                )
-                suppressMutabilityWarning(&request)
-                converter.setAcceptHeader(
-                    in: &request.headerFields,
-                    contentTypes: input.headers.accept
-                )
-                let body: OpenAPIRuntime.HTTPBody?
-                switch input.body {
-                case let .json(value):
-                    body = try converter.setRequiredRequestBodyAsJSON(
-                        value,
-                        headerFields: &request.headerFields,
-                        contentType: "application/json; charset=utf-8"
-                    )
-                }
-                return (request, body)
-            },
-            deserializer: { response, responseBody in
-                switch response.status.code {
-                case 200:
-                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.post_sol_auth_sol_refresh.Output.Ok.Body
+                    let body: Operations.registerUser.Output.Created.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -282,9 +251,16 @@ public struct Client: APIProtocol {
                     default:
                         preconditionFailure("bestContentType chose an invalid content type.")
                     }
-                    return .ok(.init(body: body))
+                    return .created(.init(
+                        headers: headers,
+                        body: body
+                    ))
+                case 400:
+                    return .badRequest(.init())
                 case 401:
                     return .unauthorized(.init())
+                case 409:
+                    return .conflict(.init())
                 default:
                     return .undocumented(
                         statusCode: response.status.code,

@@ -12,11 +12,6 @@ public struct ContentView: View {
         VStack {
             Text("Hello, World!")
                 .padding()
-                .onAppear {
-                    ThisIsCoreKit.something()
-                    ThisIsNetworkKit.something()
-                    print(ThisIsNetworkKit.thisServer)
-                }
             
             MainView()
             

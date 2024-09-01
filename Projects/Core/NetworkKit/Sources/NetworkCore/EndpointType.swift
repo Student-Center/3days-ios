@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import OpenapiGenerated
 
 public protocol EndpointType {
     var method: HTTPMethod { get }
@@ -16,4 +17,14 @@ public protocol EndpointType {
     var body: Encodable? { get }
     func request<T: Decodable>(_ type: T.Type) async throws -> T
     func request() async throws
+}
+
+public protocol Endpointable {
+    static var client: Client { get }
+}
+
+extension Endpointable {
+    public static var client: Client {
+        return ServiceClient.client
+    }
 }

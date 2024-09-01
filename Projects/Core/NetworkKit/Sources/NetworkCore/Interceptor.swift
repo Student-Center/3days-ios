@@ -49,7 +49,7 @@ class AuthInterceptor: RequestInterceptor {
         // refresh 토큰 갱신 후 retry
         Task {
             do {
-                try await refreshAccessToken()
+//                try await refreshAccessToken()
                 completion(.retryWithDelay(retryDelay))
             } catch {
                 await MainActor.run {
@@ -60,11 +60,11 @@ class AuthInterceptor: RequestInterceptor {
         }
     }
     
-    private func refreshAccessToken() async throws {
-        let endpoint = AuthEndpoint.refreshToken
-        let response = try await endpoint.request(TokenResponse.self)
-        
-        TokenManager.accessToken = response.accessToken
-        TokenManager.refreshToken = response.refreshToken
-    }
+//    private func refreshAccessToken() async throws {
+//        let endpoint = AuthEndpoint.refreshToken
+//        let response = try await endpoint.request(TokenResponse.self)
+//        
+//        TokenManager.accessToken = response.accessToken
+//        TokenManager.refreshToken = response.refreshToken
+//    }
 }
