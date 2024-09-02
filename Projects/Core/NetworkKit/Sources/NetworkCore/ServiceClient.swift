@@ -13,7 +13,8 @@ import OpenAPIURLSession
 struct ServiceClient {
     static let client = Client(
         serverURL: URL(string: ServerType.current.baseURL)!,
-        transport: URLSessionTransport()
+        transport: URLSessionTransport(),
+        middlewares: []
     )
     
     private init() {}
