@@ -14,7 +14,11 @@ struct ServiceClient {
     static let client = Client(
         serverURL: URL(string: ServerType.current.baseURL)!,
         transport: URLSessionTransport(),
-        middlewares: []
+        middlewares: [
+            AuthenticationMiddleware(),
+            RetryingMiddleware(),
+            LoggingMiddleware()
+        ]
     )
     
     private init() {}

@@ -89,41 +89,82 @@ extension RetryingMiddleware: ClientMiddleware {
         guard case .upToAttempts(count: let maxAttemptCount) = policy else {
             return try await next(request, body, baseURL)
         }
+        
         if let body { guard body.iterationBehavior == .multiple else { return try await next(request, body, baseURL) } }
+
         func willRetry() async throws {
             switch delay {
             case .none: return
             case .constant(seconds: let seconds): try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
             }
         }
+
+        var currentRequest = request
+
         for attempt in 1...maxAttemptCount {
             print("Attempt \(attempt)")
+
             let (response, responseBody): (HTTPResponse, HTTPBody?)
+
+            // 오류 처리
             if signals.contains(.errorThrown) {
-                do { (response, responseBody) = try await next(request, body, baseURL) } catch {
+                do {
+                    (response, responseBody) = try await next(currentRequest, body, baseURL)
+                } catch {
                     if attempt == maxAttemptCount {
                         throw error
                     } else {
-                        print("Retrying after an error")
+                        print("⚠️ Client 내부 오류로 인한 재요청")
                         try await willRetry()
                         continue
                     }
                 }
             } else {
-                (response, responseBody) = try await next(request, body, baseURL)
+                (response, responseBody) = try await next(currentRequest, body, baseURL)
             }
+            
+            // 401 Unauthorized 응답 처리
+            if response.status.code == 401 && attempt < maxAttemptCount {
+                print("♻️ 401 Error, 리프레시 토큰 재발급 요청")
+
+                // 토큰 갱신 시도
+                do {
+                    let tokenResponse = try await AuthEndpoint.refreshAccessToken()
+                    guard let accesstoken = tokenResponse.accessToken,
+                          let refreshToken = tokenResponse.refreshToken else {
+                        throw AuthEndpointError.tokenResponseNotValid
+                    }
+                    
+                    // 요청 헤더에 새로운 액세스 토큰을 추가
+                    var newTokenHeader = currentRequest.headerFields
+                    newTokenHeader.append(
+                        HTTPField(
+                            name: .authorization,
+                            value: "Bearer \(accesstoken)"
+                        )
+                    )
+                    
+                    currentRequest.headerFields = newTokenHeader
+                    continue  // 재시도 루프 다시 호출!
+                } catch {
+                    print("리프레시 토큰 발급 실패")
+                    throw error  // 토큰 갱신 실패 시 오류 반환
+                }
+            }
+
             if signals.contains(response.status.code) && attempt < maxAttemptCount {
-                print("Retrying with code \(response.status.code)")
+                print("⚠️ Status Code \(response.status.code) 로 인한 재요청")
                 try await willRetry()
                 continue
             } else {
-                print("Returning the received response, either because of success or ran out of attempts.")
                 return (response, responseBody)
             }
         }
+        
         preconditionFailure("Unreachable")
     }
 }
+
 
 extension Set where Element == RetryingMiddleware.RetryableSignal {
     /// Checks whether the provided response code matches the retryable signals.

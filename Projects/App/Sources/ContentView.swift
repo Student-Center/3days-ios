@@ -21,7 +21,7 @@ public struct ContentView: View {
         .onAppear {
             Task {
                 do {
-                    try await ExampleEndpoint.example.request()
+                    try await AuthEndpoint.requestSMSVerification(phone: "010-4602-2274")
                 } catch {
                     print(error)
                 }

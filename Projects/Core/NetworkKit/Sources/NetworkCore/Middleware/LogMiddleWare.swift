@@ -11,7 +11,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 //===----------------------------------------------------------------------===//
-#if canImport(Darwin)
 import OpenAPIRuntime
 import Foundation
 import HTTPTypes
@@ -138,4 +137,3 @@ enum BodyLoggingPolicy {
         }
     }
 }
-#endif  // canImport(Darwin)

@@ -21,7 +21,7 @@ struct AuthenticationMiddleware {
     /// The value for the `Authorization` header field.
     private var accessToken: String {
         guard let accessToken = TokenManager.accessToken else {
-            print("❌ 잘못된 접근: 토큰이 비어있음.")
+            print("🪙 토큰이 비어있음.")
             return ""
         }
         return "Bearer \(accessToken)"

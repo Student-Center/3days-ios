@@ -38,6 +38,14 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `POST /users`.
     /// - Remark: Generated from `#/paths//users/post(registerUser)`.
     func registerUser(_ input: Operations.registerUser.Input) async throws -> Operations.registerUser.Output
+    /// 액세스 토큰 갱신
+    ///
+    /// - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+    ///
+    ///
+    /// - Remark: HTTP `POST /users/token/refresh`.
+    /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)`.
+    func refreshToken(_ input: Operations.refreshToken.Input) async throws -> Operations.refreshToken.Output
 }
 
 /// Convenience overloads for operation inputs.
@@ -91,6 +99,22 @@ extension APIProtocol {
         body: Operations.registerUser.Input.Body
     ) async throws -> Operations.registerUser.Output {
         try await registerUser(Operations.registerUser.Input(
+            headers: headers,
+            body: body
+        ))
+    }
+    /// 액세스 토큰 갱신
+    ///
+    /// - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+    ///
+    ///
+    /// - Remark: HTTP `POST /users/token/refresh`.
+    /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)`.
+    public func refreshToken(
+        headers: Operations.refreshToken.Input.Headers = .init(),
+        body: Operations.refreshToken.Input.Body
+    ) async throws -> Operations.refreshToken.Output {
+        try await refreshToken(Operations.refreshToken.Input(
             headers: headers,
             body: body
         ))
@@ -1040,6 +1064,174 @@ public enum Operations {
                     default:
                         try throwUnexpectedResponseStatus(
                             expectedStatus: "conflict",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 액세스 토큰 갱신
+    ///
+    /// - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+    ///
+    ///
+    /// - Remark: HTTP `POST /users/token/refresh`.
+    /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)`.
+    public enum refreshToken {
+        public static let id: Swift.String = "refreshToken"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/token/refresh/POST/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.refreshToken.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.refreshToken.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.refreshToken.Input.Headers
+            /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody/json`.
+                public struct jsonPayload: Codable, Hashable, Sendable {
+                    /// 유효한 리프레시 토큰
+                    ///
+                    /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody/json/refreshToken`.
+                    public var refreshToken: Swift.String?
+                    /// Creates a new `jsonPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - refreshToken: 유효한 리프레시 토큰
+                    public init(refreshToken: Swift.String? = nil) {
+                        self.refreshToken = refreshToken
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case refreshToken
+                    }
+                }
+                /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody/content/application\/json`.
+                case json(Operations.refreshToken.Input.Body.jsonPayload)
+            }
+            public var body: Operations.refreshToken.Input.Body
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            ///   - body:
+            public init(
+                headers: Operations.refreshToken.Input.Headers = .init(),
+                body: Operations.refreshToken.Input.Body
+            ) {
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/token/refresh/POST/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/token/refresh/POST/responses/200/content/application\/json`.
+                    case json(Components.Schemas.TokenResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.TokenResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.refreshToken.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.refreshToken.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 토큰 갱신 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.refreshToken.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.refreshToken.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Unauthorized: Sendable, Hashable {
+                /// Creates a new `Unauthorized`.
+                public init() {}
+            }
+            /// 유효하지 않거나 만료된 리프레시 토큰
+            ///
+            /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Operations.refreshToken.Output.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Operations.refreshToken.Output.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
                             response: self
                         )
                     }

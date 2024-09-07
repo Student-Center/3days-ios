@@ -270,4 +270,75 @@ public struct Client: APIProtocol {
             }
         )
     }
+    /// 액세스 토큰 갱신
+    ///
+    /// - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+    ///
+    ///
+    /// - Remark: HTTP `POST /users/token/refresh`.
+    /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)`.
+    public func refreshToken(_ input: Operations.refreshToken.Input) async throws -> Operations.refreshToken.Output {
+        try await client.send(
+            input: input,
+            forOperation: Operations.refreshToken.id,
+            serializer: { input in
+                let path = try converter.renderedPath(
+                    template: "/users/token/refresh",
+                    parameters: []
+                )
+                var request: HTTPTypes.HTTPRequest = .init(
+                    soar_path: path,
+                    method: .post
+                )
+                suppressMutabilityWarning(&request)
+                converter.setAcceptHeader(
+                    in: &request.headerFields,
+                    contentTypes: input.headers.accept
+                )
+                let body: OpenAPIRuntime.HTTPBody?
+                switch input.body {
+                case let .json(value):
+                    body = try converter.setRequiredRequestBodyAsJSON(
+                        value,
+                        headerFields: &request.headerFields,
+                        contentType: "application/json; charset=utf-8"
+                    )
+                }
+                return (request, body)
+            },
+            deserializer: { response, responseBody in
+                switch response.status.code {
+                case 200:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Operations.refreshToken.Output.Ok.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.TokenResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .ok(.init(body: body))
+                case 401:
+                    return .unauthorized(.init())
+                default:
+                    return .undocumented(
+                        statusCode: response.status.code,
+                        .init()
+                    )
+                }
+            }
+        )
+    }
 }

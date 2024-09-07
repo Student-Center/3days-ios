@@ -7,9 +7,15 @@
 //
 
 import Foundation
+import Model
 import CoreKit
 
-public struct AuthEndpoint: Endpointable {
+enum AuthEndpointError: Error {
+    case emptyToken
+    case tokenResponseNotValid
+}
+
+public enum AuthEndpoint: Endpointable {
     public static func requestSMSVerification(phone: String) async throws -> String? {
         let response = try await client.requestVerification(
             .init(body: .json(.init(phoneNumber: phone)))
@@ -43,5 +49,28 @@ public struct AuthEndpoint: Endpointable {
                 )
             )
         }
+    }
+}
+
+//MARK: - AccessToken Refresh
+extension AuthEndpoint {
+    static func refreshAccessToken() async throws -> RefreshTokenResponse {
+        guard let refreshToken = TokenManager.refreshToken else {
+            throw AuthEndpointError.emptyToken
+        }
+
+        let response = try await client.refreshToken(
+            body: .json(.init(refreshToken: refreshToken))
+        )
+        
+        let result = try response.ok.body.json
+        
+        TokenManager.accessToken = result.accessToken
+        TokenManager.refreshToken = result.refreshToken
+        
+        return RefreshTokenResponse(
+            refreshToken: result.refreshToken,
+            accessToken: result.accessToken
+        )
     }
 }
