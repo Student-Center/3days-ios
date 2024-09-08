@@ -10,6 +10,7 @@ import ProjectDescription
 public enum ExternalDependency: String {
     case alamofire = "Alamofire"
     case nuke = "Nuke"
+    case openapiGenerated = "OpenapiGenerated"
     
     var name: String {
         return self.rawValue

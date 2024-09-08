@@ -1,0 +1,3 @@
+[submodule "OpenApiGenerator/Sources/openapi-generator-cli/3days-oas"]
+	path = OpenApiGenerator/Sources/openapi-generator-cli/3days-oas
+	url = https://github.com/Student-Center/3days-oas.git

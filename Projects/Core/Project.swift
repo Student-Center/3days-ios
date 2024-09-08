@@ -12,6 +12,7 @@ let project: Project = .make(
                 .target(name: .coreKit),
                 .target(name: .model),
                 .external(.alamofire),
+                .external(.openapiGenerated)
             ]
         ),
         .makeUnitTest(
