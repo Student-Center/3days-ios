@@ -130,16 +130,16 @@ import SwiftUI
 }
 {{accessModifier}} extension SwiftUI.Font {
   {% for family in families %}
-    static var bold: DesignSystemFontConvertible {
+    static var bold: DesignCoreFontConvertible {
       {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.bold
     }
-    static var medium: DesignSystemFontConvertible {
+    static var medium: DesignCoreFontConvertible {
       {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.medium
     }
-    static var regular: DesignSystemFontConvertible {
+    static var regular: DesignCoreFontConvertible {
       {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.regular
     }
-    static var semiBold: DesignSystemFontConvertible {
+    static var semiBold: DesignCoreFontConvertible {
       {{param.name}}FontFamily.{{family.name|swiftIdentifier:"pretty"|escapeReservedKeywords}}.semiBold
     }
   {% endfor %}

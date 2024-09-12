@@ -2,7 +2,7 @@ import SwiftUI
 import CoreKit
 import NetworkKit
 import ComponentsKit
-import DesignSystemKit
+import DesignCore
 import Main
 
 public struct ContentView: View {

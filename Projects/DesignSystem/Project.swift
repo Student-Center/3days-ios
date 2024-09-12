@@ -5,7 +5,7 @@ let project: Project = .make(
     name: "DesignSystem",
     targets: [
         .make(
-            target: .designSystemKit,
+            target: .DesignCore,
             useResource: true,
             dependencies: [
                 .external(.nuke)
@@ -14,7 +14,7 @@ let project: Project = .make(
         .make(
             target: .componentsKit,
             dependencies: [
-                .target(name: .designSystemKit)
+                .target(name: .DesignCore)
             ]
         )
     ]
