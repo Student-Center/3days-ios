@@ -76,7 +76,7 @@ extension Target {
         return .make(
             name: target.name,
             product: product,
-            bundleId: "com.studentcenter.weave2-\(target.name)",
+            bundleId: "com.weave.three-days-\(target.name)",
             sources: ["\(target.sources)"],
             dependencies: dependencies
         )
@@ -89,10 +89,11 @@ extension Target {
         settings: Settings? = nil,
         dependencies: [TargetDependency] = []
     ) -> Target {
+        let flag = config == .prod ? "" : "-\(config.flag)"
         return .make(
             name: config.appName,
             product: .app,
-            bundleId: "com.studentcenter.weave2-\(config.flag)",
+            bundleId: "com.weave.three-days\(flag)",
             infoPlist: infoPlist,
             sources: ["Sources/**"],
             resources: ["Resources/**"],
@@ -108,7 +109,7 @@ extension Target {
         return .make(
             name: target.unitTestName,
             product: .unitTests,
-            bundleId: "com.studentcenter.weave2-\(target.name)-unitTest",
+            bundleId: "com.weave.three-days-\(target.name)-unitTest",
             sources: ["\(target.testSources)"],
             dependencies: dependencies
         )
