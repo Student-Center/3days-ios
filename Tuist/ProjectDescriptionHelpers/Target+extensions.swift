@@ -71,6 +71,7 @@ extension Target {
     public static func make(
         target: TargetName,
         product: Product = .staticLibrary,
+        useResource: Bool = false,
         dependencies: [TargetDependency] = []
     ) -> Target {
         return .make(
@@ -78,6 +79,7 @@ extension Target {
             product: product,
             bundleId: "com.studentcenter.weave2-\(target.name)",
             sources: ["\(target.sources)"],
+            resources: useResource ? ["\(target.resources)"] : nil,
             dependencies: dependencies
         )
     }

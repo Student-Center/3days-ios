@@ -6,6 +6,7 @@ let project: Project = .make(
     targets: [
         .make(
             target: .designSystemKit,
+            useResource: true,
             dependencies: [
                 .external(.nuke)
             ]
