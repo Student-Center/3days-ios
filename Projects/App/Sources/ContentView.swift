@@ -12,6 +12,8 @@ public struct ContentView: View {
         VStack {
             Text("Hello, World!")
                 .padding()
+                .font(.pretendard(._300, size: 24))
+                .pretendard(weight: ._300, size: 20)
             
             MainView()
             
