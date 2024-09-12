@@ -16,7 +16,7 @@ public struct ContentView: View {
             MainView()
             
             SampleComponent()
-                .foregroundStyle(Color.tempColor)
+                .foregroundStyle(Color.red)
         }
         .onAppear {
             Task {
