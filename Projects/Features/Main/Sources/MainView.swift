@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import DesignSystemKit
+import DesignCore
 
 public struct MainView: View {
     

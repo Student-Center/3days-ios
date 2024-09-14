@@ -49,6 +49,12 @@ let workspace = Workspace(
                             target: TargetName.coreKit.unitTestName
                         )
                     ),
+                    .testableTarget(
+                        target: .project(
+                            path: "./\(ProjectPath.designSystem.rawValue)",
+                            target: TargetName.DesignCore.unitTestName
+                        )
+                    )
                 ]
             )
         ),

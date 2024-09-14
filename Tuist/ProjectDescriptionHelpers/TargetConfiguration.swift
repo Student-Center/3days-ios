@@ -13,7 +13,7 @@ public enum TargetName: String {
     case coreKit = "CoreKit"
     case model = "Model"
     case networkKit = "NetworkKit"
-    case designSystemKit = "DesignSystemKit"
+    case DesignCore = "DesignCore"
     case componentsKit = "ComponentsKit"
     case main = "Main"
 }
@@ -25,7 +25,7 @@ public extension TargetName {
             return .app
         case .coreKit, .networkKit, .model:
             return .core
-        case .designSystemKit, .componentsKit:
+        case .DesignCore, .componentsKit:
             return .designSystem
         case .main:
             return .feature
