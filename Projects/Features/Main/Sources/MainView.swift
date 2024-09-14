@@ -16,7 +16,6 @@ public struct MainView: View {
         Text("This is Main View in Main Feature!")
             .foregroundStyle(Color.red)
             .background(LinearGradient.gradientA)
-            .font(.bold.displayLg)
     }
 }
 
