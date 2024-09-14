@@ -50,7 +50,7 @@ public extension UIFont {
     }
 }
 
-private struct PretendardModifier: ViewModifier {
+internal struct PretendardModifier: ViewModifier {
     let weight: PretendardWeight
     let size: CGFloat
     var lineHeight: CGFloat? = nil

@@ -11,6 +11,12 @@ let project: Project = .make(
                 .external(.nuke)
             ]
         ),
+        .makeUnitTest(
+            target: .DesignCore,
+            dependencies: [
+                .target(name: .DesignCore)
+            ]
+        ),
         .make(
             target: .componentsKit,
             dependencies: [

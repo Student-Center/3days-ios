@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-public enum Typography {
+public enum Typography: CaseIterable {
     // EN - Medium
     case en_medium_20
     case en_medium_16
