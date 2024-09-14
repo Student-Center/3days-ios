@@ -39,12 +39,7 @@ import SwiftUI
   {{accessModifier}} let name: String
   {{accessModifier}} let family: String
   {{accessModifier}} let path: String
-  {{accessModifier}} func font(size: CGFloat) -> Font {
-    guard let font = UIFont(font: self, size: size) else {
-      fatalError("Unable to initialize font name: '\(name)', family: \(family)")
-    }
-      return Font(uiFont: font)
-  }
+  
   {{accessModifier}} func register() {
   // swiftlint:disable:next conditional_returns_on_newline
   guard let url = url else { return }

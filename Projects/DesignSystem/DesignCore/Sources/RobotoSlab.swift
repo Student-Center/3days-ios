@@ -23,15 +23,32 @@ public extension UIFont {
 
 private struct RobotoSlabModifier: ViewModifier {
     let size: CGFloat
+    var lineHeight: CGFloat? = nil
     
     func body(content: Content) -> some View {
-        content
-            .font(.robotoSlab(size: size))
+        if let lineHeight {
+            let uifont = UIFont.robotoSlab(size: size)
+            content
+                .font(Font(uiFont: uifont))
+                .lineSpacing(lineHeight - uifont.lineHeight)
+                .padding(.vertical, (lineHeight - uifont.lineHeight))
+        } else {
+            content
+                .font(.robotoSlab(size: size))
+        }
     }
 }
 
 public extension View {
-    func robotoSlab(size: CGFloat) -> some View {
-        return modifier(RobotoSlabModifier(size: size))
+    func robotoSlab(
+        size: CGFloat,
+        lineHeight: CGFloat? = nil
+    ) -> some View {
+        return modifier(
+            RobotoSlabModifier(
+                size: size,
+                lineHeight: lineHeight
+            )
+        )
     }
 }

@@ -44,11 +44,19 @@ public enum PretendardWeight {
     }
 }
 
-public extension Font {
-    static func pretendard(_ weight: PretendardWeight, size: CGFloat) -> Font {
-        return weight.font.font(size: size)
-    }
-}
+//public extension Font {
+//    static func pretendard(_ weight: PretendardWeight, size: CGFloat) -> Font {
+//        return weight.font.font(size: size)
+//    }
+//    
+//    static func pretendard(
+//        _ weight: PretendardWeight,
+//        size: CGFloat,
+//        lineHeight: CGFloat
+//    ) -> Font {
+//        return weight.font.font(size: size)
+//    }
+//}
 
 public extension UIFont {
     static func pretendard(_ weight: PretendardWeight, size: CGFloat) -> UIFont {
@@ -59,15 +67,34 @@ public extension UIFont {
 private struct PretendardModifier: ViewModifier {
     let weight: PretendardWeight
     let size: CGFloat
+    var lineHeight: CGFloat? = nil
     
     func body(content: Content) -> some View {
-        content
-            .font(.pretendard(weight, size: size))
+        if let lineHeight {
+            let uifont = weight.font.uiFont(size: size)
+            content
+                .font(Font(uiFont: uifont))
+                .lineSpacing(lineHeight - uifont.lineHeight)
+                .padding(.vertical, (lineHeight - uifont.lineHeight))
+        } else {
+            content
+                .font(Font(uiFont: weight.font.uiFont(size: size)))
+        }
     }
 }
 
 public extension View {
-    func pretendard(weight: PretendardWeight, size: CGFloat) -> some View {
-        return modifier(PretendardModifier(weight: weight, size: size))
+    func pretendard(
+        weight: PretendardWeight,
+        size: CGFloat,
+        lineHeight: CGFloat? = nil
+    ) -> some View {
+        return modifier(
+            PretendardModifier(
+                weight: weight,
+                size: size,
+                lineHeight: lineHeight
+            )
+        )
     }
 }
