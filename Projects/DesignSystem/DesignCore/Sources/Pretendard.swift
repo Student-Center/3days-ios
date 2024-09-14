@@ -44,20 +44,6 @@ public enum PretendardWeight {
     }
 }
 
-//public extension Font {
-//    static func pretendard(_ weight: PretendardWeight, size: CGFloat) -> Font {
-//        return weight.font.font(size: size)
-//    }
-//    
-//    static func pretendard(
-//        _ weight: PretendardWeight,
-//        size: CGFloat,
-//        lineHeight: CGFloat
-//    ) -> Font {
-//        return weight.font.font(size: size)
-//    }
-//}
-
 public extension UIFont {
     static func pretendard(_ weight: PretendardWeight, size: CGFloat) -> UIFont {
         return .init(font: weight.font, size: size)!
