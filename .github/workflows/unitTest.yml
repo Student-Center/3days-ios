@@ -18,6 +18,8 @@ jobs:
           mise install
     - name: Install Tuist dependencies
       run: mise x -- tuist install
+    - name: Generate Xcworkspace
+      run: mise x -- tuist generate
     - name: Run unit tests
       run: |
         xcodebuild test -scheme three-days-UnitTest -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' | tee result.log
