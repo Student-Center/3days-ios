@@ -54,7 +54,7 @@ jobs:
         run: |
           cd Projects/App
           VERSION_NUMBER=$(xcrun agvtool what-marketing-version -terse1)
-          echo "VERSION_NUMBER=$VERSION_NUMBER"
+          echo "VERSION_NUMBER=$VERSION_NUMBER" >> $GITHUB_ENV
           cd -
       - name: set build number
         run: |
@@ -66,7 +66,7 @@ jobs:
           BUILD_NUMBER="${BUILD_DATE}${BUILD_TIME}"
   
           # 로그
-          echo "Build number: $BUILD_NUMBER"
+          echo "Build number: $BUILD_NUMBER" >> $GITHUB_ENV
   
           # 빌드넘버 세팅
           xcrun agvtool new-version -all $BUILD_NUMBER
