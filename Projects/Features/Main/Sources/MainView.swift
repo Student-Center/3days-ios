@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import DesignSystemKit
+import DesignCore
 
 public struct MainView: View {
     
@@ -14,7 +14,8 @@ public struct MainView: View {
     
     public var body: some View {
         Text("This is Main View in Main Feature!")
-            .foregroundStyle(Color.tempColor)
+            .foregroundStyle(Color.red)
+            .background(LinearGradient.gradientA)
     }
 }
 
