@@ -25,11 +25,11 @@ let project: Project = .make(
                 configurations: [
                     .debug(
                         name: .debug,
-                        settings: BuildSetting.App.dev
+                        settings: BuildSetting.App.dev_debug
                     ),
                     .release(
                         name: .release,
-                        settings: BuildSetting.App.dev
+                        settings: BuildSetting.App.dev_release
                     )
                 ]
             ),
@@ -45,11 +45,11 @@ let project: Project = .make(
                 configurations: [
                     .debug(
                         name: .debug,
-                        settings: BuildSetting.App.prod
+                        settings: BuildSetting.App.prod_debug
                     ),
                     .release(
                         name: .release,
-                        settings: BuildSetting.App.prod
+                        settings: BuildSetting.App.prod_release
                     )
                 ]
             ),
@@ -69,11 +69,32 @@ enum BuildSetting {
                 "INFOPLIST_KEY_CFBundleDisplayName": config.appDisplayName
             ]
         }
-        static let dev: SettingsDictionary = [
+        static let dev_debug: SettingsDictionary = [
             "APP_ENV": "dev",
+            "DEVELOPMENT_TEAM": "846TMZL7WC",
+            "CODE_SIGN_STYLE": "Automatic",
         ]
-        static let prod: SettingsDictionary = [
-            "APP_ENV": "prod"
+        
+        static let dev_release: SettingsDictionary = [
+            "APP_ENV": "dev",
+            "CODE_SIGN_STYLE": "Manual",
+            "DEVELOPMENT_TEAM": "846TMZL7WC",
+            "CODE_SIGN_IDENTITY": "iPhone Distribution",
+            "PROVISIONING_PROFILE_SPECIFIER": "3days-dev"
+        ]
+        
+        static let prod_debug: SettingsDictionary = [
+            "APP_ENV": "prod",
+            "DEVELOPMENT_TEAM": "846TMZL7WC",
+            "CODE_SIGN_STYLE": "Automatic"
+        ]
+        
+        static let prod_release: SettingsDictionary = [
+            "APP_ENV": "prod",
+            "CODE_SIGN_STYLE": "Manual",
+            "DEVELOPMENT_TEAM": "846TMZL7WC",
+            "CODE_SIGN_IDENTITY": "iPhone Distribution",
+            "PROVISIONING_PROFILE_SPECIFIER": "3days-prod"
         ]
     }
 }
