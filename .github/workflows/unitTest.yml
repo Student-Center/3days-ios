@@ -25,36 +25,3 @@ jobs:
       run: |
         xcodebuild test -scheme three-days-UnitTest -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' | tee result.log
       continue-on-error: true
-      
-    - name: Parse test results
-      id: parse_test_results
-      run: |
-        TOTAL_TESTS=$(grep -oE 'Test Suite .* Executed ([0-9]+) tests' result.log | grep -oE '[0-9]+' | head -n 1)
-        FAILED_TESTS=$(grep -oE 'Executed [0-9]+ tests, with ([0-9]+) failures' result.log | grep -oE '[0-9]+' | head -n 1)
-        FAILED_TEST_NAMES=$(grep -oE '^[[:space:]]+[0-9]+\) (.*)' result.log | awk '{$1=""; print $0}')
-        
-        echo "Total tests: $TOTAL_TESTS"
-        echo "Failed tests: $FAILED_TESTS"
-        echo "Failed test names: $FAILED_TEST_NAMES"
-        
-        echo "TOTAL_TESTS=$TOTAL_TESTS" >> $GITHUB_ENV
-        echo "FAILED_TESTS=$FAILED_TESTS" >> $GITHUB_ENV
-        echo "FAILED_TEST_NAMES=$FAILED_TEST_NAMES" >> $GITHUB_ENV
-
-    - name: Notify Discord
-      if: ${{ always() }}
-      run: |
-        if [ "${{ env.FAILED_TESTS }}" -eq "0" ]; then
-          # 성공 시
-          MESSAGE="iOS Unit Test Passed!\n- Total ${{ env.TOTAL_TESTS }} tests executed, all passed."
-          COLOR=5814783
-        else
-          # 실패 시
-          MESSAGE="iOS Unit Test Failed.. (dev)\n- Total ${{ env.TOTAL_TESTS }} tests executed, ${{ env.FAILED_TESTS }} failed.\n\nFailed tests:\n${{ env.FAILED_TEST_NAMES }}"
-          COLOR=16711741
-        fi
-    
-        curl -H "Content-Type: application/json" \
-             -X POST \
-             -d "{\"content\": null, \"embeds\": [{\"title\": \"${MESSAGE}\", \"color\": ${COLOR}}]}" \
-             ${{ secrets.DISCORD_WEBHOOK_URL }}
