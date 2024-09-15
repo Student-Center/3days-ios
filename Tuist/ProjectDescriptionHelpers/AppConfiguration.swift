@@ -13,8 +13,12 @@ public enum AppConfig {
 }
 
 public extension AppConfig {
-    static let appVersion: SettingValue = "1.0.0"
+    static let appVersion: String = "1.0.0"
     static let buildNumber: SettingValue = "1"
+    
+    static var appVersionValue: SettingValue {
+        return .string(appVersion)
+    }
 }
 
 public extension AppConfig {
