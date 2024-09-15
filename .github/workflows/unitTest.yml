@@ -35,13 +35,14 @@ jobs:
         echo "FAILED_TESTS=$FAILED_TESTS" >> $GITHUB_ENV
         echo "FAILED_TEST_NAMES=$FAILED_TEST_NAMES" >> $GITHUB_ENV
     - name: Notify Discord
-      uses: th0th/notify-discord@v0.4.1
       if: ${{ always() }}
-      env:
-        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        GITHUB_ACTOR: ${{ github.actor }}
-        GITHUB_JOB_NAME: "Unit Test Results"
-        GITHUB_JOB_STATUS: ${{ job.status }}
-        MESSAGE: |
-          Total tests: ${{ env.TOTAL_TESTS }}. Failed tests: ${{ env.FAILED_TESTS }}.
-          Failed test names: ${{ env.FAILED_TEST_NAMES }}
+      run: |
+        if [ "${{ env.FAILED_TESTS }}" -eq "0" ]; then
+          MESSAGE="All tests passed! Total tests: ${{ env.TOTAL_TESTS }}"
+        else
+          MESSAGE="Some tests failed. Total tests: ${{ env.TOTAL_TESTS }}, Failed tests: ${{ env.FAILED_TESTS }}. Failed tests: ${{ env.FAILED_TEST_NAMES }}"
+        fi
+    
+        curl -H "Content-Type: application/json" \
+             -d "{\"content\": \"$MESSAGE\"}" \
+             -X POST ${{ secrets.DISCORD_WEBHOOK_URL }}
