@@ -62,8 +62,8 @@ jobs:
           cd Projects/App
   
           # 시분초 기반 빌드넘버 생성
-          BUILD_DATE=$(date +'%y%m%d')
-          BUILD_TIME=$(date +'%H%M')
+          BUILD_DATE=$(TZ=Asia/Seoul date +'%y%m%d')
+          BUILD_TIME=$(TZ=Asia/Seoul date +'%H%M')
           BUILD_NUMBER="${BUILD_DATE}${BUILD_TIME}"
   
           # 로그
