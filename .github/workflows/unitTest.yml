@@ -24,3 +24,24 @@ jobs:
       run: |
         xcodebuild test -scheme three-days-UnitTest -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' | tee result.log
       continue-on-error: true
+    - name: Parse test results
+      id: parse_test_results
+      run: |
+        TOTAL_TESTS=$(grep -oE 'Test Suite .* executed ([0-9]+) tests' result.log | grep -oE '[0-9]+' | head -n 1)
+        FAILED_TESTS=$(grep -oE 'Failing tests:.*' -A 20 result.log | grep -oE '[0-9]+' | head -n 1)
+        FAILED_TEST_NAMES=$(grep -oE '^[[:space:]]+[0-9]+\) (.*)' result.log | awk '{$1=""; print $0}')
+
+        echo "TOTAL_TESTS=$TOTAL_TESTS" >> $GITHUB_ENV
+        echo "FAILED_TESTS=$FAILED_TESTS" >> $GITHUB_ENV
+        echo "FAILED_TEST_NAMES=$FAILED_TEST_NAMES" >> $GITHUB_ENV
+    - name: Notify Discord
+      uses: th0th/notify-discord@v0.4.1
+      if: ${{ always() }}
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        GITHUB_ACTOR: ${{ github.actor }}
+        GITHUB_JOB_NAME: "Unit Test Results"
+        GITHUB_JOB_STATUS: ${{ job.status }}
+        MESSAGE: |
+          Total tests: ${{ env.TOTAL_TESTS }}. Failed tests: ${{ env.FAILED_TESTS }}.
+          Failed test names: ${{ env.FAILED_TEST_NAMES }}
