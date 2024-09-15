@@ -41,6 +41,14 @@ jobs:
       - name: Checkout project
         # uses 키워드를 통해 Github Actions에서 기본으로 제공하는 액션을 사용 가능. 아래 액션은 repository 에 체크아웃하는 것
         uses: actions/checkout@v2
+      - name: Get build number
+        id: get-build-number
+        run: |
+          BUILD_DATE=$(date +'%y%m%d')
+          BUILD_TIME=$(date +'%H%M')
+          BUILD_NUMBER="${BUILD_DATE}${BUILD_TIME}"
+          echo "Build number: $BUILD_NUMBER"
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
       - name: Install Mise
         run: |
             curl https://mise.run | sh
@@ -49,6 +57,23 @@ jobs:
         run: mise x -- tuist install
       - name: Generate Xcworkspace
         run: mise x -- tuist generate
+      - name: Change directory and set build number
+        run: |
+          cd Projects/App
+  
+          # 시분초 기반 빌드넘버 생성
+          BUILD_DATE=$(date +'%y%m%d')
+          BUILD_TIME=$(date +'%H%M')
+          BUILD_NUMBER="${BUILD_DATE}${BUILD_TIME}"
+  
+          # 로그
+          echo "Build number: $BUILD_NUMBER"
+  
+          # 빌드넘버 세팅
+          xcrun agvtool new-version -all $BUILD_NUMBER
+  
+          # 기존 디렉토리로
+          cd -
       - name: Configure Keychain 
         # 키체인 초기화 - 임시 키체인 생성
         run: |
