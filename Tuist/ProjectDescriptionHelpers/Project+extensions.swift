@@ -26,7 +26,7 @@ extension Project {
         
         return Project(
             name: name,
-            organizationName: "com.studentcenter",
+            organizationName: "com.weave",
             options: .options(
                 automaticSchemesOptions: .disabled,
                 defaultKnownRegions: ["ko"],
