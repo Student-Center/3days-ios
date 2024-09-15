@@ -41,14 +41,6 @@ jobs:
       - name: Checkout project
         # uses 키워드를 통해 Github Actions에서 기본으로 제공하는 액션을 사용 가능. 아래 액션은 repository 에 체크아웃하는 것
         uses: actions/checkout@v2
-      - name: Get build number
-        id: get-build-number
-        run: |
-          BUILD_DATE=$(date +'%y%m%d')
-          BUILD_TIME=$(date +'%H%M')
-          BUILD_NUMBER="${BUILD_DATE}${BUILD_TIME}"
-          echo "Build number: $BUILD_NUMBER"
-          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
       - name: Install Mise
         run: |
             curl https://mise.run | sh
@@ -60,8 +52,10 @@ jobs:
       - name: Get version number
         id: get-version
         run: |
+          cd Projects/App
           VERSION_NUMBER=$(xcrun agvtool what-marketing-version -terse1)
           echo "VERSION_NUMBER=$VERSION_NUMBER"
+          cd -
       - name: set build number
         run: |
           cd Projects/App
@@ -81,18 +75,10 @@ jobs:
           cd -
       - name: Send start notification to Discord
         run: |
-         curl -H "Content-Type: application/json" \
-         -X POST \
-         -d '{
-            "content": null,
-            "embeds": [
-                {
-                    "title": "iOS 배포 시작(dev)",
-                    "description": "Actor: '${{ github.actor }}' \nVersion: '${{ env.VERSION_NUMBER }} (${ env.BUILD_NUMBER })'",
-                    "color": 5814783
-                }
-            ]
-         }' ${{ secrets.DISCORD_WEBHOOK_URL }}
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{\"content\": null, \"embeds\": [{\"title\": \"iOS 배포 시작(dev)\", \"description\": \"Actor: ${{ github.actor }} \nVersion: ${{ env.VERSION_NUMBER }} (${{ env.BUILD_NUMBER }})\", \"color\": 5814783}]}" \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
       - name: Configure Keychain 
         # 키체인 초기화 - 임시 키체인 생성
         run: |
@@ -141,29 +127,13 @@ jobs:
         if: success()
         run: |
           curl -H "Content-Type: application/json" \
-            -X POST \
-            -d '{
-                  "content": null,
-                  "embeds": [
-                        {
-                            "title": "iOS 배포 성공(dev)",
-                            "description": "Actor: '${{ github.actor }}' \nVersion: '${{ env.VERSION_NUMBER }} (${ env.BUILD_NUMBER })'",
-                            "color": 5814783
-                        }
-                    ]
-                }' ${{ secrets.DISCORD_WEBHOOK_URL }}
+          -X POST \
+          -d "{\"content\": null, \"embeds\": [{\"title\": \"iOS 배포 성공(dev)\", \"description\": \"Actor: ${{ github.actor }} \nVersion: ${{ env.VERSION_NUMBER }} (${{ env.BUILD_NUMBER }})\", \"color\": 5814783}]}" \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
       - name: Failure notification to Discord
         if: failure()
         run: |
           curl -H "Content-Type: application/json" \
           -X POST \
-          -d '{
-            "content": null,
-            "embeds": [
-              {
-                "title": "iOS 배포 실패....(dev)",
-                "description": "Actor: '${{ github.actor }}' \nVersion: '${{ env.VERSION_NUMBER }} (${ env.BUILD_NUMBER })'",
-                "color": 16711741
-              }
-            ]
-          }' ${{ secrets.DISCORD_WEBHOOK_URL }}
+          -d "{\"content\": null, \"embeds\": [{\"title\": \"iOS 배포 실패....(dev)\", \"description\": \"Actor: ${{ github.actor }} \nVersion: ${{ env.VERSION_NUMBER }} (${{ env.BUILD_NUMBER }})\", \"color\": 16711741}]}" \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}
