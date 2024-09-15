@@ -7,7 +7,7 @@ let infoPlist = InfoPlist.extendingDefault(
             "UIColorName": "",
             "UIImageName": "",
         ],
-        "CFBundleShortVersionString": "$(MARKETING_VERSION)",
+        "CFBundleShortVersionString": .string(AppConfig.appVersion),
         "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
         "App Enviroment": "$(APP_ENV)",
         "CFBundleDisplayName": "${INFOPLIST_KEY_CFBundleDisplayName}"
@@ -64,7 +64,7 @@ enum BuildSetting {
     enum App {
         static func base(_ config: AppConfig) -> SettingsDictionary {
             return [
-                "MARKETING_VERSION": AppConfig.appVersion,
+                "MARKETING_VERSION": AppConfig.appVersionValue,
                 "CURRENT_PROJECT_VERSION": AppConfig.buildNumber,
                 "INFOPLIST_KEY_CFBundleDisplayName": config.appDisplayName
             ]
