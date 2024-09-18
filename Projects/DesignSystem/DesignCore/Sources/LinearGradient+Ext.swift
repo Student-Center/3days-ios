@@ -10,7 +10,7 @@ import SwiftUI
 
 extension LinearGradient {
     public static let gradientA = LinearGradient(
-        colors: [DesignCore.gradientA0, DesignCore.gradientA1],
+        colors: [DesignCore.Colors.gradientA0, DesignCore.Colors.gradientA1],
         startPoint: .leading,
         endPoint: .trailing
     )
