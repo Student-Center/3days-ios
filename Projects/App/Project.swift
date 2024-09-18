@@ -10,7 +10,9 @@ let infoPlist = InfoPlist.extendingDefault(
         "CFBundleShortVersionString": .string(AppConfig.appVersion),
         "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
         "App Enviroment": "$(APP_ENV)",
-        "CFBundleDisplayName": "${INFOPLIST_KEY_CFBundleDisplayName}"
+        "CFBundleDisplayName": "${INFOPLIST_KEY_CFBundleDisplayName}",
+        "UIUserInterfaceStyle": "Light",
+        "ITSAppUsesNonExemptEncryption": false
     ]
 )
 
