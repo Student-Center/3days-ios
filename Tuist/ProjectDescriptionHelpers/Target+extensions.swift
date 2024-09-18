@@ -42,6 +42,10 @@ extension Target {
             )
         }
         
+        targetSettings?.base.merge(
+            ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": "$(inherited)"]
+        )
+        
         return .target(
             name: name,
             destinations: destinations,
@@ -80,7 +84,12 @@ extension Target {
             bundleId: "com.weave.three-days-\(target.name)",
             sources: ["\(target.sources)"],
             resources: useResource ? ["\(target.resources)"] : nil,
-            dependencies: dependencies
+            dependencies: dependencies,
+            settings: .settings(configurations: [
+                .debug(name: .debug),
+                .release(name: .configuration("Staging")),
+                .release(name: .release)
+            ])
         )
     }
     

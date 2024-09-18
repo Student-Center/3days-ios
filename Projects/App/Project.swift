@@ -35,6 +35,10 @@ let project: Project = .make(
                         settings: BuildSetting.App.dev_debug
                     ),
                     .release(
+                        name: .configuration("Staging"),
+                        settings: BuildSetting.App.dev_release
+                    ),
+                    .release(
                         name: .release,
                         settings: BuildSetting.App.dev_release
                     )
@@ -51,6 +55,10 @@ let project: Project = .make(
                     .debug(
                         name: .debug,
                         settings: BuildSetting.App.prod_debug
+                    ),
+                    .release(
+                        name: .configuration("Staging"),
+                        settings: BuildSetting.App.prod_release
                     ),
                     .release(
                         name: .release,

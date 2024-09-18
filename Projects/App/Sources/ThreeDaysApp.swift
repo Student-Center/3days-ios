@@ -12,7 +12,7 @@ struct ThreeDaysApp: App {
         WindowGroup {
             ZStack(alignment: .bottomLeading) {
                 rootView
-                #if DEBUG
+                #if STAGING || DEBUG
                 debugMenuPicker
                     .padding(.leading, 16)
                     .padding(.bottom, 16)
@@ -31,7 +31,7 @@ struct ThreeDaysApp: App {
         }
     }
 
-    #if DEBUG
+    #if STAGING || DEBUG
     @ViewBuilder
     var debugMenuPicker: some View {
         Menu("🚀 개발모드") {

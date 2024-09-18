@@ -24,6 +24,21 @@ extension Project {
             )
         }
         
+        targetSettings?.configurations = [
+            .debug(
+                name: .debug,
+                settings: configCompilation("DEBUG")
+            ),
+            .release(
+                name: .configuration("Staging"),
+                settings: configCompilation("STAGING")
+            ),
+            .release(
+                name: .release,
+                settings: configCompilation("RELEASE")
+            )
+        ]
+        
         return Project(
             name: name,
             organizationName: "com.weave",
@@ -41,4 +56,8 @@ extension Project {
             resourceSynthesizers: resourceSynthesizers
         )
     }
+}
+
+fileprivate func configCompilation(_ value: String) -> SettingsDictionary {
+    return ["SWIFT_ACTIVE_COMPILATION_CONDITIONS": .string(value)]
 }

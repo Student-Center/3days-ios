@@ -24,7 +24,7 @@ let workspace = Workspace(
                 configuration: .debug,
                 arguments: .arguments(environmentVariables: ["IDEPreferLogStreaming": "YES"])
             ),
-            archiveAction: .archiveAction(configuration: .debug),
+            archiveAction: .archiveAction(configuration: .configuration("Staging")),
             profileAction: .profileAction(configuration: .debug),
             analyzeAction: .analyzeAction(configuration: .debug)
         ),
