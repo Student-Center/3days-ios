@@ -70,7 +70,7 @@ extension Target {
     
     public static func make(
         target: TargetName,
-        product: Product = .staticLibrary,
+        product: Product = .framework,
         useResource: Bool = false,
         dependencies: [TargetDependency] = []
     ) -> Target {

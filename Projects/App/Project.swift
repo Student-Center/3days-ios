@@ -14,6 +14,11 @@ let infoPlist = InfoPlist.extendingDefault(
     ]
 )
 
+let appDependencies: [TargetDependency] = [
+    .project(target: .main),
+    .project(target: .designPreview)
+]
+
 let project: Project = .make(
     name: "App",
     targets: [
@@ -33,9 +38,7 @@ let project: Project = .make(
                     )
                 ]
             ),
-            dependencies: [
-                .project(target: .main)
-            ]
+            dependencies: appDependencies
         ),
         .makeAppTarget(
             config: .prod,
@@ -53,9 +56,7 @@ let project: Project = .make(
                     )
                 ]
             ),
-            dependencies: [
-                .project(target: .main)
-            ]
+            dependencies: appDependencies
         ),
     ]
 )

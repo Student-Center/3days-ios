@@ -1,7 +1,8 @@
 import SwiftUI
+import DesignPreview
 
 @main
-struct Weave2IOSApp: App {
+struct ThreeDaysApp: App {
     var body: some Scene {
         WindowGroup {
             DesignPreviewView()
