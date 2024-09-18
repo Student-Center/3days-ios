@@ -14,6 +14,10 @@ public struct BackgroundTextureView: View {
     public var body: some View {
         DesignCore.Images.backgroundDefault.image!
             .resizable()
+            .frame(
+                width: Device.width,
+                height: Device.height
+            )
             .aspectRatio(contentMode: .fill)
             .ignoresSafeArea()
     }
@@ -29,6 +33,7 @@ fileprivate struct BackgroundTextureViewModifier: ViewModifier {
                         width: Device.width,
                         height: Device.height
                     )
+                    .aspectRatio(contentMode: .fill)
                     .ignoresSafeArea()
             }
     }
