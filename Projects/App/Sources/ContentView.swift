@@ -18,7 +18,7 @@ public struct ContentView: View {
             MainView()
             
             SampleComponent()
-                .foregroundStyle(DesignCore.red300)
+                .foregroundStyle(DesignCore.Colors.red300)
         }
     }
 }

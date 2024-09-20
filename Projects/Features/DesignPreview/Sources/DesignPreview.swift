@@ -11,11 +11,13 @@ import DesignCore
 fileprivate enum PreviewTypes: CaseIterable {
     case colors
     case typography
+    case textureBackground
     
     var name: String {
         switch self {
         case .colors: return "Colors"
         case .typography: return "Typography"
+        case .textureBackground: return "Texture Background"
         }
     }
     
@@ -26,6 +28,8 @@ fileprivate enum PreviewTypes: CaseIterable {
             DesignColorPreview()
         case .typography:
             DesignTypographyPreview()
+        case .textureBackground:
+            DesignBackgroundTextureView()
         }
     }
 }
