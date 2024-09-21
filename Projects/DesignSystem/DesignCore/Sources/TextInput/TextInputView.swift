@@ -8,9 +8,11 @@
 
 import SwiftUI
 
-public struct TextInput: View {
+public struct TextInput<Content>: View where Content: View {
     let placeholder: String
     let backgroundColor: Color
+    let keyboardType: UIKeyboardType
+    @ViewBuilder let leftView: () -> Content
     @Binding var text: String
     @FocusState var isFocused: Bool
     
@@ -20,34 +22,40 @@ public struct TextInput: View {
         placeholder: String = "",
         backgroundColor: Color = .white,
         text: Binding<String>,
+        keyboardType: UIKeyboardType = .default,
         isFocused: FocusState<Bool> = .init(),
+        @ViewBuilder leftView: @escaping () -> Content = { EmptyView() },
         rightIcon: TextInputRightIconModel? = nil
     ) {
         self.placeholder = placeholder
         self.backgroundColor = backgroundColor
+        self.keyboardType = keyboardType
         self._text = text
         self._isFocused = isFocused
+        self.leftView = leftView
         self.rightIcon = rightIcon
     }
     
     public var body: some View {
         ZStack {
             Capsule()
+                .inset(by: -1)
                 .stroke(
                     DesignCore.Colors.grey100,
                     lineWidth: isFocused ? 1.0 : 0
                 )
                 .background(backgroundColor)
             
-            HStack {
+            HStack(spacing: 10) {
+                leftView()
                 TextField(
                     placeholder,
                     text: $text
                 )
                 .focused($isFocused)
+                .keyboardType(keyboardType)
                 .tint(DesignCore.Colors.grey500)
                 .foregroundStyle(DesignCore.Colors.grey500)
-                .padding(.leading, 24)
                 .typography(.medium_16)
                 
                 if let rightIcon {
@@ -59,9 +67,10 @@ public struct TextInput: View {
                         rightIcon.icon
                     }
                     .frame(width: 36, height: 36)
-                    .padding(.trailing, 12)
                 }
             }
+            .padding(.leading, 24)
+            .padding(.trailing, 12)
         }
         .frame(height: 60)
         .containerShape(Capsule())

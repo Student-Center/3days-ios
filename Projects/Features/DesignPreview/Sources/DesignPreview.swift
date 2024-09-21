@@ -14,6 +14,7 @@ fileprivate enum PreviewTypes: CaseIterable {
     case textureBackground
     case ctaButton
     case shadow
+    case textInput
     
     var name: String {
         switch self {
@@ -22,6 +23,7 @@ fileprivate enum PreviewTypes: CaseIterable {
         case .textureBackground: return "Texture Background"
         case .ctaButton: return "CTA Button"
         case .shadow: return "Shadow"
+        case .textInput: return "Text Input"
         }
     }
     
@@ -38,6 +40,8 @@ fileprivate enum PreviewTypes: CaseIterable {
             DesignButtonView()
         case .shadow:
             DesignShadowView()
+        case .textInput:
+            DesignTextInputPreview()
         }
     }
 }
