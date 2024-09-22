@@ -16,6 +16,7 @@ fileprivate enum PreviewTypes: CaseIterable {
     case shadow
     case textInput
     case toast
+    case tooltip
     
     var name: String {
         switch self {
@@ -26,6 +27,7 @@ fileprivate enum PreviewTypes: CaseIterable {
         case .shadow: return "Shadow"
         case .textInput: return "Text Input"
         case .toast: return "Toast"
+        case .tooltip: return "ToolTip"
         }
     }
     
@@ -46,6 +48,8 @@ fileprivate enum PreviewTypes: CaseIterable {
             DesignTextInputPreview()
         case .toast:
             DesignToastView()
+        case .tooltip:
+            DesignToolTipView()
         }
     }
 }
