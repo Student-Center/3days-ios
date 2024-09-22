@@ -63,7 +63,7 @@ struct Toast: View {
                 .shadow(.alert)
             
             HStack(spacing: 6) {
-                DesignCore.Images.alert.image!
+                DesignCore.Images.alert.image
                     .resizable()
                     .frame(width: 20, height: 20)
                 Text(message)

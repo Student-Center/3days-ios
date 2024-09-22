@@ -52,7 +52,7 @@ public struct CTABottomButton<BackgroundStyle: ShapeStyle>: View {
                         )
                     Text(title)
                         .foregroundStyle(titleColor)
-                        .typography(.medium_18)
+                        .typography(.semibold_18)
                 }
                 Rectangle()
                     .foregroundStyle(buttonBackgroundColor)
