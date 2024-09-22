@@ -12,33 +12,39 @@ import DesignCore
 struct DesignColorPreview: View {
     
     let blackColors = [
-        DesignCore.black,
-        DesignCore.grey500,
-        DesignCore.grey400,
-        DesignCore.grey300,
-        DesignCore.grey200,
-        DesignCore.grey100
+        DesignCore.Colors.black,
+        DesignCore.Colors.grey500,
+        DesignCore.Colors.grey400,
+        DesignCore.Colors.grey300,
+        DesignCore.Colors.grey200,
+        DesignCore.Colors.grey100
     ]
     
     let tintColors = [
-        DesignCore.red300,
-        DesignCore.blue300
+        DesignCore.Colors.red300,
+        DesignCore.Colors.blue300
+    ]
+    
+    let lightColors = [
+        DesignCore.Colors.green500,
+        DesignCore.Colors.pink500,
+        DesignCore.Colors.blue500,
+        DesignCore.Colors.green100,
+        DesignCore.Colors.pink100
     ]
     
     let pastelColors = [
-        DesignCore.darkGreen,
-        DesignCore.darkPink,
-        DesignCore.darkBlue,
-        DesignCore.lightYellow,
-        DesignCore.lightGreen,
-        DesignCore.lightPink,
-        DesignCore.lightBlue,
+        DesignCore.Colors.yellow50,
+        DesignCore.Colors.green50,
+        DesignCore.Colors.pink50,
+        DesignCore.Colors.blue50,
     ]
     
     var colorGroups: [[Color]] {
         return [
             blackColors,
             tintColors,
+            lightColors,
             pastelColors
         ]
     }

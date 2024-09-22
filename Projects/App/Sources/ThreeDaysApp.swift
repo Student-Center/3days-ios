@@ -43,7 +43,7 @@ struct ThreeDaysApp: App {
         }
         .buttonStyle(BorderedProminentButtonStyle())
         .typography(.semibold_14)
-        .tint(DesignCore.grey300)
+        .tint(DesignCore.Colors.grey300)
     }
     #endif
 }

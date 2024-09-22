@@ -11,11 +11,23 @@ import DesignCore
 fileprivate enum PreviewTypes: CaseIterable {
     case colors
     case typography
+    case textureBackground
+    case ctaButton
+    case shadow
+    case textInput
+    case toast
+    case tooltip
     
     var name: String {
         switch self {
         case .colors: return "Colors"
         case .typography: return "Typography"
+        case .textureBackground: return "Texture Background"
+        case .ctaButton: return "CTA Button"
+        case .shadow: return "Shadow"
+        case .textInput: return "Text Input"
+        case .toast: return "Toast"
+        case .tooltip: return "ToolTip"
         }
     }
     
@@ -26,6 +38,18 @@ fileprivate enum PreviewTypes: CaseIterable {
             DesignColorPreview()
         case .typography:
             DesignTypographyPreview()
+        case .textureBackground:
+            DesignBackgroundTextureView()
+        case .ctaButton:
+            DesignButtonView()
+        case .shadow:
+            DesignShadowView()
+        case .textInput:
+            DesignTextInputPreview()
+        case .toast:
+            DesignToastView()
+        case .tooltip:
+            DesignToolTipView()
         }
     }
 }
