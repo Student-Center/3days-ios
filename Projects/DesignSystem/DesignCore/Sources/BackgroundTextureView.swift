@@ -12,7 +12,7 @@ public struct BackgroundTextureView: View {
     public init() {}
     
     public var body: some View {
-        DesignCore.Images.backgroundDefault.image!
+        DesignCore.Images.backgroundDefault.image
             .resizable()
             .frame(
                 width: Device.width,
@@ -27,7 +27,7 @@ fileprivate struct BackgroundTextureViewModifier: ViewModifier {
     fileprivate func body(content: Content) -> some View {
         content
             .background {
-                DesignCore.Images.backgroundDefault.image!
+                DesignCore.Images.backgroundDefault.image
                     .resizable()
                     .frame(
                         width: Device.width,

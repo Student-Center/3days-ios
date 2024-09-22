@@ -178,9 +178,8 @@ import SwiftUI
     return image
   }
 
-  {{accessModifier}} var image: SwiftUI.Image? {
-    guard let uiImage else { return nil }
-    return SwiftUI.Image(uiImage: uiImage)
+  {{accessModifier}} var image: SwiftUI.Image {
+    return SwiftUI.Image(uiImage: uiImage!)
   }
 }
 

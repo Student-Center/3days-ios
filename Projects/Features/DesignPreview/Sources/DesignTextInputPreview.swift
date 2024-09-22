@@ -20,7 +20,7 @@ struct DesignTextInputPreview: View {
     var phoneRightIcon: TextInputRightIconModel? {
         if isPhoneValidated {
             return .init(
-                icon: DesignCore.Images.checkBold.image!,
+                icon: DesignCore.Images.checkBold.image,
                 backgroundColor: Color(hex: 0x2DE76B)
             )
         }
@@ -36,7 +36,7 @@ struct DesignTextInputPreview: View {
                     backgroundColor: .white,
                     text: $companyTextInput,
                     rightIcon: .init(
-                        icon: DesignCore.Images.checkBold.image!,
+                        icon: DesignCore.Images.checkBold.image,
                         backgroundColor: Color(hex: 0x2DE76B)
                     )
                 )
@@ -46,7 +46,7 @@ struct DesignTextInputPreview: View {
                     backgroundColor: .white,
                     text: $naverTextInput,
                     rightIcon: .init(
-                        icon: DesignCore.Images.search.image!,
+                        icon: DesignCore.Images.search.image,
                         backgroundColor: DesignCore.Colors.grey100
                     )
                 )
@@ -58,7 +58,7 @@ struct DesignTextInputPreview: View {
                     keyboardType: .phonePad,
                     leftView: {
                         HStack(spacing: 6) {
-                            DesignCore.Images.flagKorea.image!
+                            DesignCore.Images.flagKorea.image
                             Text("+82")
                                 .foregroundStyle(DesignCore.Colors.grey200)
                                 .typography(.medium_16)

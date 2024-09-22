@@ -25,20 +25,26 @@ struct DesignColorPreview: View {
         DesignCore.Colors.blue300
     ]
     
+    let lightColors = [
+        DesignCore.Colors.green500,
+        DesignCore.Colors.pink500,
+        DesignCore.Colors.blue500,
+        DesignCore.Colors.green100,
+        DesignCore.Colors.pink100
+    ]
+    
     let pastelColors = [
-        DesignCore.Colors.darkGreen,
-        DesignCore.Colors.darkPink,
-        DesignCore.Colors.darkBlue,
-        DesignCore.Colors.lightYellow,
-        DesignCore.Colors.lightGreen,
-        DesignCore.Colors.lightPink,
-        DesignCore.Colors.lightBlue,
+        DesignCore.Colors.yellow50,
+        DesignCore.Colors.green50,
+        DesignCore.Colors.pink50,
+        DesignCore.Colors.blue50,
     ]
     
     var colorGroups: [[Color]] {
         return [
             blackColors,
             tintColors,
+            lightColors,
             pastelColors
         ]
     }

@@ -45,7 +45,7 @@ public struct CTAButton<BackgroundStyle: ShapeStyle>: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20))
                     Text(title)
                         .foregroundStyle(titleColor)
-                        .typography(.medium_18)
+                        .typography(.semibold_18)
                 }
             }
         })

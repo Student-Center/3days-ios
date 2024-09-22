@@ -27,7 +27,7 @@ struct DesignButtonView: View {
             
             CTAButton(
                 title: "타이틀",
-                backgroundStyle: DesignCore.Colors.darkGreen
+                backgroundStyle: DesignCore.Colors.green500
             ) {}
             .padding(.horizontal, 36)
             
