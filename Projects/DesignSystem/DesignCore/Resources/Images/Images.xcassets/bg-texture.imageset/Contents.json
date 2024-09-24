@@ -1,16 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "bg-texture.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "background_default@2x.png",
+      "filename" : "bg-texture@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "background_default@3x.png",
+      "filename" : "bg-texture@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
