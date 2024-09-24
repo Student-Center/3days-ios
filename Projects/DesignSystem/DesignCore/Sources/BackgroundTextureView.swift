@@ -9,38 +9,62 @@
 import SwiftUI
 
 public struct BackgroundTextureView: View {
-    public init() {}
+    public enum ColorType {
+        case `default`
+        case splashBrown
+        case splashGreen
+        case splashPurple
+        case splashPink
+        
+        var color: Color {
+            switch self {
+            case .default: return Color(hex: 0xF5F1EE)
+            case .splashBrown: return Color(hex: 0xE4DED7)
+            case .splashGreen: return Color(hex: 0xDFE7D1)
+            case .splashPurple: return Color(hex: 0xD7D7EA)
+            case .splashPink: return Color(hex: 0xECDAE3)
+            }
+        }
+    }
+    
+    let type: ColorType
+    
+    public init(_ type: ColorType) {
+        self.type = type
+    }
     
     public var body: some View {
-        DesignCore.Images.backgroundDefault.image
-            .resizable()
-            .frame(
-                width: Device.width,
-                height: Device.height
-            )
-            .aspectRatio(contentMode: .fill)
-            .ignoresSafeArea()
+        ZStack {
+            type.color
+            DesignCore.Images.bgTexture.image
+                .resizable()
+                .frame(
+                    width: Device.width,
+                    height: Device.height
+                )
+                .aspectRatio(contentMode: .fill)
+        }
+        .ignoresSafeArea()
     }
 }
 
 fileprivate struct BackgroundTextureViewModifier: ViewModifier {
-    fileprivate func body(content: Content) -> some View {
+    let colorType: BackgroundTextureView.ColorType
+    
+    func body(content: Content) -> some View {
         content
             .background {
-                DesignCore.Images.backgroundDefault.image
-                    .resizable()
-                    .frame(
-                        width: Device.width,
-                        height: Device.height
-                    )
-                    .aspectRatio(contentMode: .fill)
-                    .ignoresSafeArea()
+                BackgroundTextureView(colorType)
             }
     }
 }
 
 extension View {
-    public func textureBackground() -> some View {
-        modifier(BackgroundTextureViewModifier())
+    public func textureBackground(_ type: BackgroundTextureView.ColorType) -> some View {
+        modifier(BackgroundTextureViewModifier(colorType: type))
     }
+}
+
+#Preview {
+    BackgroundTextureView(.splashGreen)
 }

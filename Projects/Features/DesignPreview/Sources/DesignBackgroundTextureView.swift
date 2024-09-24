@@ -15,7 +15,7 @@ struct DesignBackgroundTextureView: View {
             Text("This is Background 🎨")
                 .typography(.semibold_20)
         }
-        .textureBackground()
+        .textureBackground(.splashPink)
         .navigationTitle("Texture Background")
     }
 }
