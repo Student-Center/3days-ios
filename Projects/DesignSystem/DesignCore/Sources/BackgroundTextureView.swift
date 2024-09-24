@@ -48,7 +48,7 @@ public struct BackgroundTextureView: View {
     }
 }
 
-fileprivate struct BackgroundTextureViewModifier: ViewModifier {
+private struct BackgroundTextureViewModifier: ViewModifier {
     let colorType: BackgroundTextureView.ColorType
     
     func body(content: Content) -> some View {
