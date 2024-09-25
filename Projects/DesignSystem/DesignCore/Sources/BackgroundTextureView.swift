@@ -9,33 +9,15 @@
 import SwiftUI
 
 public struct BackgroundTextureView: View {
-    public enum ColorType {
-        case `default`
-        case splashBrown
-        case splashGreen
-        case splashPurple
-        case splashPink
-        
-        var color: Color {
-            switch self {
-            case .default: return Color(hex: 0xF5F1EE)
-            case .splashBrown: return Color(hex: 0xE4DED7)
-            case .splashGreen: return Color(hex: 0xDFE7D1)
-            case .splashPurple: return Color(hex: 0xD7D7EA)
-            case .splashPink: return Color(hex: 0xECDAE3)
-            }
-        }
-    }
+    let color: Color
     
-    let type: ColorType
-    
-    public init(_ type: ColorType) {
-        self.type = type
+    public init(_ color: Color) {
+        self.color = color
     }
     
     public var body: some View {
         ZStack {
-            type.color
+            color
             DesignCore.Images.bgTexture.image
                 .resizable()
                 .frame(
@@ -49,22 +31,18 @@ public struct BackgroundTextureView: View {
 }
 
 private struct BackgroundTextureViewModifier: ViewModifier {
-    let colorType: BackgroundTextureView.ColorType
+    let color: Color
     
     func body(content: Content) -> some View {
         content
             .background {
-                BackgroundTextureView(colorType)
+                BackgroundTextureView(color)
             }
     }
 }
 
 extension View {
-    public func textureBackground(_ type: BackgroundTextureView.ColorType) -> some View {
-        modifier(BackgroundTextureViewModifier(colorType: type))
+    public func textureBackground(_ color: Color = .init(hex: 0xF5F1EE)) -> some View {
+        modifier(BackgroundTextureViewModifier(color: color))
     }
-}
-
-#Preview {
-    BackgroundTextureView(.splashGreen)
 }
