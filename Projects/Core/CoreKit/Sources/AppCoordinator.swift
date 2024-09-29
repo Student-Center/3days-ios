@@ -14,7 +14,7 @@ import SwiftUI
     private init() {}
     
     //MARK: - Properties
-    public private(set) var rootView = FeatureType.designPreview
+    public private(set) var rootView = FeatureType.main
     
     //MARK: - Methods
     public func changeRootView(_ feature: FeatureType) {

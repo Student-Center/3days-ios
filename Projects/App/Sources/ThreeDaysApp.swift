@@ -27,7 +27,7 @@ struct ThreeDaysApp: App {
         case .designPreview:
             DesignPreviewView()
         case .main:
-            MainView()
+            SplashAnimatedView()
         }
     }
 

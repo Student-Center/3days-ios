@@ -77,6 +77,8 @@ struct SplashAnimatedView: View {
     
     var body: some View {
         VStack(spacing: 84) {
+            Spacer()
+            
             Text("3일동안 딱 한 사람만 알아가는\n새로운 설렘의 시작")
                 .typography(.semibold_24)
                 .multilineTextAlignment(.center)
@@ -116,6 +118,8 @@ struct SplashAnimatedView: View {
             .frame(height: 70)
             .padding(.horizontal, 50)
             .opacity(otherViewOpacity)
+            
+            Spacer()
         }
         .textureBackground(animationStep.color)
         .task {
@@ -127,7 +131,7 @@ struct SplashAnimatedView: View {
         for step in SplashAnimationStep.allCases.dropFirst() {
             guard !cycleCompleted else { break }
             try? await Task.sleep(for: .seconds(step.interval))
-            withAnimation(.interactiveSpring(duration: 0.2)) {
+            withAnimation(.interactiveSpring(duration: 0.75)) {
                 updateIconStates(for: step)
                 animationStep = step
             }
