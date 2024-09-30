@@ -1,7 +1,6 @@
 import SwiftUI
 import CoreKit
 import NetworkKit
-import ComponentsKit
 import DesignCore
 import Main
 
@@ -16,9 +15,6 @@ public struct ContentView: View {
                 .robotoSlab(size: 12)
             
             MainView()
-            
-            SampleComponent()
-                .foregroundStyle(DesignCore.Colors.red300)
         }
     }
 }

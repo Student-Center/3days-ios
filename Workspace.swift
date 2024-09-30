@@ -52,7 +52,7 @@ let workspace = Workspace(
                     .testableTarget(
                         target: .project(
                             path: "./\(ProjectPath.designSystem.rawValue)",
-                            target: TargetName.DesignCore.unitTestName
+                            target: TargetName.designCore.unitTestName
                         )
                     )
                 ]

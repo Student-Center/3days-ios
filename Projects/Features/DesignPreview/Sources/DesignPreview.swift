@@ -59,20 +59,19 @@ public struct DesignPreviewView: View {
     public init() {}
     
     public var body: some View {
-        NavigationStack {
-            List(PreviewTypes.allCases, id: \.self) { type in
-                NavigationLink {
-                    type.nextView()
-                } label: {
-                    HStack {
-                        Text(type.name)
-                        Spacer()
-                    }
+        List(PreviewTypes.allCases, id: \.self) { type in
+            NavigationLink {
+                type.nextView()
+            } label: {
+                HStack {
+                    Text(type.name)
+                    Spacer()
                 }
             }
-            .navigationTitle("3days Design System")
-            .toolbarTitleDisplayMode(.inline)
         }
+        .navigationBarBackButtonHidden()
+        .navigationTitle("3days Design System")
+        .toolbarTitleDisplayMode(.inline)
     }
 }
 

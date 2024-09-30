@@ -1,12 +1,12 @@
 import SwiftUI
 import DesignCore
 import DesignPreview
-import CoreKit
+import CommonKit
 import Main
 
 @main
 struct ThreeDaysApp: App {
-    let coordinator = AppCoordinator.shared
+    @StateObject var coordinator = AppCoordinator.shared
     
     var body: some Scene {
         WindowGroup {
@@ -23,11 +23,15 @@ struct ThreeDaysApp: App {
     
     @ViewBuilder
     var rootView: some View {
-        switch coordinator.rootView {
-        case .designPreview:
-            DesignPreviewView()
-        case .main:
-            SplashAnimatedView()
+        NavigationStack(
+            path: $coordinator.navigationStack
+        ) {
+            coordinator.rootView
+                .navigationDestination(
+                    for: PathType.self
+                ) { feature in
+                    feature.view
+                }
         }
     }
 
@@ -35,7 +39,7 @@ struct ThreeDaysApp: App {
     @ViewBuilder
     var debugMenuPicker: some View {
         Menu("🚀 개발모드") {
-            ForEach(FeatureType.allCases, id: \.self) { feature in
+            ForEach(PathType.debugPreviewTypes, id: \.self) { feature in
                 Button(feature.name) {
                     coordinator.changeRootView(feature)
                 }

@@ -12,10 +12,16 @@ let project: Project = .make(
         .make(target: .coreKit),
         .make(target: .model),
         .make(
-            target: .networkKit,
+            target: .commonKit,
             dependencies: [
                 .target(name: .coreKit),
-                .target(name: .model),
+                .target(name: .model)
+            ]
+        ),
+        .make(
+            target: .networkKit,
+            dependencies: [
+                .target(name: .commonKit),
                 .external(.alamofire),
                 .external(.openapiGenerated)
             ]
