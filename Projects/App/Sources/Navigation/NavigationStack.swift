@@ -26,7 +26,7 @@ extension PathType {
             case .authPhoneVerify:
                 AuthPhoneVerifyView()
             case .authAgreement:
-                Text("authAgreement")
+                AuthAgreementView()
             }
         }
     }

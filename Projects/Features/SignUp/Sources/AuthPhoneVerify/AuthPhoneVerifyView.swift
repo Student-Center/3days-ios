@@ -54,6 +54,11 @@ public struct AuthPhoneVerifyView: View {
             
             Spacer()
         }
+        .onChange(of: verifyCode) {
+            if verifyCode.count == 6 {
+                AppCoordinator.shared.push(.signUp(.authAgreement))
+            }
+        }
         .onAppear {
             verifyTextFieldFocused = true
         }
