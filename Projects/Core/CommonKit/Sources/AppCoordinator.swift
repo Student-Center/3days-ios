@@ -25,19 +25,14 @@ public final class AppCoordinator: ObservableObject {
         }
     }
     
+    @MainActor
     public func push(_ path: PathType) {
-        Task {
-            await MainActor.run {
-                navigationStack.append(path)
-            }
-        }
+        navigationStack.append(path)
     }
     
+    @MainActor
     public func pop() {
-        Task {
-            await MainActor.run {
-                navigationStack.removeLast()
-            }
-        }
+        guard navigationStack.count > 1 else { return }
+        navigationStack.removeLast()
     }
 }

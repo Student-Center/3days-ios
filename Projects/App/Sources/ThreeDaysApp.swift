@@ -6,7 +6,7 @@ import Main
 
 @main
 struct ThreeDaysApp: App {
-    @ObservedObject var coordinator = AppCoordinator.shared
+    @StateObject var coordinator = AppCoordinator.shared
     
     var body: some Scene {
         WindowGroup {

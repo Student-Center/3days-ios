@@ -16,6 +16,7 @@ public struct CTABottomButton<BackgroundStyle: ShapeStyle>: View {
     private let isActive: Bool
     private var handler: () -> Void
     
+    @State private var cancellables: Set<AnyCancellable> = []
     @State private var keyboardHeight: CGFloat = 0
     
     public init(
@@ -68,25 +69,19 @@ public struct CTABottomButton<BackgroundStyle: ShapeStyle>: View {
             .offset(y: -min(keyboardHeight, geometry.safeAreaInsets.bottom))
             .animation(.snappy(duration: 0.35), value: keyboardHeight)
         }
-        .onAppear(perform: subscribeToKeyboardEvents)
-        .onDisappear(perform: unsubscribeFromKeyboardEvents)
-    }
-    
-    private func subscribeToKeyboardEvents() {
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notification in
-            if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-                let keyboardRectangle = keyboardFrame.cgRectValue
-                keyboardHeight = keyboardRectangle.height
-            }
+        .onAppear {
+            Publishers.Merge(
+                NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+                    .compactMap { $0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect }
+                    .map { $0.height },
+                NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
+                    .map { _ in CGFloat(0) }
+            )
+            .assign(to: \.keyboardHeight, on: self)
+            .store(in: &cancellables)
         }
-        
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { _ in
-            keyboardHeight = 0
+        .onDisappear {
+            cancellables.removeAll()
         }
-    }
-    
-    private func unsubscribeFromKeyboardEvents() {
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }

@@ -25,7 +25,12 @@ public enum PathType: Hashable {
         switch self {
         case .designPreview: return "Design Preview"
         case .main: return "메인"
-        default: return ""
+        case .signUp(let subType):
+            switch subType {
+            case .authPhoneInput: return "전화번호 입력"
+            case .authPhoneVerify: return "전화번호 인증"
+            case .authAgreement: return "이용 약관"
+            }
         }
     }
 }
