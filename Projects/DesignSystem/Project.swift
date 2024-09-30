@@ -10,7 +10,7 @@ let project: Project = .make(
     ]),
     targets: [
         .make(
-            target: .DesignCore,
+            target: .designCore,
             product: .framework,
             useResource: true,
             dependencies: [
@@ -18,9 +18,9 @@ let project: Project = .make(
             ]
         ),
         .makeUnitTest(
-            target: .DesignCore,
+            target: .designCore,
             dependencies: [
-                .target(name: .DesignCore)
+                .target(name: .designCore)
             ]
         )
     ]

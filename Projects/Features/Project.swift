@@ -7,13 +7,15 @@ let project: Project = .make(
         .make(
             target: .designPreview,
             dependencies: [
-                .project(target: .coreKit)
+                .project(target: .coreKit),
+                .project(target: .designCore)
             ]
         ),
         .make(
             target: .signUp,
             dependencies: [
                 .project(target: .commonKit),
+                .project(target: .designCore),
                 .project(target: .networkKit)
             ]
         ),
@@ -21,6 +23,7 @@ let project: Project = .make(
             target: .main,
             dependencies: [
                 .project(target: .commonKit),
+                .project(target: .designCore),
                 .project(target: .networkKit)
             ]
         )

@@ -17,10 +17,26 @@ public final class AppCoordinator: ObservableObject {
     @Published public var navigationStack: [PathType] = [.main]
     
     //MARK: - Methods
-    public func changeRootView(_ feature: PathType) {
+    public func changeRootView(_ path: PathType) {
         Task {
             await MainActor.run {
-                navigationStack = [feature]
+                navigationStack = [path]
+            }
+        }
+    }
+    
+    public func push(_ path: PathType) {
+        Task {
+            await MainActor.run {
+                navigationStack.append(path)
+            }
+        }
+    }
+    
+    public func pop() {
+        Task {
+            await MainActor.run {
+                navigationStack.removeLast()
             }
         }
     }

@@ -36,8 +36,7 @@ struct DesignButtonView: View {
             CTABottomButton(
                 title: "다음",
                 backgroundStyle: LinearGradient.gradientA,
-                isActive: true,
-                keyboardShown: isTextFieldFocused
+                isActive: true
             ) {
                 if isTextFieldFocused {
                     isTextFieldFocused.toggle()
