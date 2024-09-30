@@ -22,13 +22,6 @@ let project: Project = .make(
             dependencies: [
                 .target(name: .DesignCore)
             ]
-        ),
-        .make(
-            target: .componentsKit,
-            product: .framework,
-            dependencies: [
-                .target(name: .DesignCore)
-            ]
         )
     ]
 )

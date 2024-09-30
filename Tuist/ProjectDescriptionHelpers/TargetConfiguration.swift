@@ -12,12 +12,13 @@ public enum TargetName: String {
     case prodApp = "ProdApp"
     case coreKit = "CoreKit"
     case model = "Model"
+    case commonKit = "CommonKit"
     case networkKit = "NetworkKit"
     case DesignCore = "DesignCore"
-    case componentsKit = "ComponentsKit"
     
     //MARK: - Features
     case designPreview = "DesignPreview"
+    case signUp = "SignUp"
     case main = "Main"
 }
 
@@ -26,11 +27,11 @@ public extension TargetName {
         switch self {
         case .devApp, .prodApp:
             return .app
-        case .coreKit, .networkKit, .model:
+        case .coreKit, .networkKit, .model, .commonKit:
             return .core
-        case .DesignCore, .componentsKit:
+        case .DesignCore:
             return .designSystem
-        case .main, .designPreview:
+        case .main, .designPreview, .signUp:
             return .feature
         }
     }

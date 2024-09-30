@@ -8,6 +8,8 @@
 
 import SwiftUI
 import DesignCore
+import CoreKit
+import CommonKit
 
 enum SplashAnimationStep: CaseIterable {
     case first, second, third, fourth, fifth, sixth
@@ -113,7 +115,9 @@ struct SplashAnimatedView: View {
                 isActive: true,
                 isShowLetter: $showLetterAnimation
             ) {
-                
+                AppCoordinator.shared.navigationStack.append(
+                    .signUp(.authPhoneInput)
+                )
             }
             .frame(height: 70)
             .padding(.horizontal, 50)
@@ -121,6 +125,7 @@ struct SplashAnimatedView: View {
             
             Spacer()
         }
+        .toolbar(.hidden, for: .navigationBar)
         .textureBackground(animationStep.color)
         .task {
             await runSingleCycle()
