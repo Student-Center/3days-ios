@@ -8,22 +8,23 @@
 
 import SwiftUI
 import DesignCore
+import CommonKit
 
 enum GenderType: CaseIterable {
     case male
-    case femail
+    case female
     
     var unselectedImage: Image {
         switch self {
         case .male: DesignCore.Images.maleUnselected.image
-        case .femail: DesignCore.Images.femaleUnselected.image
+        case .female: DesignCore.Images.femaleUnselected.image
         }
     }
     
     var selectedImage: Image {
         switch self {
         case .male: DesignCore.Images.maleSelected.image
-        case .femail: DesignCore.Images.femaleSelected.image
+        case .female: DesignCore.Images.femaleSelected.image
         }
     }
 }
