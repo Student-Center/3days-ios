@@ -28,7 +28,7 @@ public struct AuthAgreementView: View {
             Spacer()
             
             CTABottomButton(title: "다음") {
-                AppCoordinator.shared.push(
+                AppCoordinator.shared.changeRootView(
                     .signUp(.authGreeting)
                 )
             }

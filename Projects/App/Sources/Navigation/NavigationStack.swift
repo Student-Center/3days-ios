@@ -32,6 +32,8 @@ extension PathType {
                 AuthGreetingView()
             case .authProfileGender:
                 AuthProfileGenderInputView()
+            case .authProfileAge:
+                AuthProfileAgeInputView()
             }
         }
     }

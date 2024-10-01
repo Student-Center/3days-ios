@@ -70,7 +70,9 @@ public struct AuthProfileGenderInputView: View {
                 title: "다음",
                 isActive: selectedGender != nil
             ) {
-                
+                AppCoordinator.shared.push(
+                    .signUp(.authProfileAge)
+                )
             }
         }
         .padding(.top, 10)
