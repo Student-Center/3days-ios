@@ -30,6 +30,9 @@ public enum PathType: Hashable {
             case .authPhoneInput: return "전화번호 입력"
             case .authPhoneVerify: return "전화번호 인증"
             case .authAgreement: return "이용 약관"
+            
+            case .authGreeting: return "가입 후 환영"
+            case .authProfileGender: return "성별 입력"
             }
         }
     }
@@ -39,4 +42,7 @@ public enum SignUpSubViewType: Hashable {
     case authPhoneInput
     case authPhoneVerify
     case authAgreement
+    
+    case authGreeting
+    case authProfileGender
 }
