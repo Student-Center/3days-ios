@@ -33,6 +33,7 @@ public enum PathType: Hashable {
             
             case .authGreeting: return "가입 후 환영"
             case .authProfileGender: return "성별 입력"
+            case .authProfileAge: return "나이 입력"
             }
         }
     }
@@ -45,4 +46,5 @@ public enum SignUpSubViewType: Hashable {
     
     case authGreeting
     case authProfileGender
+    case authProfileAge
 }

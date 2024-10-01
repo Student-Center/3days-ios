@@ -37,10 +37,15 @@ public struct AuthGreetingView: View {
             
             Spacer()
         }
+        .setNavigation(
+            showLeftBackButton: false,
+            handler: {}
+        )
         .ignoresSafeArea()
         .padding(.top, 155)
         .textureBackground()
-        .onAppear {
+        .task {
+            try? await Task.sleep(nanoseconds: 500_000_000)
             withAnimation(.easeInOut(duration: 0.6)) {
                 isAppeared = true
             }
