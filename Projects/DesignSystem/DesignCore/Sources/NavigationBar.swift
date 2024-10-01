@@ -9,6 +9,7 @@
 import SwiftUI
 
 private struct NavigationBarViewModifier: ViewModifier {
+    var showLeftBackButton: Bool = true
     var handler: () -> Void
     
     func body(content: Content) -> some View {
@@ -17,20 +18,30 @@ private struct NavigationBarViewModifier: ViewModifier {
             .toolbar(.visible, for: .navigationBar)
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        handler()
-                    } label: {
-                        DesignCore.Images.leftArrow.image
+                if showLeftBackButton {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button {
+                            handler()
+                        } label: {
+                            DesignCore.Images.leftArrow.image
+                        }
+                        
                     }
-                    
                 }
             }
     }
 }
 
 public extension View {
-    func setNavigation(handler: @escaping () -> Void) -> some View {
-        return modifier(NavigationBarViewModifier(handler: handler))
+    func setNavigation(
+        showLeftBackButton: Bool = true,
+        handler: @escaping () -> Void
+    ) -> some View {
+        return modifier(
+            NavigationBarViewModifier(
+                showLeftBackButton: showLeftBackButton,
+                handler: handler
+            )
+        )
     }
 }
