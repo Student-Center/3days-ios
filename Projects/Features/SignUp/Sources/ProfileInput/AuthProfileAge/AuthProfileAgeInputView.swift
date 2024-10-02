@@ -77,7 +77,8 @@ public struct AuthProfileAgeInputView: View {
                 title: "다음",
                 isActive: birthYear.count > 3
             ) {
-                
+                // TODO: 순서 재정의
+                AppCoordinator.shared.push(.signUp(.authName))
             }
         }
         .ignoresSafeArea()

@@ -13,7 +13,7 @@ import CommonKit
 
 public struct AuthPhoneInputView: View {
     
-    @State var phoneTextInput = String()
+    @State var phoneTextInput = "010-"
     @State var isPhoneValidated = false
     
     public init() {}
