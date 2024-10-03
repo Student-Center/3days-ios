@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Description</key>
+	<string>SwiftUI View with MVI template by jisu</string>
+	<key>DefaultCompletionName</key>
+	<string>swift</string>
+	<key>BuildableType</key>
+	<string>swift</string>
+	<key>Summary</key>
+	<string>SwiftUI View with MVI</string>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>SortOrder</key>
+	<string>1</string>
+	<key>Image</key>
+	<dict>
+		<key>FileTypeIcon</key>
+		<string>swift</string>
+	</dict>
+	<key>Platforms</key>
+	<array>
+		<string>com.apple.platform.iphoneos</string>
+	</array>
+	<key>Options</key>
+	<array>
+		<dict>
+			<key>Identifier</key>
+			<string>productName</string>
+			<key>Required</key>
+			<true/>
+			<key>Name</key>
+			<string>MVI Scene Name:</string>
+			<key>Description</key>
+			<string>Name of Scene</string>
+			<key>Type</key>
+			<string>text</string>
+			<key>Default</key>
+			<string>Sample</string>
+		</dict>
+	</array>
+</dict>
+</plist>
