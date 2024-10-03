@@ -27,6 +27,15 @@ extension PathType {
                 AuthPhoneVerifyView()
             case .authAgreement:
                 AuthAgreementView()
+                
+            case .authGreeting:
+                AuthGreetingView()
+            case .authProfileGender:
+                AuthProfileGenderInputView()
+            case .authProfileAge:
+                AuthProfileAgeInputView()
+            case .authName:
+                AuthNameInputView()
             }
         }
     }

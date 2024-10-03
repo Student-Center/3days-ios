@@ -13,8 +13,6 @@ import CommonKit
 
 public struct AuthAgreementView: View {
     
-    @State var isShowAlert = false
-    
     public init() {}
     
     public var body: some View {
@@ -30,10 +28,9 @@ public struct AuthAgreementView: View {
             Spacer()
             
             CTABottomButton(title: "다음") {
-                isShowAlert = true
-            }
-            .alert("끝!!", isPresented: $isShowAlert) {
-                
+                AppCoordinator.shared.changeRootView(
+                    .signUp(.authGreeting)
+                )
             }
         }
         .ignoresSafeArea(.all)

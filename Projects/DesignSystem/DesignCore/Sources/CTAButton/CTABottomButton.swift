@@ -9,31 +9,32 @@
 import SwiftUI
 import Combine
 
-public struct CTABottomButton<BackgroundStyle: ShapeStyle>: View {
+public struct CTABottomButton: View {
     private let title: String
-    private let backgroundStyle: BackgroundStyle
+    private let backgroundStyle: AnyShapeStyle
     private let titleColor: Color = .white
     private let isActive: Bool
     private var handler: () -> Void
     
     @State private var cancellables: Set<AnyCancellable> = []
     @State private var keyboardHeight: CGFloat = 0
-    
+    @State private var maxKeyboardHeight: CGFloat = 0
+
     public init(
         title: String,
-        backgroundStyle: BackgroundStyle = DesignCore.Colors.grey500,
+        backgroundStyle: some ShapeStyle = DesignCore.Colors.grey500,
         isActive: Bool = true,
         handler: @escaping () -> Void
     ) {
         self.title = title
-        self.backgroundStyle = backgroundStyle
+        self.backgroundStyle = AnyShapeStyle(backgroundStyle)
         self.isActive = isActive
         self.handler = handler
     }
-    
-    private var buttonBackgroundColor: BackgroundStyle {
+
+    private var buttonBackgroundColor: AnyShapeStyle {
         if !isActive {
-            return DesignCore.Colors.grey100 as! BackgroundStyle
+            return AnyShapeStyle(DesignCore.Colors.grey100)
         }
         return backgroundStyle
     }

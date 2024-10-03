@@ -84,17 +84,35 @@ public struct VerifyCodeInputView: View {
     @Binding var errorMessage: String?
     var verifyCodeMaxCount: Int
     @FocusState private var isTextFieldFocused: Bool
+    let boxHeight: CGFloat
+    let textColor: Color
+    let borderWidth: CGFloat
+    let borderColor: Color
+    let backColor: Color
+    let cornerRadius: CGFloat
     
     public init(
         verifyCode: Binding<String>,
         errorMessage: Binding<String?>,
         verifyCodeMaxCount: Int = 6,
+        boxHeight: CGFloat = 72,
+        textColor: Color = .black,
+        borderWidth: CGFloat = 0,
+        borderColor: Color = .white,
+        backColor: Color = .white,
+        cornerRadius: CGFloat = 10,
         focused: FocusState<Bool>
     ) {
         self._verifyCode = verifyCode
         self._errorMessage = errorMessage
         self.verifyCodeMaxCount = verifyCodeMaxCount
         self._isTextFieldFocused = focused
+        self.boxHeight = boxHeight
+        self.textColor = textColor
+        self.borderWidth = borderWidth
+        self.borderColor = borderColor
+        self.backColor = backColor
+        self.cornerRadius = cornerRadius
     }
         
     public var body: some View {
@@ -109,6 +127,7 @@ public struct VerifyCodeInputView: View {
             ForEach(0 ..< verifyCodeMaxCount, id: \.self) { index in
                 let text = getCharFromString(index: index)
                 getSingleTextBox(text: text)
+                    .shadow(.default)
             }
         }
     }
@@ -116,13 +135,17 @@ public struct VerifyCodeInputView: View {
     @ViewBuilder
     private func getSingleTextBox(text: String) -> some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(borderColor, lineWidth: borderWidth)
+                .background(backColor)
+                .clipShape(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                )
             Text(text)
                 .pretendard(weight: ._600, size: 32)
+                .foregroundStyle(textColor)
         }
-        .frame(height: 72)
+        .frame(height: boxHeight)
     }
     
     private var clearTextFieldView: some View {
