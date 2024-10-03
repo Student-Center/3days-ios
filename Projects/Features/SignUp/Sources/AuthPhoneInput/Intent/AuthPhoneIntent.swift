@@ -34,6 +34,7 @@ extension AuthPhoneInputIntent {
         
         // default
         func onAppear()
+        func task() async
     }
     
     struct DataModel {
@@ -45,6 +46,8 @@ extension AuthPhoneInputIntent {
 extension AuthPhoneInputIntent: AuthPhoneInputIntent.Intentable {
     // default
     func onAppear() {}
+    
+    func task() async {}
     
     // content
     @MainActor

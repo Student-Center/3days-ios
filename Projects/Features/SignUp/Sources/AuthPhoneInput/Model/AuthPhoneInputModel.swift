@@ -53,6 +53,7 @@ protocol AuthPhoneInputActionable: AnyObject {
     // error
     func showErrorView(error: ErrorModel)
     func showErrorAlert(error: ErrorModel)
+    func resetError()
 }
 
 extension AuthPhoneInputModel: AuthPhoneInputActionable {
@@ -66,10 +67,20 @@ extension AuthPhoneInputModel: AuthPhoneInputActionable {
     }
     
     // default
-    func setLoading(status: Bool) {}
+    func setLoading(status: Bool) {
+        isLoading = status
+    }
     
     // error
-    func showErrorView(error: ErrorModel) {}
-    func showErrorAlert(error: ErrorModel) {}
+    func showErrorView(error: ErrorModel) {
+        showErrorView = error
+    }
+    func showErrorAlert(error: ErrorModel) {
+        showErrorAlert = error
+    }
+    func resetError() {
+        showErrorView = nil
+        showErrorAlert = nil
+    }
 }
 

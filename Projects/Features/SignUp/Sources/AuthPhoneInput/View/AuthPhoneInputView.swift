@@ -56,6 +56,9 @@ public struct AuthPhoneInputView: View {
                 intent.onTapNextButton()
             }
         }
+        .task {
+            await intent.task()
+        }
         .onAppear {
             intent.onAppear()
         }
@@ -63,6 +66,7 @@ public struct AuthPhoneInputView: View {
         .padding(.top, 14)
         .textureBackground()
         .setNavigationWithPop()
+        .setLoading(state.isLoading)
     }
 }
 
