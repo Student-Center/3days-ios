@@ -21,7 +21,7 @@ public final class AppCoordinator: ObservableObject {
     public func changeRootView(_ path: PathType) {
         push(path)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { // 애니메이션 시간에 맞춰 조정
-            self.navigationStack.removeFirst()
+            self.navigationStack.removeSubrange(0 ..< self.navigationStack.count - 1)
         }
     }
     

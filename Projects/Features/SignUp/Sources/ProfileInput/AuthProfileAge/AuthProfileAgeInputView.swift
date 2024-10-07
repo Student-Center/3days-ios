@@ -1,26 +1,37 @@
 //
-//  AuthProfileAgeView.swift
-//  DesignPreview
+//  AuthProfileAgeInputView.swift
+//  SignUp
 //
-//  Created by 김지수 on 10/1/24.
+//  Created by 김지수 on 10/6/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import SwiftUI
+import CoreKit
 import DesignCore
 import CommonKit
 
 public struct AuthProfileAgeInputView: View {
     
-    @State var birthYear = String()
-    @State var errorMessage: String? = "잘못 입력하셨어요"
     @FocusState var isFocused
     
-    public init() {}
+    @StateObject var container: MVIContainer<AuthProfileAgeInputIntent.Intentable, AuthProfileAgeInputModel.Stateful>
     
-    var targetGender: String {
-        let tempTarget = "여성"
-        return tempTarget
+    private var intent: AuthProfileAgeInputIntent.Intentable { container.intent }
+    private var state: AuthProfileAgeInputModel.Stateful { container.model }
+    
+    public init() {
+        let model = AuthProfileAgeInputModel()
+        let intent = AuthProfileAgeInputIntent(
+            model: model,
+            externalData: .init(targetGender: .male)
+        )
+        let container = MVIContainer(
+            intent: intent as AuthProfileAgeInputIntent.Intentable,
+            model: model as AuthProfileAgeInputModel.Stateful,
+            modelChangePublisher: model.objectWillChange
+        )
+        self._container = StateObject(wrappedValue: container)
     }
     
     public var body: some View {
@@ -28,14 +39,14 @@ public struct AuthProfileAgeInputView: View {
             ProfileInputTemplatedView(
                 currentPage: 2,
                 maxPage: 5,
-                subMessage: "좋은 \(targetGender) 소개시켜 드릴께요!",
+                subMessage: "좋은 \(state.targetGender) 소개시켜 드릴께요!",
                 mainMessage: "당신의 나이는 무엇인가요?"
             ) {
                 VStack {
                     HStack {
                         VerifyCodeInputView(
-                            verifyCode: $birthYear,
-                            errorMessage: $errorMessage,
+                            verifyCode: $container.model.birthYear,
+                            errorMessage: $container.model.errorMessage,
                             verifyCodeMaxCount: 4,
                             boxHeight: 92,
                             textColor: .black,
@@ -46,6 +57,17 @@ public struct AuthProfileAgeInputView: View {
                             focused: _isFocused
                         )
                         .padding(.horizontal, 6)
+                        .onChange(of: state.birthYear) {
+                            intent.onYearChanged(
+                                state.birthYear
+                            )
+                        }
+                        .onChange(of: state.isFocused) {
+                            isFocused = state.isFocused
+                        }
+                        .onChange(of: isFocused) {
+                            intent.onFocusChanged(isFocused)
+                        }
                         
                         VStack {
                             Spacer()
@@ -75,11 +97,16 @@ public struct AuthProfileAgeInputView: View {
             
             CTABottomButton(
                 title: "다음",
-                isActive: birthYear.count > 3
+                isActive: state.isValidated
             ) {
-                // TODO: 순서 재정의
-                AppCoordinator.shared.push(.signUp(.authName))
+                intent.onTapNextButton()
             }
+        }
+        .task {
+            await intent.task()
+        }
+        .onAppear {
+            intent.onAppear()
         }
         .ignoresSafeArea()
         .padding(.top, 10)
@@ -87,6 +114,7 @@ public struct AuthProfileAgeInputView: View {
         .setNavigation(showLeftBackButton: false) {
             
         }
+        .setLoading(state.isLoading)
     }
 }
 
