@@ -1,19 +1,36 @@
 //
 //  AuthGreetingView.swift
-//  DesignPreview
+//  SignUp
 //
-//  Created by 김지수 on 10/1/24.
+//  Created by 김지수 on 10/5/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import SwiftUI
-import CommonKit
+import CoreKit
 import DesignCore
+import CommonKit
 
 public struct AuthGreetingView: View {
-    @State var isAppeared = false
     
-    public init() {}
+    @StateObject var container: MVIContainer<AuthGreetingIntent.Intentable, AuthGreetingModel.Stateful>
+    
+    private var intent: AuthGreetingIntent.Intentable { container.intent }
+    private var state: AuthGreetingModel.Stateful { container.model }
+    
+    public init() {
+        let model = AuthGreetingModel()
+        let intent = AuthGreetingIntent(
+            model: model,
+            externalData: .init()
+        )
+        let container = MVIContainer(
+            intent: intent as AuthGreetingIntent.Intentable,
+            model: model as AuthGreetingModel.Stateful,
+            modelChangePublisher: model.objectWillChange
+        )
+        self._container = StateObject(wrappedValue: container)
+    }
     
     public var body: some View {
         VStack {
@@ -21,8 +38,8 @@ public struct AuthGreetingView: View {
                 .typography(.semibold_24)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(DesignCore.Colors.grey500)
-                .opacity(isAppeared ? 1.0 : 0.0)
-                .offset(y: isAppeared ? 0 : -24)
+                .opacity(state.isAppeared ? 1.0 : 0.0)
+                .offset(y: state.isAppeared ? 0 : -24)
             
             Spacer()
             
@@ -32,27 +49,34 @@ public struct AuthGreetingView: View {
                 )
             }
             .padding(.horizontal, 24)
-            .opacity(isAppeared ? 1.0 : 0.0)
-            .offset(y: isAppeared ? 0 : -24)
+            .opacity(state.isAppeared ? 1.0 : 0.0)
+            .offset(y: state.isAppeared ? 0 : -24)
             
             Spacer()
         }
+        .animation(
+            .easeInOut,
+            value: state.isAppeared
+        )
         .setNavigation(
             showLeftBackButton: false,
             handler: {}
         )
+        .task {
+            await intent.task()
+        }
+        .onAppear {
+            intent.onAppear()
+        }
         .ignoresSafeArea()
         .padding(.top, 155)
         .textureBackground()
-        .task {
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            withAnimation(.easeInOut(duration: 0.6)) {
-                isAppeared = true
-            }
-        }
+        .setLoading(state.isLoading)
     }
 }
 
 #Preview {
-    AuthGreetingView()
+    NavigationView {
+        AuthGreetingView()
+    }
 }

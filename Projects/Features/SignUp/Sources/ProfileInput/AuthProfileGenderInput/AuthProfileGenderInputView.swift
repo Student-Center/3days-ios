@@ -1,38 +1,36 @@
 //
 //  AuthProfileGenderInputView.swift
-//  DesignPreview
+//  SignUp
 //
-//  Created by 김지수 on 10/1/24.
+//  Created by 김지수 on 10/5/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import SwiftUI
+import CoreKit
 import DesignCore
 import CommonKit
 
-enum GenderType: CaseIterable {
-    case male
-    case female
-    
-    var unselectedImage: Image {
-        switch self {
-        case .male: DesignCore.Images.maleUnselected.image
-        case .female: DesignCore.Images.femaleUnselected.image
-        }
-    }
-    
-    var selectedImage: Image {
-        switch self {
-        case .male: DesignCore.Images.maleSelected.image
-        case .female: DesignCore.Images.femaleSelected.image
-        }
-    }
-}
-
 public struct AuthProfileGenderInputView: View {
-    @State var selectedGender: GenderType?
     
-    public init() {}
+    @StateObject var container: MVIContainer<AuthProfileGenderInputIntent.Intentable, AuthProfileGenderInputModel.Stateful>
+    
+    private var intent: AuthProfileGenderInputIntent.Intentable { container.intent }
+    private var state: AuthProfileGenderInputModel.Stateful { container.model }
+    
+    public init() {
+        let model = AuthProfileGenderInputModel()
+        let intent = AuthProfileGenderInputIntent(
+            model: model,
+            externalData: .init()
+        )
+        let container = MVIContainer(
+            intent: intent as AuthProfileGenderInputIntent.Intentable,
+            model: model as AuthProfileGenderInputModel.Stateful,
+            modelChangePublisher: model.objectWillChange
+        )
+        self._container = StateObject(wrappedValue: container)
+    }
     
     public var body: some View {
         VStack {
@@ -45,7 +43,7 @@ public struct AuthProfileGenderInputView: View {
                 HStack(spacing: 0) {
                     Spacer()
                     ForEach(GenderType.allCases, id: \.self) {  type in
-                        if selectedGender == type {
+                        if state.selectedGender == type {
                             type.selectedImage
                                 .resizable()
                                 .frame(width: 130, height: 130)
@@ -54,9 +52,7 @@ public struct AuthProfileGenderInputView: View {
                                 .resizable()
                                 .frame(width: 130, height: 130)
                                 .onTapGesture {
-                                    withAnimation {
-                                        selectedGender = type
-                                    }
+                                    intent.onTapGender(type)
                                 }
                         }
                     }
@@ -68,18 +64,25 @@ public struct AuthProfileGenderInputView: View {
             
             CTABottomButton(
                 title: "다음",
-                isActive: selectedGender != nil
+                isActive: state.selectedGender != nil
             ) {
-                AppCoordinator.shared.push(
-                    .signUp(.authProfileAge)
-                )
+                intent.onTapNextButton()
             }
+        }
+        .animation(
+            .default,
+            value: state.selectedGender
+        )
+        .task {
+            await intent.task()
+        }
+        .onAppear {
+            intent.onAppear()
         }
         .padding(.top, 10)
         .textureBackground()
-        .setNavigation(showLeftBackButton: false) {
-            
-        }
+        .setNavigationWithPop()
+        .setLoading(state.isLoading)
     }
 }
 

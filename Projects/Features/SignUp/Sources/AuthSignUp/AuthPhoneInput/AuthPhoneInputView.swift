@@ -13,10 +13,24 @@ import CommonKit
 
 public struct AuthPhoneInputView: View {
     
-    @State var phoneTextInput = "010-"
-    @State var isPhoneValidated = false
+    @StateObject var container: MVIContainer<AuthPhoneInputIntent.Intentable, AuthPhoneInputModel.Stateful>
     
-    public init() {}
+    private var intent: AuthPhoneInputIntent.Intentable { container.intent }
+    private var state: AuthPhoneInputModel.Stateful { container.model }
+    
+    public init() {
+        let model = AuthPhoneInputModel()
+        let intent = AuthPhoneInputIntent(
+            model: model,
+            externalData: .init(input: "temp")
+        )
+        let container = MVIContainer(
+            intent: intent as AuthPhoneInputIntent.Intentable,
+            model: model as AuthPhoneInputModel.Stateful,
+            modelChangePublisher: model.objectWillChange
+        )
+        self._container = StateObject(wrappedValue: container)
+    }
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 30) {
@@ -25,33 +39,40 @@ public struct AuthPhoneInputView: View {
                 .padding(.horizontal, 26)
             
             PhoneTextInputView(
-                phoneTextInput: $phoneTextInput,
-                isPhoneValidated: $isPhoneValidated
+                phoneTextInput: $container.model.phoneInputText,
+                isPhoneValidated: state.isPhoneValidated
             )
+            .onChange(of: state.phoneInputText) {
+                intent.onChangePhoneInput(phone: state.phoneInputText)
+            }
             .padding(.horizontal, 26)
             
             Spacer()
             
-            CTABottomButton(title: "다음", isActive: isPhoneValidated) {
-                AppCoordinator.shared.push(
-                    .signUp(
-                        .authPhoneVerify
-                    )
-                )
+            CTABottomButton(
+                title: "다음",
+                isActive: state.isPhoneValidated
+            ) {
+                intent.onTapNextButton()
             }
+        }
+        .task {
+            await intent.task()
+        }
+        .onAppear {
+            intent.onAppear()
         }
         .ignoresSafeArea(.all)
         .padding(.top, 14)
         .textureBackground()
-        .setNavigation {
-            AppCoordinator.shared.pop()
-        }
+        .setNavigationWithPop()
+        .setLoading(state.isLoading)
     }
 }
 
 private struct PhoneTextInputView: View {
     @Binding var phoneTextInput: String
-    @Binding var isPhoneValidated: Bool
+    let isPhoneValidated: Bool
     
     var phoneRightIcon: TextInputRightIconModel? {
         if isPhoneValidated {
@@ -85,11 +106,6 @@ private struct PhoneTextInputView: View {
             },
             rightIcon: phoneRightIcon
         )
-        .onChange(of: phoneTextInput) {
-            let editedPhone = phoneTextInput.formattedPhoneNumber()
-            phoneTextInput = editedPhone
-            isPhoneValidated = editedPhone.isValidPhoneNumber()
-        }
     }
 }
 

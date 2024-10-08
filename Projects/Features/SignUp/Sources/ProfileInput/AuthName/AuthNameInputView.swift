@@ -1,22 +1,35 @@
 //
 //  AuthNameInputView.swift
-//  DesignPreview
+//  SignUp
 //
-//  Created by 김지수 on 10/2/24.
+//  Created by 김지수 on 10/7/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import SwiftUI
+import CoreKit
 import DesignCore
 import CommonKit
-import UIKit
 
 public struct AuthNameInputView: View {
     
-    @State var inputText = String()
+    @StateObject var container: MVIContainer<AuthNameInputIntent.Intentable, AuthNameInputModel.Stateful>
+    
+    private var intent: AuthNameInputIntent.Intentable { container.intent }
+    private var state: AuthNameInputModel.Stateful { container.model }
     
     public init() {
-
+        let model = AuthNameInputModel()
+        let intent = AuthNameInputIntent(
+            model: model,
+            externalData: .init()
+        )
+        let container = MVIContainer(
+            intent: intent as AuthNameInputIntent.Intentable,
+            model: model as AuthNameInputModel.Stateful,
+            modelChangePublisher: model.objectWillChange
+        )
+        self._container = StateObject(wrappedValue: container)
     }
     
     @ViewBuilder
@@ -32,7 +45,7 @@ public struct AuthNameInputView: View {
                 .offset(x: 100, y: 12)
         }
     }
-
+    
     public var body: some View {
         VStack(spacing: 44) {
             VStack(spacing: 0) {
@@ -48,7 +61,7 @@ public struct AuthNameInputView: View {
                 backgroundView
                 TextField(
                     "김위브",
-                    text: $inputText
+                    text: $container.model.inputText
                 )
                 .keyboardType(.namePhonePad)
                 .interactiveDismissDisabled()
@@ -67,17 +80,22 @@ public struct AuthNameInputView: View {
             CTABottomButton(
                 title: "다음",
                 backgroundStyle: LinearGradient.gradientA,
-                isActive: inputText.count >= 2
+                isActive: state.inputText.count >= 2
             ) {
                 
             }
         }
-        .ignoresSafeArea()
+        .task {
+            await intent.task()
+        }
+        .onAppear {
+            intent.onAppear()
+        }
+        .ignoresSafeArea(.all)
         .padding(.top, 10)
         .textureBackground()
-        .setNavigation {
-            AppCoordinator.shared.pop()
-        }
+        .setNavigationWithPop()
+        .setLoading(state.isLoading)
     }
 }
 
