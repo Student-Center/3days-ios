@@ -94,7 +94,9 @@ public struct AuthNameInputView: View {
         .ignoresSafeArea(.all)
         .padding(.top, 10)
         .textureBackground()
-        .setNavigationWithPop()
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
+        }
         .setLoading(state.isLoading)
     }
 }

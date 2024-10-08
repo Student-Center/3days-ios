@@ -9,18 +9,20 @@
 import Foundation
 import CommonKit
 import CoreKit
+import NetworkKit
+import Model
 
 //MARK: - Intent
 class AuthPhoneVerifyIntent {
     private weak var model: AuthPhoneVerifyModelActionable?
-    private let externalData: DataModel
+    private let input: DataModel
 
     // MARK: Life cycle
     init(
         model: AuthPhoneVerifyModelActionable,
         externalData: DataModel
     ) {
-        self.externalData = externalData
+        self.input = externalData
         self.model = model
     }
 }
@@ -38,7 +40,9 @@ extension AuthPhoneVerifyIntent {
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let smsResponse: SMSSendResponse
+    }
 }
 
 //MARK: - Intentable
@@ -46,12 +50,16 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
     // default
     func onAppear() {
         model?.setTextFieldFocus(value: true)
+        model?.setInitialPhoneNumber(
+            input.smsResponse.phoneNumber
+        )
     }
     
     func onChangeVerifyCode(code: String) {
         if code.count == 6 {
             Task {
-                await pushNextView()
+                model?.setLoading(status: true)
+                await requestVerification(code: code)
             }
         }
     }
@@ -60,9 +68,52 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
         model?.setTextFieldFocus(value: state)
     }
     
+    func requestVerification(code: String) async {
+        do {
+            switch input.smsResponse.userType {
+            case .NEW:
+                let registerToken = try await AuthService.requestNewUserVerifyCode(
+                    .init(
+                        verificationId: input.smsResponse.authCodeId,
+                        verificationCode: code
+                    )
+                )
+                // New User - 회원가입 뷰로 이동
+                TokenManager.registerToken = registerToken
+                await processSignUp()
+                
+            case .EXISTING:
+                let response = try await AuthService.requestExistingUserVerifyCode(
+                    .init(
+                        verificationId: input.smsResponse.authCodeId,
+                        verificationCode: code
+                    )
+                )
+                // Existing User - 메인 뷰로 이동
+                TokenManager.accessToken = response.accessToken
+                TokenManager.refreshToken = response.refreshToken
+                await pushToHomeview()
+            }
+        } catch {
+            model?.setLoading(status: false)
+            model?.resetText()
+            model?.showErrorAlert(
+                error: .init(
+                    title: "에러 발생",
+                    message: error.localizedDescription
+                )
+            )
+        }
+    }
+    
     @MainActor
-    func pushNextView() {
+    func processSignUp() {
         AppCoordinator.shared.push(.signUp(.authAgreement))
+    }
+    
+    @MainActor
+    func pushToHomeview() {
+        AppCoordinator.shared.push(.main)
     }
     
     func task() async {}

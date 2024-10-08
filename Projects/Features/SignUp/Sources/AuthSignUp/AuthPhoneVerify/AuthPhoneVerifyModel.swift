@@ -19,6 +19,7 @@ final class AuthPhoneVerifyModel: ObservableObject {
         var errorMessage: String? { get set }
         var verifyTextFieldFocused: Bool { get set }
         var isValidated: Bool { get }
+        var sentPhoneNumber: String { get }
         
         // default
         var isLoading: Bool { get }
@@ -34,6 +35,7 @@ final class AuthPhoneVerifyModel: ObservableObject {
     @Published var verifyCode = ""
     @Published var errorMessage: String? = "에러에여"
     @Published var verifyTextFieldFocused: Bool = false
+    @Published var sentPhoneNumber: String = ""
     
     // default
     @Published var isLoading: Bool = false
@@ -50,6 +52,8 @@ protocol AuthPhoneVerifyModelActionable: AnyObject {
     // content
     func setValidation(value: Bool)
     func setTextFieldFocus(value: Bool)
+    func setInitialPhoneNumber(_ phone: String)
+    func resetText()
 
     // default
     func setLoading(status: Bool)
@@ -67,6 +71,12 @@ extension AuthPhoneVerifyModel: AuthPhoneVerifyModelActionable {
     }
     func setTextFieldFocus(value: Bool) {
         verifyTextFieldFocused = value
+    }
+    func resetText() {
+        verifyCode = ""
+    }
+    func setInitialPhoneNumber(_ phone: String) {
+        sentPhoneNumber = phone
     }
     
     // default

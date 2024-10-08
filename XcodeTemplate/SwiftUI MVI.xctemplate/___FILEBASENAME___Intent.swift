@@ -7,14 +7,14 @@ import CoreKit
 //MARK: - Intent
 class ___FILEBASENAMEASIDENTIFIER___ {
     private weak var model: ___VARIABLE_productName___ModelActionable?
-    private let externalData: DataModel
+    private let input: DataModel
 
     // MARK: Life cycle
     init(
         model: ___VARIABLE_productName___ModelActionable,
-        externalData: DataModel
+        input: DataModel
     ) {
-        self.externalData = externalData
+        self.input = input
         self.model = model
     }
 }

@@ -8,7 +8,12 @@
 
 import Foundation
 
-public struct SMSVerificationResponse {
-    let refreshToken: String
-    let accessToken: String
+public struct ExistingUserVerificationResponse {
+    public let refreshToken: String
+    public let accessToken: String
+    
+    public init(refreshToken: String, accessToken: String) {
+        self.refreshToken = refreshToken
+        self.accessToken = accessToken
+    }
 }

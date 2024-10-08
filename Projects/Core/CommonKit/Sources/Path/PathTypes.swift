@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Model
 
 public enum PathType: Hashable {
     case designPreview
@@ -42,11 +43,34 @@ public enum PathType: Hashable {
 
 public enum SignUpSubViewType: Hashable {
     case authPhoneInput
-    case authPhoneVerify
+    case authPhoneVerify(SMSSendResponse)
     case authAgreement
     
     case authGreeting
     case authProfileGender
     case authProfileAge
     case authName
+    
+    public static func == (lhs: SignUpSubViewType, rhs: SignUpSubViewType) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .authPhoneInput:
+            hasher.combine(0)
+        case .authPhoneVerify:
+            hasher.combine(1)
+        case .authAgreement:
+            hasher.combine(2)
+        case .authGreeting:
+            hasher.combine(3)
+        case .authProfileGender:
+            hasher.combine(4)
+        case .authProfileAge:
+            hasher.combine(5)
+        case .authName:
+            hasher.combine(6)
+        }
+    }
 }

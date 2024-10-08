@@ -81,7 +81,9 @@ public struct AuthProfileGenderInputView: View {
         }
         .padding(.top, 10)
         .textureBackground()
-        .setNavigationWithPop()
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
+        }
         .setLoading(state.isLoading)
     }
 }

@@ -57,7 +57,9 @@ public struct AuthAgreementView: View {
         .ignoresSafeArea(.all)
         .padding(.top, 14)
         .textureBackground()
-        .setNavigationWithPop()
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
+        }
         .setLoading(state.isLoading)
     }
 }

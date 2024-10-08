@@ -9,6 +9,8 @@
 import Foundation
 import CommonKit
 import CoreKit
+import NetworkKit
+import Model
 
 //MARK: - Intent
 class AuthPhoneInputIntent {
@@ -29,7 +31,7 @@ class AuthPhoneInputIntent {
 extension AuthPhoneInputIntent {
     protocol Intentable {
         // content
-        func onTapNextButton()
+        func onTapNextButton(with Phone: String)
         func onChangePhoneInput(phone: String)
         
         // default
@@ -37,9 +39,7 @@ extension AuthPhoneInputIntent {
         func task() async
     }
     
-    struct DataModel {
-        let input: String
-    }
+    struct DataModel {}
 }
 
 //MARK: - Intentable
@@ -50,19 +50,49 @@ extension AuthPhoneInputIntent: AuthPhoneInputIntent.Intentable {
     func task() async {}
     
     // content
-    @MainActor
-    func onTapNextButton() {
-        AppCoordinator.shared.push(
-            .signUp(
-                .authPhoneVerify
+    func onTapNextButton(with Phone: String) {
+        model?.setLoading(status: true)
+        Task {
+            await requestSendSMS(phone: Phone)
+        }
+    }
+    
+    func requestSendSMS(phone: String) async {
+        do {
+            let editedPhone = phone.replacingOccurrences(
+                of: "-",
+                with: ""
             )
-        )
+            let response = try await AuthService.requestSendSMS(phone: editedPhone)
+            await pushNextView(smsResponse: response)
+        } catch {
+            // TODO: Error 타입 정의
+            model?.showErrorAlert(
+                error: .init(
+                    title: "오류 발생",
+                    message: "다시 시도해주세요"
+                )
+            )
+        }
     }
     
     func onChangePhoneInput(phone: String) {
-        let editedPhone = phone.formattedPhoneNumber()
+        var editedPhone = phone.formattedPhoneNumber()
+        if editedPhone.count < 4 {
+            editedPhone = "010-"
+        }
         let isPhoneValidated = editedPhone.isValidPhoneNumber()
         model?.setEditedPhoneText(phone: editedPhone)
         model?.setPhoneValidated(value: isPhoneValidated)
+    }
+    
+    @MainActor
+    func pushNextView(smsResponse: SMSSendResponse) {
+        print(#function)
+        AppCoordinator.shared.push(
+            .signUp(
+                .authPhoneVerify(smsResponse)
+            )
+        )
     }
 }
