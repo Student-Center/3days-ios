@@ -19,6 +19,7 @@ public struct AuthCompanyView: View {
     private var state: AuthCompanyModel.Stateful { container.model }
     
     @FocusState var showDropDown: Bool
+    @State var isShowSameCompanyPopup = false
     
     public init() {
         let model = AuthCompanyModel()
@@ -141,8 +142,19 @@ public struct AuthCompanyView: View {
                 title: "다음",
                 isActive: state.isValidated
             ) {
-                intent.onTapNextButton()
+                /// 회사를 정확하게 파악할 수 있다면 -> 같은 회사 매칭 팝업 보여주기
+                if !state.isNoCompanyHere {
+                    isShowSameCompanyPopup = true
+                } else {
+                    /// 회사 정확하게 파악 불가하다면 다음 뷰로
+                    intent.onTapNextButton()
+                }
             }
+        }
+        .sheet(isPresented: $isShowSameCompanyPopup) {
+            sameCompanyMatchingPopUpView
+                .presentationDetents([.height(280)])
+                .presentationCornerRadius(20)
         }
         .onChange(of: state.textInput) {
             intent.onTextChanged(text: state.textInput)
@@ -159,6 +171,45 @@ public struct AuthCompanyView: View {
             AppCoordinator.shared.pop()
         }
         .setLoading(state.isLoading)
+    }
+    
+    @ViewBuilder
+    var sameCompanyMatchingPopUpView: some View {
+        VStack {
+            VStack(spacing: 0) {
+                LeftAlignText("잠시만요!")
+                    .typography(.regular_14)
+                    .foregroundStyle(DesignCore.Colors.grey200)
+                LeftAlignText("같은 회사 사람도 소개 받을까요?")
+                    .typography(.semibold_20)
+                    .foregroundStyle(DesignCore.Colors.grey500)
+            }
+            
+            Spacer()
+            
+            VStack {
+                CTAButton(
+                    title: "같은 회사는 소개받기 싫어요",
+                    backgroundStyle: DesignCore.Colors.red300
+                ) {
+                    intent.onTapSameCompanyMatching(isAgree: false)
+                    isShowSameCompanyPopup = false
+                    intent.onTapNextButton()
+                }
+                
+                CTAButton(
+                    title: "네, 받을래요",
+                    titleColor: DesignCore.Colors.grey400,
+                    backgroundStyle: DesignCore.Colors.grey50
+                ) {
+                    intent.onTapSameCompanyMatching(isAgree: true)
+                    isShowSameCompanyPopup = false
+                    intent.onTapNextButton()
+                }
+            }
+        }
+        .padding(.horizontal, 26)
+        .padding(.vertical, 30)
     }
 }
 

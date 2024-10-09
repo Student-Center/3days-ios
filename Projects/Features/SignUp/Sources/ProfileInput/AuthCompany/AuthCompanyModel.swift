@@ -34,6 +34,7 @@ final class AuthCompanyModel: ObservableObject {
         var isValidated: Bool { get }
         var isTextFieldFocused: Bool { get }
         var isTextFieldEnabled: Bool { get }
+        var sameCompanyMatchingAvailable: Bool? { get }
         
         // default
         var isLoading: Bool { get }
@@ -51,6 +52,7 @@ final class AuthCompanyModel: ObservableObject {
     @Published var isNoCompanyHere: Bool = false
     @Published var isTextFieldFocused: Bool = false
     @Published var isTextFieldEnabled: Bool = true
+    @Published var sameCompanyMatchingAvailable: Bool?
     
     var isValidated: Bool {
         if isNoCompanyHere {
@@ -78,6 +80,7 @@ protocol AuthCompanyModelActionable: AnyObject {
     func setToggleNoCompany()
     func setValidation(value: Bool)
     func setFocusState(_ value: Bool)
+    func setSameCompanyMatchingAvailable(_ value: Bool)
 
     // default
     func setLoading(status: Bool)
@@ -98,6 +101,9 @@ extension AuthCompanyModel: AuthCompanyModelActionable {
         if let company {
             textInput = company.name
         }
+    }
+    func setSameCompanyMatchingAvailable(_ value: Bool) {
+        sameCompanyMatchingAvailable = value
     }
     func setFocusState(_ value: Bool) {
         isTextFieldFocused = value

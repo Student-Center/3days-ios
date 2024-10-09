@@ -11,17 +11,19 @@ import SwiftUI
 public struct CTAButton<BackgroundStyle: ShapeStyle>: View {
     private let title: String
     private let backgroundStyle: BackgroundStyle
-    private let titleColor: Color = .white
+    private let titleColor: Color
     private let isActive: Bool
     private var handler: () -> Void
     
     public init(
         title: String,
+        titleColor: Color = .white,
         backgroundStyle: BackgroundStyle = DesignCore.Colors.grey500,
         isActive: Bool = true,
         handler: @escaping () -> Void
     ) {
         self.title = title
+        self.titleColor = titleColor
         self.backgroundStyle = backgroundStyle
         self.isActive = isActive
         self.handler = handler

@@ -42,6 +42,7 @@ extension AuthCompanyIntent {
         func onTapNoCompanyToggle()
         func onTapNextButton()
         func onChangedFocusState(_ value: Bool)
+        func onTapSameCompanyMatching(isAgree: Bool)
         
         // default
         func onAppear()
@@ -103,6 +104,9 @@ extension AuthCompanyIntent: AuthCompanyIntent.Intentable {
         } catch {
             print(error)
         }
+    }
+    func onTapSameCompanyMatching(isAgree: Bool) {
+        model?.setSameCompanyMatchingAvailable(isAgree)
     }
     func onTapNextButton() {
         Task {
