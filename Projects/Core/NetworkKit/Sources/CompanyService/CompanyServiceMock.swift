@@ -11,13 +11,11 @@ import Model
 
 //MARK: - Service
 public final class CompanyServiceMock: CompanyServiceProtocol {
-    
+
     public init() {}
     
-    public func requestSearchCompany(
-        keyword: String
-    ) async throws -> [CompanySearchResponse] {
-        return [
+    public func requestSearchCompany(keyword: String, next: String?) async throws -> ([Model.CompanySearchResponse], String?) {
+        return ([
             .init(id: "0", name: "현대글로비스"),
             .init(id: "1", name: "현대자동차"),
             .init(id: "2", name: "기아자동차"),
@@ -31,6 +29,6 @@ public final class CompanyServiceMock: CompanyServiceProtocol {
             .init(id: "10", name: "호날두주식회사"),
             .init(id: "11", name: "애플"),
             .init(id: "12", name: "엔비디아"),
-        ]
+        ], nil)
     }
 }

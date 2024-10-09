@@ -23,6 +23,9 @@ public struct DropDownPicker<Content: View>: View {
     var dataSources: [any DropDownFetchable]
     let itemSize: CGFloat = 56
     
+    var nextPageHandler: (() -> Void)?
+    var needCallNextPage = false
+    
     var frameHeight: CGFloat {
         if !showDropDown {
             return 0
@@ -50,13 +53,17 @@ public struct DropDownPicker<Content: View>: View {
     public init(
         dataSources: [any DropDownFetchable],
         showDropDown: FocusState<Bool>,
+        needCallNextPage: Bool = false,
         @ViewBuilder content: @escaping () -> Content,
-        tapHandler: ((Int) -> Void)? = nil
+        tapHandler: ((Int) -> Void)? = nil,
+        nextPageHandler: (() -> Void)? = nil
     ) {
         self.dataSources = dataSources
         self.content = content
         self.tapHandler = tapHandler
         self._showDropDown = showDropDown
+        self.nextPageHandler = nextPageHandler
+        self.needCallNextPage = needCallNextPage
     }
     
     public var body: some View {
@@ -89,6 +96,13 @@ public struct DropDownPicker<Content: View>: View {
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        if needCallNextPage {
+                            ProgressView()
+                                .padding(.bottom, 10)
+                                .onAppear {
+                                    nextPageHandler?()
+                                }
+                        }
                     }
                 }
                 .clipShape(

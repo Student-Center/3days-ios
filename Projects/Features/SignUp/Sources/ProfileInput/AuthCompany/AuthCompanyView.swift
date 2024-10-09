@@ -66,7 +66,8 @@ public struct AuthCompanyView: View {
                         ) {
                             DropDownPicker(
                                 dataSources: state.searchResponse,
-                                showDropDown: _showDropDown
+                                showDropDown: _showDropDown,
+                                needCallNextPage: state.needPagination
                             ) {
                                 TextInput(
                                     placeholder: "내 회사 검색",
@@ -86,6 +87,15 @@ public struct AuthCompanyView: View {
                                 intent.onCompanySelected(
                                     company: company
                                 )
+                            } nextPageHandler: {
+                                print("다음 페이지~")
+                                if let nextSearchKey = state.nextSearchKey {
+                                    print("\(nextSearchKey)로 호출")
+                                    intent.needRequestNextPage(
+                                        keyword: state.textInput,
+                                        next: nextSearchKey
+                                    )
+                                }
                             }
                             .padding(.horizontal, 24)
                             .onChange(of: state.isTextFieldFocused) {

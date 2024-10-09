@@ -28,6 +28,8 @@ final class AuthCompanyModel: ObservableObject {
     protocol Stateful {
         // content
         var searchResponse: [CompanySearchResponse] { get }
+        var nextSearchKey: String? { get }
+        var needPagination: Bool { get }
         var selectedCompany: CompanySearchResponse? { get }
         var isNoCompanyHere: Bool { get }
         var textInput: String { get set }
@@ -47,12 +49,17 @@ final class AuthCompanyModel: ObservableObject {
     //MARK: State Properties
     // content
     @Published var searchResponse: [CompanySearchResponse] = []
+    var nextSearchKey: String? = nil
     @Published var selectedCompany: CompanySearchResponse? = nil
     @Published var textInput: String = ""
     @Published var isNoCompanyHere: Bool = false
     @Published var isTextFieldFocused: Bool = false
     @Published var isTextFieldEnabled: Bool = true
     @Published var sameCompanyMatchingAvailable: Bool?
+    
+    var needPagination: Bool {
+        return nextSearchKey != nil
+    }
     
     var isValidated: Bool {
         if isNoCompanyHere {
@@ -76,6 +83,8 @@ extension AuthCompanyModel: AuthCompanyModel.Stateful {}
 protocol AuthCompanyModelActionable: AnyObject {
     // content
     func setResponseData(_ response: [CompanySearchResponse])
+    func appendResponseData(_ response: [CompanySearchResponse])
+    func setNextPaginationKey(_ next: String?)
     func setSelectedCompany(_ company: CompanySearchResponse?)
     func setToggleNoCompany()
     func setValidation(value: Bool)
@@ -95,6 +104,12 @@ extension AuthCompanyModel: AuthCompanyModelActionable {
     // content
     func setResponseData(_ response: [CompanySearchResponse]) {
         searchResponse = response
+    }
+    func appendResponseData(_ response: [CompanySearchResponse]) {
+        searchResponse.append(contentsOf: response)
+    }
+    func setNextPaginationKey(_ next: String?) {
+        nextSearchKey = next
     }
     func setSelectedCompany(_ company: CompanySearchResponse?) {
         selectedCompany = company

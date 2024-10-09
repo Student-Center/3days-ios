@@ -12,7 +12,10 @@ import Model
 
 //MARK: - Service Protocol
 public protocol CompanyServiceProtocol {
-    func requestSearchCompany(keyword: String) async throws -> [CompanySearchResponse]
+    func requestSearchCompany(
+        keyword: String,
+        next: String?
+    ) async throws -> ([CompanySearchResponse], String?)
 }
 
 //MARK: - Service
@@ -22,16 +25,21 @@ public final class CompanyService {
 }
 
 extension CompanyService: CompanyServiceProtocol {
-    public func requestSearchCompany(keyword: String) async throws -> [CompanySearchResponse] {
+    public func requestSearchCompany(
+        keyword: String,
+        next: String? = nil
+    ) async throws -> ([CompanySearchResponse], String?) {
         let response = try await client.searchCompanies(
-            query: .init(name: keyword)
-        ).ok.body.json.companies
+            query: .init(name: keyword, next: next)
+        ).ok.body.json
         
-        return response.map {
+        let result = response.companies.map {
             CompanySearchResponse(
                 id: $0.id,
                 name: $0.name
             )
         }
+        let next = response.next
+        return (result, next)
     }
 }

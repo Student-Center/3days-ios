@@ -43,6 +43,10 @@ extension AuthCompanyIntent {
         func onTapNextButton()
         func onChangedFocusState(_ value: Bool)
         func onTapSameCompanyMatching(isAgree: Bool)
+        func needRequestNextPage(
+            keyword: String,
+            next: String
+        )
         
         // default
         func onAppear()
@@ -98,15 +102,43 @@ extension AuthCompanyIntent: AuthCompanyIntent.Intentable {
             model?.setSelectedCompany(nil)
             return
         }
-        do {
-            let response = try await companyService.requestSearchCompany(keyword: keyword)
-            model?.setResponseData(response)
-        } catch {
-            print(error)
-        }
+        await requestCompanyList(keyword: keyword, needAppend: false)
     }
     func onTapSameCompanyMatching(isAgree: Bool) {
         model?.setSameCompanyMatchingAvailable(isAgree)
+    }
+    func needRequestNextPage(
+        keyword: String,
+        next: String
+    ) {
+        Task {
+            await requestCompanyList(
+                keyword: keyword,
+                next: next,
+                needAppend: true
+            )
+        }
+    }
+    // company list API 요청
+    func requestCompanyList(
+        keyword: String,
+        next: String? = nil,
+        needAppend: Bool
+    ) async {
+        do {
+            let (response, next) = try await companyService.requestSearchCompany(
+                keyword: keyword,
+                next: next
+            )
+            if needAppend {
+                model?.appendResponseData(response)
+            } else {
+                model?.setResponseData(response)
+            }
+            model?.setNextPaginationKey(next)
+        } catch {
+            print(error)
+        }
     }
     func onTapNextButton() {
         Task {
