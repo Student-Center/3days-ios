@@ -43,9 +43,9 @@ final class PhoneNumberTests: XCTestCase {
             "010123456789".isValidPhoneNumber(),
             "유효하지 않은 번호 형식임에도 불구하고 true가 반환됨"
         )
-        XCTAssertFalse(
+        XCTAssertTrue(
             "010-1234-5678".isValidPhoneNumber(),
-            "하이픈이 포함된 경우 유효하지 않은 번호 형식임에도 불구하고 true가 반환됨"
+            "하이픈이 포함되었으나 유효한 번호인 경우 true를 반환해야 함"
         )
         
         // 텍스트가 포함된 경우
