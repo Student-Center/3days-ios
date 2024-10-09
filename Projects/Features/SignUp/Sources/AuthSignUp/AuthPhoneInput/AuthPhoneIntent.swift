@@ -53,7 +53,7 @@ extension AuthPhoneInputIntent: AuthPhoneInputIntent.Intentable {
     func task() async {}
     
     // content
-    func onTapNextButton(with Phone: String) {
+    func onTapNextButton(with phone: String) {
         model?.setLoading(status: true)
         Task {
             await requestSendSMS(phone: Phone)
