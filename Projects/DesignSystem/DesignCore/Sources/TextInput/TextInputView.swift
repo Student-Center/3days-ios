@@ -15,6 +15,7 @@ public struct TextInput<Content>: View where Content: View {
     @ViewBuilder let leftView: () -> Content
     @Binding var text: String
     @FocusState var isFocused: Bool
+    let isEnabled: Bool
     
     var rightIcon: TextInputRightIconModel?
     
@@ -24,6 +25,7 @@ public struct TextInput<Content>: View where Content: View {
         text: Binding<String>,
         keyboardType: UIKeyboardType = .default,
         isFocused: FocusState<Bool> = .init(),
+        isEnabled: Bool = true,
         @ViewBuilder leftView: @escaping () -> Content = { EmptyView() },
         rightIcon: TextInputRightIconModel? = nil
     ) {
@@ -34,6 +36,7 @@ public struct TextInput<Content>: View where Content: View {
         self._isFocused = isFocused
         self.leftView = leftView
         self.rightIcon = rightIcon
+        self.isEnabled = isEnabled
     }
     
     public var body: some View {
@@ -44,7 +47,7 @@ public struct TextInput<Content>: View where Content: View {
                     DesignCore.Colors.grey100,
                     lineWidth: isFocused ? 1.0 : 0
                 )
-                .background(backgroundColor)
+                .background(isEnabled ? backgroundColor : DesignCore.Colors.grey100)
             
             HStack(spacing: 10) {
                 leftView()
@@ -57,6 +60,7 @@ public struct TextInput<Content>: View where Content: View {
                 .tint(DesignCore.Colors.grey500)
                 .foregroundStyle(DesignCore.Colors.grey500)
                 .typography(.medium_16)
+                .disabled(!isEnabled)
                 
                 if let rightIcon {
                     ZStack {

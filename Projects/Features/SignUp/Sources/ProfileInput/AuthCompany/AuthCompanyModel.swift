@@ -29,8 +29,11 @@ final class AuthCompanyModel: ObservableObject {
         // content
         var searchResponse: [CompanySearchResponse] { get }
         var selectedCompany: CompanySearchResponse? { get }
+        var isNoCompanyHere: Bool { get }
         var textInput: String { get set }
         var isValidated: Bool { get }
+        var isTextFieldFocused: Bool { get }
+        var isTextFieldEnabled: Bool { get }
         
         // default
         var isLoading: Bool { get }
@@ -45,10 +48,16 @@ final class AuthCompanyModel: ObservableObject {
     @Published var searchResponse: [CompanySearchResponse] = []
     @Published var selectedCompany: CompanySearchResponse? = nil
     @Published var textInput: String = ""
-//    @Published var isValidated: Bool = false
+    @Published var isNoCompanyHere: Bool = false
+    @Published var isTextFieldFocused: Bool = false
+    @Published var isTextFieldEnabled: Bool = true
     
     var isValidated: Bool {
-        selectedCompany != nil
+        if isNoCompanyHere {
+            return true
+        } else {
+            return selectedCompany != nil
+        }
     }
     
     // default
@@ -66,7 +75,9 @@ protocol AuthCompanyModelActionable: AnyObject {
     // content
     func setResponseData(_ response: [CompanySearchResponse])
     func setSelectedCompany(_ company: CompanySearchResponse?)
+    func setToggleNoCompany()
     func setValidation(value: Bool)
+    func setFocusState(_ value: Bool)
 
     // default
     func setLoading(status: Bool)
@@ -86,6 +97,22 @@ extension AuthCompanyModel: AuthCompanyModelActionable {
         selectedCompany = company
         if let company {
             textInput = company.name
+        }
+    }
+    func setFocusState(_ value: Bool) {
+        isTextFieldFocused = value
+    }
+    func setToggleNoCompany() {
+        isNoCompanyHere.toggle()
+        
+        // on 이 된다면
+        if isNoCompanyHere {
+            selectedCompany = nil
+            textInput = ""
+            isTextFieldFocused = false
+            isTextFieldEnabled = false
+        } else {
+            isTextFieldEnabled = true
         }
     }
     func setValidation(value: Bool) {}

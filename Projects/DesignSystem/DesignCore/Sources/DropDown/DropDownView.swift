@@ -104,5 +104,6 @@ public struct DropDownPicker<Content: View>: View {
             }
             .frame(height: 50)
         }
+        .zIndex(999)
     }
 }

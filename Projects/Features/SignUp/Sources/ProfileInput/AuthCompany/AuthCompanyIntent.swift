@@ -39,7 +39,9 @@ extension AuthCompanyIntent {
         // content
         func onTextChanged(text: String)
         func onCompanySelected(company: CompanySearchResponse)
+        func onTapNoCompanyToggle()
         func onTapNextButton()
+        func onChangedFocusState(_ value: Bool)
         
         // default
         func onAppear()
@@ -74,6 +76,12 @@ extension AuthCompanyIntent: AuthCompanyIntent.Intentable {
     func task() async {}
     
     // content
+    func onChangedFocusState(_ value: Bool) {
+        model?.setFocusState(value)
+    }
+    func onTapNoCompanyToggle() {
+        model?.setToggleNoCompany()
+    }
     func onTextChanged(text: String) {
         if let model = model as? AuthCompanyModel,
            model.selectedCompany?.name != text {

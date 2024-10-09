@@ -39,7 +39,7 @@ public struct AuthCompanyView: View {
     }
     
     var textInputRightIcon: TextInputRightIconModel {
-        if state.isValidated {
+        if state.selectedCompany != nil {
             return .init(
                 icon: DesignCore.Images.checkBold.image,
                 backgroundColor: Color(hex: 0x2DE76B)
@@ -72,6 +72,7 @@ public struct AuthCompanyView: View {
                                     text: $container.model.textInput,
                                     keyboardType: .namePhonePad,
                                     isFocused: _showDropDown,
+                                    isEnabled: state.isTextFieldEnabled,
                                     rightIcon: textInputRightIcon
                                 )
                                 .interactiveDismissDisabled()
@@ -86,6 +87,34 @@ public struct AuthCompanyView: View {
                                 )
                             }
                             .padding(.horizontal, 24)
+                            .onChange(of: state.isTextFieldFocused) {
+                                showDropDown = state.isTextFieldFocused
+                            }
+                            .onChange(of: showDropDown) {
+                                intent.onChangedFocusState(showDropDown)
+                            }
+                            
+                            HStack {
+                                Spacer()
+                                Image(systemName: state.isNoCompanyHere ? "checkmark.square.fill" : "square")
+                                    .resizable()
+                                    .frame(width: 14, height: 14)
+                                    .foregroundStyle(DesignCore.Colors.grey200)
+                                Text("회사 검색 목록에 없어요.")
+                                    .typography(.medium_14)
+                                    .foregroundStyle(DesignCore.Colors.grey400)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 60)
+                            .padding(.vertical, 14)
+                            .background(DesignCore.Colors.grey100.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .padding(.horizontal, 24)
+                            .contentShape(Rectangle())
+                            .padding(.top, 12)
+                            .onTapGesture {
+                                intent.onTapNoCompanyToggle()
+                            }
                         }
                         .id(0)
                         
