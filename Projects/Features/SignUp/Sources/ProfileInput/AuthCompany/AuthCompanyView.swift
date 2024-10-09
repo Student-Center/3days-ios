@@ -11,26 +11,6 @@ import CoreKit
 import DesignCore
 import CommonKit
 
-struct DropDownMock: DropDownFetchable {
-    let id: String
-    var name: String
-    
-    static var mock: [DropDownMock] {
-        return [
-            .init(id: "0", name: "현대글로비스"),
-            .init(id: "1", name: "현대자동차"),
-            .init(id: "2", name: "기아자동차"),
-            .init(id: "3", name: "채널"),
-            .init(id: "4", name: "닥터다이어리"),
-            .init(id: "5", name: "컬쳐커넥션"),
-            .init(id: "6", name: "스타벅스"),
-            .init(id: "7", name: "아이스아메리카노"),
-            .init(id: "8", name: "애플"),
-            .init(id: "9", name: "엔비디아"),
-        ]
-    }
-}
-
 public struct AuthCompanyView: View {
     
     @StateObject var container: MVIContainer<AuthCompanyIntent.Intentable, AuthCompanyModel.Stateful>
@@ -39,7 +19,6 @@ public struct AuthCompanyView: View {
     private var state: AuthCompanyModel.Stateful { container.model }
     
     @FocusState var showDropDown: Bool
-    @State var text: String = ""
     
     public init() {
         let model = AuthCompanyModel()
@@ -59,6 +38,20 @@ public struct AuthCompanyView: View {
         return showDropDown ? Device.height * 0.7 : 0
     }
     
+    var textInputRightIcon: TextInputRightIconModel {
+        if state.isValidated {
+            return .init(
+                icon: DesignCore.Images.checkBold.image,
+                backgroundColor: Color(hex: 0x2DE76B)
+            )
+        } else {
+            return .init(
+                icon: DesignCore.Images.search.image,
+                backgroundColor: .init(hex: 0xCAC7C5)
+            )
+        }
+    }
+    
     public var body: some View {
         ZStack {
             ScrollView {
@@ -71,27 +64,28 @@ public struct AuthCompanyView: View {
                             mainMessage: "당신은 지금 어떤 회사에서\n재직하고 있나요?"
                         ) {
                             DropDownPicker(
-                                dataSources: DropDownMock.mock,
+                                dataSources: state.searchResponse,
                                 showDropDown: _showDropDown
                             ) {
                                 TextInput(
                                     placeholder: "내 회사 검색",
-                                    text: $text,
+                                    text: $container.model.textInput,
                                     keyboardType: .namePhonePad,
-                                    isFocused: _showDropDown
+                                    isFocused: _showDropDown,
+                                    rightIcon: textInputRightIcon
                                 )
                                 .interactiveDismissDisabled()
                                 .textInputAutocapitalization(.never)
                                 .autocorrectionDisabled()
                                 .speechAnnouncementsQueued(false)
                                 .speechSpellsOutCharacters(false)
-                                
                             } tapHandler: { index in
-                                print(index)
-                                //                let university = viewStore.filteredUniversityLists[index]
-                                //                viewStore.send(.didTappedUniversity(university: university))
+                                let company = state.searchResponse[index]
+                                intent.onCompanySelected(
+                                    company: company
+                                )
                             }
-                            .padding(.horizontal, 50)
+                            .padding(.horizontal, 24)
                         }
                         .id(0)
                         
@@ -120,6 +114,9 @@ public struct AuthCompanyView: View {
             ) {
                 intent.onTapNextButton()
             }
+        }
+        .onChange(of: state.textInput) {
+            intent.onTextChanged(text: state.textInput)
         }
         .task {
             await intent.task()

@@ -28,8 +28,8 @@ public struct DropDownPicker<Content: View>: View {
             return 0
         }
         
-        if dataSources.count > 2 {
-            return itemSize * 3
+        if dataSources.count > 3 {
+            return itemSize * 3 + itemSize * 0.5
         }
         
         return itemSize * CGFloat(dataSources.count)
@@ -40,8 +40,8 @@ public struct DropDownPicker<Content: View>: View {
             return 0
         }
         
-        if dataSources.count > 2 {
-            return 125
+        if dataSources.count > 3 {
+            return 140
         }
         
         return 125 - 28 * CGFloat(3 - dataSources.count)

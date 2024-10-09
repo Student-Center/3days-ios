@@ -77,14 +77,16 @@ extension LoggingMiddleware: ServerMiddleware {
 
 extension LoggingMiddleware {
     func log(_ request: HTTPRequest, _ requestBody: BodyLoggingPolicy.BodyLog) {
+        let decodedPath = request.path?.removingPercentEncoding ?? "<nil>"
         logger.debug(
-            "Request: \(request.method, privacy: .public) \(request.path ?? "<nil>", privacy: .public) body: \(requestBody, privacy: .auto)"
+            "Request: \(request.method, privacy: .public) \(decodedPath, privacy: .public) body: \(requestBody, privacy: .auto)"
         )
     }
 
     func log(_ request: HTTPRequest, _ response: HTTPResponse, _ responseBody: BodyLoggingPolicy.BodyLog) {
+        let decodedPath = request.path?.removingPercentEncoding ?? "<nil>"
         logger.debug(
-            "Response: \(request.method, privacy: .public) \(request.path ?? "<nil>", privacy: .public) \(response.status, privacy: .public) body: \(responseBody, privacy: .auto)"
+            "Response: \(request.method, privacy: .public) \(decodedPath, privacy: .public) \(response.status, privacy: .public) body: \(responseBody, privacy: .auto)"
         )
     }
 

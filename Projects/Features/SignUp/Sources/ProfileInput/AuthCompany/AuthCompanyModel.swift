@@ -9,12 +9,27 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
+import DesignCore
+
+extension CompanySearchResponse: DropDownFetchable {
+    public static func == (lhs: CompanySearchResponse, rhs: CompanySearchResponse) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(0)
+    }
+}
 
 final class AuthCompanyModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
+        var searchResponse: [CompanySearchResponse] { get }
+        var selectedCompany: CompanySearchResponse? { get }
+        var textInput: String { get set }
         var isValidated: Bool { get }
         
         // default
@@ -27,7 +42,14 @@ final class AuthCompanyModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    @Published var isValidated: Bool = false
+    @Published var searchResponse: [CompanySearchResponse] = []
+    @Published var selectedCompany: CompanySearchResponse? = nil
+    @Published var textInput: String = ""
+//    @Published var isValidated: Bool = false
+    
+    var isValidated: Bool {
+        selectedCompany != nil
+    }
     
     // default
     @Published var isLoading: Bool = false
@@ -42,6 +64,8 @@ extension AuthCompanyModel: AuthCompanyModel.Stateful {}
 //MARK: - Actionable
 protocol AuthCompanyModelActionable: AnyObject {
     // content
+    func setResponseData(_ response: [CompanySearchResponse])
+    func setSelectedCompany(_ company: CompanySearchResponse?)
     func setValidation(value: Bool)
 
     // default
@@ -55,9 +79,16 @@ protocol AuthCompanyModelActionable: AnyObject {
 
 extension AuthCompanyModel: AuthCompanyModelActionable {
     // content
-    func setValidation(value: Bool) {
-        isValidated = value
+    func setResponseData(_ response: [CompanySearchResponse]) {
+        searchResponse = response
     }
+    func setSelectedCompany(_ company: CompanySearchResponse?) {
+        selectedCompany = company
+        if let company {
+            textInput = company.name
+        }
+    }
+    func setValidation(value: Bool) {}
     
     // default
     func setLoading(status: Bool) {
