@@ -10,6 +10,8 @@ import Foundation
 import OpenapiGenerated
 import OpenAPIURLSession
 
+let client = ServiceClient.client
+
 struct ServiceClient {
     static let client = Client(
         serverURL: URL(string: ServerType.current.baseURL)!,

@@ -16,14 +16,17 @@ import Model
 class AuthPhoneInputIntent {
     private weak var model: AuthPhoneInputActionable?
     private let input: DataModel
+    private let authService: AuthServiceProtocol
 
     // MARK: Life cycle
     init(
         model: AuthPhoneInputActionable,
-        input: DataModel
+        input: DataModel,
+        authService: AuthServiceProtocol = AuthService.shared
     ) {
         self.input = input
         self.model = model
+        self.authService = authService
     }
 }
 
@@ -63,8 +66,8 @@ extension AuthPhoneInputIntent: AuthPhoneInputIntent.Intentable {
                 of: "-",
                 with: ""
             )
-            let response = try await AuthService.requestSendSMS(phone: editedPhone)
-            await pushNextView(smsResponse: response)
+            let response = try await authService.requestSendSMS(phone: editedPhone)
+            await onReceivedSMSResponse(response)
         } catch {
             // TODO: Error 타입 정의
             model?.showErrorAlert(
@@ -74,6 +77,10 @@ extension AuthPhoneInputIntent: AuthPhoneInputIntent.Intentable {
                 )
             )
         }
+    }
+    
+    func onReceivedSMSResponse(_ response: SMSSendResponse) async {
+        await pushNextView(smsResponse: response)
     }
     
     func onChangePhoneInput(phone: String) {

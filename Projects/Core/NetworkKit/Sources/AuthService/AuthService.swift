@@ -15,8 +15,25 @@ enum AuthEndpointError: Error {
     case tokenResponseNotValid
 }
 
-public enum AuthService: Endpointable {
-    public static func requestSendSMS(phone: String) async throws -> SMSSendResponse {
+//MARK: - Service Protocol
+public protocol AuthServiceProtocol {
+    func requestSendSMS(phone: String) async throws -> SMSSendResponse
+    func requestNewUserVerifyCode(
+        _ request: SMSVerificationRequest
+    ) async throws -> String
+    func requestExistingUserVerifyCode(
+        _ request: SMSVerificationRequest
+    ) async throws -> ExistingUserVerificationResponse
+}
+
+//MARK: - Service
+public final class AuthService {
+    public static var shared = AuthService()
+    private init() {}
+}
+
+extension AuthService: AuthServiceProtocol {
+    public func requestSendSMS(phone: String) async throws -> SMSSendResponse {
         let response = try await client.requestVerification(
             headers: .init(X_hyphen_OS_hyphen_Type: .IOS),
             body: .json(.init(phoneNumber: phone))
@@ -31,7 +48,7 @@ public enum AuthService: Endpointable {
         )
     }
     
-    public static func requestNewUserVerifyCode(
+    public func requestNewUserVerifyCode(
         _ request: SMSVerificationRequest
     ) async throws -> String {
         let response = try await client.newUserVerifyCode(
@@ -41,7 +58,7 @@ public enum AuthService: Endpointable {
         return response.registerToken
     }
     
-    public static func requestExistingUserVerifyCode(
+    public func requestExistingUserVerifyCode(
         _ request: SMSVerificationRequest
     ) async throws -> ExistingUserVerificationResponse {
         let response = try await client.existingUserVerifyCode(
@@ -58,7 +75,7 @@ public enum AuthService: Endpointable {
 
 //MARK: - AccessToken Refresh
 extension AuthService {
-    static func refreshAccessToken() async throws -> RefreshTokenResponse {
+    public func refreshAccessToken() async throws -> RefreshTokenResponse {
         guard let refreshToken = TokenManager.refreshToken else {
             throw AuthEndpointError.emptyToken
         }

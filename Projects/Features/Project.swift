@@ -19,6 +19,12 @@ let project: Project = .make(
                 .project(target: .networkKit)
             ]
         ),
+        .makeUnitTest(
+            target: .signUp,
+            dependencies: [
+                .project(target: .signUp)
+            ]
+        ),
         .make(
             target: .main,
             dependencies: [

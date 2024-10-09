@@ -16,14 +16,17 @@ import Model
 class AuthPhoneVerifyIntent {
     private weak var model: AuthPhoneVerifyModelActionable?
     private let input: DataModel
+    private let authService: AuthServiceProtocol
 
     // MARK: Life cycle
     init(
         model: AuthPhoneVerifyModelActionable,
-        input: DataModel
+        input: DataModel,
+        service: AuthServiceProtocol = AuthService.shared
     ) {
         self.input = input
         self.model = model
+        self.authService = service
     }
 }
 
@@ -72,7 +75,7 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
         do {
             switch input.smsResponse.userType {
             case .NEW:
-                let registerToken = try await AuthService.requestNewUserVerifyCode(
+                let registerToken = try await authService.requestNewUserVerifyCode(
                     .init(
                         verificationId: input.smsResponse.authCodeId,
                         verificationCode: code
@@ -83,7 +86,7 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
                 await processSignUp()
                 
             case .EXISTING:
-                let response = try await AuthService.requestExistingUserVerifyCode(
+                let response = try await authService.requestExistingUserVerifyCode(
                     .init(
                         verificationId: input.smsResponse.authCodeId,
                         verificationCode: code
