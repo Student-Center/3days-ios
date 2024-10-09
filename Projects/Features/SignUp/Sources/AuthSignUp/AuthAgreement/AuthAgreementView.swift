@@ -22,7 +22,7 @@ public struct AuthAgreementView: View {
         let model = AuthAgreementModel()
         let intent = AuthAgreementIntent(
             model: model,
-            externalData: .init()
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as AuthAgreementIntent.Intentable,

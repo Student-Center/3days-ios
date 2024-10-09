@@ -24,7 +24,7 @@ public struct AuthProfileAgeInputView: View {
         let model = AuthProfileAgeInputModel()
         let intent = AuthProfileAgeInputIntent(
             model: model,
-            externalData: .init(targetGender: .male)
+            input: .init(targetGender: .male)
         )
         let container = MVIContainer(
             intent: intent as AuthProfileAgeInputIntent.Intentable,

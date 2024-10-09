@@ -13,14 +13,14 @@ import CoreKit
 //MARK: - Intent
 class AuthGreetingIntent {
     private weak var model: AuthGreetingModelActionable?
-    private let externalData: DataModel
+    private let input: DataModel
 
     // MARK: Life cycle
     init(
         model: AuthGreetingModelActionable,
-        externalData: DataModel
+        input: DataModel
     ) {
-        self.externalData = externalData
+        self.input = input
         self.model = model
     }
 }

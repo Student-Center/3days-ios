@@ -1,5 +1,5 @@
 //
-//  SMSVerificationResponse.swift
+//  ExistingUserVerificationResponse.swift
 //  NetworkKit
 //
 //  Created by 김지수 on 9/1/24.

@@ -22,7 +22,7 @@ public struct AuthGreetingView: View {
         let model = AuthGreetingModel()
         let intent = AuthGreetingIntent(
             model: model,
-            externalData: .init()
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as AuthGreetingIntent.Intentable,

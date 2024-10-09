@@ -22,7 +22,7 @@ public struct AuthProfileGenderInputView: View {
         let model = AuthProfileGenderInputModel()
         let intent = AuthProfileGenderInputIntent(
             model: model,
-            externalData: .init()
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as AuthProfileGenderInputIntent.Intentable,

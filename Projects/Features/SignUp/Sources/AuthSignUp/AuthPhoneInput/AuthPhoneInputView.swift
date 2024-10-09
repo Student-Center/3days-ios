@@ -22,7 +22,7 @@ public struct AuthPhoneInputView: View {
         let model = AuthPhoneInputModel()
         let intent = AuthPhoneInputIntent(
             model: model,
-            externalData: .init()
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as AuthPhoneInputIntent.Intentable,

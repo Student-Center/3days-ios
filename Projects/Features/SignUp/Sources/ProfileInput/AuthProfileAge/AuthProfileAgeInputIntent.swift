@@ -13,14 +13,14 @@ import CoreKit
 //MARK: - Intent
 class AuthProfileAgeInputIntent {
     private weak var model: AuthProfileAgeInputModelActionable?
-    private let externalData: DataModel
+    private let input: DataModel
 
     // MARK: Life cycle
     init(
         model: AuthProfileAgeInputModelActionable,
-        externalData: DataModel
+        input: DataModel
     ) {
-        self.externalData = externalData
+        self.input = input
         self.model = model
         
     }
@@ -48,7 +48,7 @@ extension AuthProfileAgeInputIntent {
 extension AuthProfileAgeInputIntent: AuthProfileAgeInputIntent.Intentable {
     // default
     func onAppear() {
-        model?.setTargetGender(externalData.targetGender)
+        model?.setTargetGender(input.targetGender)
     }
     
     func task() async {}

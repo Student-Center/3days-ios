@@ -24,7 +24,7 @@ public struct AuthPhoneVerifyView: View {
         let model = AuthPhoneVerifyModel()
         let intent = AuthPhoneVerifyIntent(
             model: model,
-            externalData: .init(smsResponse: smsResponse)
+            input: .init(smsResponse: smsResponse)
         )
         let container = MVIContainer(
             intent: intent as AuthPhoneVerifyIntent.Intentable,

@@ -15,14 +15,14 @@ import Model
 //MARK: - Intent
 class AuthPhoneInputIntent {
     private weak var model: AuthPhoneInputActionable?
-    private let externalData: DataModel
+    private let input: DataModel
 
     // MARK: Life cycle
     init(
         model: AuthPhoneInputActionable,
-        externalData: DataModel
+        input: DataModel
     ) {
-        self.externalData = externalData
+        self.input = input
         self.model = model
     }
 }

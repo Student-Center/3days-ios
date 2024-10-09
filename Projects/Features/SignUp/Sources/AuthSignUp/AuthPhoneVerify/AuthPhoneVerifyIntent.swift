@@ -20,9 +20,9 @@ class AuthPhoneVerifyIntent {
     // MARK: Life cycle
     init(
         model: AuthPhoneVerifyModelActionable,
-        externalData: DataModel
+        input: DataModel
     ) {
-        self.input = externalData
+        self.input = input
         self.model = model
     }
 }

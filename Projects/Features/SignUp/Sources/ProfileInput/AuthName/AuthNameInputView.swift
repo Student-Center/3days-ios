@@ -22,7 +22,7 @@ public struct AuthNameInputView: View {
         let model = AuthNameInputModel()
         let intent = AuthNameInputIntent(
             model: model,
-            externalData: .init()
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as AuthNameInputIntent.Intentable,
