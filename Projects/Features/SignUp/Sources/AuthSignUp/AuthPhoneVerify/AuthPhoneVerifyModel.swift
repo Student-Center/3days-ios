@@ -53,6 +53,7 @@ protocol AuthPhoneVerifyModelActionable: AnyObject {
     func setValidation(value: Bool)
     func setTextFieldFocus(value: Bool)
     func setInitialPhoneNumber(_ phone: String)
+    func onChangedUserInput(value: String)
     func resetText()
 
     // default
@@ -77,6 +78,12 @@ extension AuthPhoneVerifyModel: AuthPhoneVerifyModelActionable {
     }
     func setInitialPhoneNumber(_ phone: String) {
         sentPhoneNumber = phone
+    }
+    func onChangedUserInput(value: String) {
+        if showErrorView != nil || showErrorAlert != nil {
+            showErrorView = nil
+            showErrorAlert = nil
+        }
     }
     
     // default

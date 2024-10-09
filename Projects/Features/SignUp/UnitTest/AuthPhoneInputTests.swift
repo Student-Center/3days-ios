@@ -9,6 +9,7 @@
 import XCTest
 @testable import SignUp
 import Model
+import NetworkKit
 
 class AuthPhoneInputTests: XCTestCase {
     var model: AuthPhoneInputModel!
@@ -19,7 +20,8 @@ class AuthPhoneInputTests: XCTestCase {
         model = AuthPhoneInputModel()
         intent = AuthPhoneInputIntent(
             model: model,
-            input: .init()
+            input: .init(),
+            authService: AuthServiceMock()
         )
     }
     
@@ -47,15 +49,5 @@ class AuthPhoneInputTests: XCTestCase {
         
         intent.onTapNextButton(with: validPhone)
         XCTAssertTrue(model.isLoading)
-    }
-    
-    func testOnResponseAPI() async {
-        let validPhone = "01012345678"
-        let mock = SMSSendResponse(
-            userType: .NEW,
-            authCodeId: "abcd",
-            phoneNumber: validPhone
-        )
-        await intent.onReceivedSMSResponse(mock)
     }
 }

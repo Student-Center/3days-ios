@@ -59,10 +59,17 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
     }
     
     func onChangeVerifyCode(code: String) {
+        model?.onChangedUserInput(value: code)
         if code.count == 6 {
+            model?.setLoading(status: true)
             Task {
-                model?.setLoading(status: true)
-                await requestVerification(code: code)
+                do {
+                    try await requestVerification(code: code)
+                    let nextPath = getNextPath(userType: input.smsResponse.userType)
+                    await pushNextView(to: nextPath)
+                } catch {
+                    processError(error: error)
+                }
             }
         }
     }
@@ -71,52 +78,54 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
         model?.setTextFieldFocus(value: state)
     }
     
-    func requestVerification(code: String) async {
-        do {
-            switch input.smsResponse.userType {
-            case .NEW:
-                let registerToken = try await authService.requestNewUserVerifyCode(
-                    .init(
-                        verificationId: input.smsResponse.authCodeId,
-                        verificationCode: code
-                    )
-                )
-                // New User - 회원가입 뷰로 이동
-                TokenManager.registerToken = registerToken
-                await processSignUp()
-                
-            case .EXISTING:
-                let response = try await authService.requestExistingUserVerifyCode(
-                    .init(
-                        verificationId: input.smsResponse.authCodeId,
-                        verificationCode: code
-                    )
-                )
-                // Existing User - 메인 뷰로 이동
-                TokenManager.accessToken = response.accessToken
-                TokenManager.refreshToken = response.refreshToken
-                await pushToHomeview()
-            }
-        } catch {
-            model?.setLoading(status: false)
-            model?.resetText()
-            model?.showErrorAlert(
-                error: .init(
-                    title: "에러 발생",
-                    message: error.localizedDescription
+    func requestVerification(code: String) async throws {
+        switch input.smsResponse.userType {
+        case .NEW:
+            let registerToken = try await authService.requestNewUserVerifyCode(
+                .init(
+                    verificationId: input.smsResponse.authCodeId,
+                    verificationCode: code
                 )
             )
+            // New User - 회원가입 뷰로 이동
+            TokenManager.registerToken = registerToken
+            
+        case .EXISTING:
+            let response = try await authService.requestExistingUserVerifyCode(
+                .init(
+                    verificationId: input.smsResponse.authCodeId,
+                    verificationCode: code
+                )
+            )
+            // Existing User - 메인 뷰로 이동
+            TokenManager.accessToken = response.accessToken
+            TokenManager.refreshToken = response.refreshToken
+        }
+    }
+    
+    func processError(error: Error) {
+        model?.setLoading(status: false)
+        model?.resetText()
+        model?.setTextFieldFocus(value: true)
+        model?.showErrorAlert(
+            error: .init(
+                title: "에러 발생",
+                message: error.localizedDescription
+            )
+        )
+    }
+    
+    /// user type 에 따라 다음으로 이동할 뷰를 리턴합니다.
+    func getNextPath(userType: UserType) -> PathType {
+        switch userType {
+        case .NEW: return .signUp(.authAgreement)
+        case .EXISTING: return .main
         }
     }
     
     @MainActor
-    func processSignUp() {
-        AppCoordinator.shared.push(.signUp(.authAgreement))
-    }
-    
-    @MainActor
-    func pushToHomeview() {
-        AppCoordinator.shared.push(.main)
+    func pushNextView(to targetPath: PathType) {
+        AppCoordinator.shared.push(targetPath)
     }
     
     func task() async {}

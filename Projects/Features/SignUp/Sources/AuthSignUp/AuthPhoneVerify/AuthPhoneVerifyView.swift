@@ -56,7 +56,7 @@ public struct AuthPhoneVerifyView: View {
                     
                 },
                 label: {
-                    Text("010-1234-1234로 코드 재전송")
+                    Text("\(state.sentPhoneNumber) 로 코드 재전송")
                         .typography(.regular_14)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
