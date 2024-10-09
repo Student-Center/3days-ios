@@ -74,6 +74,21 @@ public struct AuthPhoneVerifyView: View {
             )
             .tint(DesignCore.Colors.grey300)
             
+            // only dev 인증 건너뛰기
+            #if STAGING || DEBUG
+            HStack {
+                Spacer()
+                Button("개발자 권력으로 건너뛰기") {
+                    // pushNextView 열어주지 않고 dev에서만 캐스팅하여 사용
+                    if let intent = intent as? AuthPhoneVerifyIntent {
+                        let targetPath = intent.getNextPath(userType: .NEW)
+                        intent.pushNextView(to: targetPath)
+                    }
+                }
+                Spacer()
+            }
+            #endif
+            
             Spacer()
         }
         .onChange(of: state.verifyCode) {
