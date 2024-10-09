@@ -22,7 +22,7 @@ public struct AuthPhoneInputView: View {
         let model = AuthPhoneInputModel()
         let intent = AuthPhoneInputIntent(
             model: model,
-            externalData: .init(input: "temp")
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as AuthPhoneInputIntent.Intentable,
@@ -53,7 +53,7 @@ public struct AuthPhoneInputView: View {
                 title: "다음",
                 isActive: state.isPhoneValidated
             ) {
-                intent.onTapNextButton()
+                intent.onTapNextButton(with: state.phoneInputText)
             }
         }
         .task {
@@ -65,7 +65,9 @@ public struct AuthPhoneInputView: View {
         .ignoresSafeArea(.all)
         .padding(.top, 14)
         .textureBackground()
-        .setNavigationWithPop()
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
+        }
         .setLoading(state.isLoading)
     }
 }

@@ -20,7 +20,7 @@ actor LoggingMiddleware {
     private let logger: Logger
     package let bodyLoggingPolicy: BodyLoggingPolicy
 
-    package init(logger: Logger = defaultLogger, bodyLoggingConfiguration: BodyLoggingPolicy = .never) {
+    package init(logger: Logger = defaultLogger, bodyLoggingConfiguration: BodyLoggingPolicy = .upTo(maxBytes: 2048)) {
         self.logger = logger
         self.bodyLoggingPolicy = bodyLoggingConfiguration
     }

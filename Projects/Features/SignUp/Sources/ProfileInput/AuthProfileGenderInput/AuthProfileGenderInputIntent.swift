@@ -13,14 +13,14 @@ import CoreKit
 //MARK: - Intent
 class AuthProfileGenderInputIntent {
     private weak var model: AuthProfileGenderInputModelActionable?
-    private let externalData: DataModel
+    private let input: DataModel
 
     // MARK: Life cycle
     init(
         model: AuthProfileGenderInputModelActionable,
-        externalData: DataModel
+        input: DataModel
     ) {
-        self.externalData = externalData
+        self.input = input
         self.model = model
     }
 }

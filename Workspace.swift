@@ -43,18 +43,9 @@ let workspace = Workspace(
             name: "three-days-UnitTest",
             testAction: .targets(
                 [
-                    .testableTarget(
-                        target: .project(
-                            path: "./\(ProjectPath.core.rawValue)",
-                            target: TargetName.coreKit.unitTestName
-                        )
-                    ),
-                    .testableTarget(
-                        target: .project(
-                            path: "./\(ProjectPath.designSystem.rawValue)",
-                            target: TargetName.designCore.unitTestName
-                        )
-                    )
+                    .target(.coreKit),
+                    .target(.designCore),
+                    .target(.signUp)
                 ]
             )
         ),

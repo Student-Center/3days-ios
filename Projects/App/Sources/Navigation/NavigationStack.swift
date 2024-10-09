@@ -23,8 +23,8 @@ extension PathType {
             switch subView {
             case .authPhoneInput:
                 AuthPhoneInputView()
-            case .authPhoneVerify:
-                AuthPhoneVerifyView()
+            case .authPhoneVerify(let smsResponse):
+                AuthPhoneVerifyView(smsResponse)
             case .authAgreement:
                 AuthAgreementView()
                 

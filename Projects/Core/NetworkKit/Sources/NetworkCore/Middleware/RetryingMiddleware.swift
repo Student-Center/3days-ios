@@ -129,7 +129,7 @@ extension RetryingMiddleware: ClientMiddleware {
 
                 // 토큰 갱신 시도
                 do {
-                    let tokenResponse = try await AuthEndpoint.refreshAccessToken()
+                    let tokenResponse = try await AuthService.shared.refreshAccessToken()
                     guard let accesstoken = tokenResponse.accessToken,
                           let refreshToken = tokenResponse.refreshToken else {
                         throw AuthEndpointError.tokenResponseNotValid

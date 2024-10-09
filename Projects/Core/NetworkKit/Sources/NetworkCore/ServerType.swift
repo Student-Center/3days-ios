@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreKit
 
 public enum ServerType: String {
     case dev // db 개발, api 개발
@@ -15,9 +16,9 @@ public enum ServerType: String {
     var baseURL: String {
         switch self {
         case .dev:
-            return "https://randomuser.me/"
+            return Secret.devBaseUrl
         case .prod:
-            return "prodURL"
+            return Secret.prodBaseUrl
         }
     }
     

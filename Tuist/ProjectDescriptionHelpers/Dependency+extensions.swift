@@ -8,7 +8,6 @@
 import ProjectDescription
 
 public enum ExternalDependency: String {
-    case alamofire = "Alamofire"
     case nuke = "Nuke"
     case openapiGenerated = "OpenapiGenerated"
     
@@ -16,10 +15,3 @@ public enum ExternalDependency: String {
         return self.rawValue
     }
 }
-
-/*
- 고민중.
- case composableArchitecture = "ComposableArchitecture"
- case tcaCoordinators = "TCACoordinators"
- case kakaoSDK = "KakaoSDK"
- */

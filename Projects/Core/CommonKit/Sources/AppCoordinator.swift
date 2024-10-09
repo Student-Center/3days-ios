@@ -19,10 +19,11 @@ public final class AppCoordinator: ObservableObject {
     //MARK: - Methods
     @MainActor
     public func changeRootView(_ path: PathType) {
-        push(path)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { // 애니메이션 시간에 맞춰 조정
-            self.navigationStack.removeSubrange(0 ..< self.navigationStack.count - 1)
-        }
+        navigationStack = [path]
+//        push(path)
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+//            self.navigationStack.removeSubrange(0 ..< self.navigationStack.count - 1)
+//        }
     }
     
     @MainActor

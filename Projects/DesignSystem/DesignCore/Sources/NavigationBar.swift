@@ -44,4 +44,13 @@ public extension View {
             )
         )
     }
+    
+    func setPopNavigation(handler: @escaping () -> Void) -> some View {
+        return modifier(
+            NavigationBarViewModifier(
+                showLeftBackButton: true,
+                handler: handler
+            )
+        )
+    }
 }

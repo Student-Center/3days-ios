@@ -16,7 +16,7 @@ public struct ___FILEBASENAMEASIDENTIFIER___: View {
         let model = ___VARIABLE_productName___Model()
         let intent = ___VARIABLE_productName___Intent(
             model: model,
-            externalData: .init()
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as ___VARIABLE_productName___Intent.Intentable,
@@ -38,7 +38,9 @@ public struct ___FILEBASENAMEASIDENTIFIER___: View {
         }
         .ignoresSafeArea(.all)
         .textureBackground()
-        .setNavigationWithPop()
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
+        }
         .setLoading(state.isLoading)
     }
 }

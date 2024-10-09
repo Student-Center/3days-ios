@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthPhoneVerifyView: View {
     
@@ -19,11 +20,11 @@ public struct AuthPhoneVerifyView: View {
     private var intent: AuthPhoneVerifyIntent.Intentable { container.intent }
     private var state: AuthPhoneVerifyModel.Stateful { container.model }
     
-    public init() {
+    public init(_ smsResponse: SMSSendResponse) {
         let model = AuthPhoneVerifyModel()
         let intent = AuthPhoneVerifyIntent(
             model: model,
-            externalData: .init()
+            input: .init(smsResponse: smsResponse)
         )
         let container = MVIContainer(
             intent: intent as AuthPhoneVerifyIntent.Intentable,
@@ -55,7 +56,7 @@ public struct AuthPhoneVerifyView: View {
                     
                 },
                 label: {
-                    Text("010-1234-1234로 코드 재전송")
+                    Text("\(state.sentPhoneNumber) 로 코드 재전송")
                         .typography(.regular_14)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -87,13 +88,21 @@ public struct AuthPhoneVerifyView: View {
         .padding(.horizontal, 26)
         .padding(.top, 14)
         .textureBackground()
-        .setNavigationWithPop()
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
+        }
         .setLoading(state.isLoading)
     }
 }
 
 #Preview {
     NavigationView {
-        AuthPhoneVerifyView()
+        AuthPhoneVerifyView(
+            .init(
+                userType: .NEW,
+                authCodeId: "",
+                phoneNumber: ""
+            )
+        )
     }
 }

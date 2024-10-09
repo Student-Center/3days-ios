@@ -22,7 +22,6 @@ let project: Project = .make(
             target: .networkKit,
             dependencies: [
                 .target(name: .commonKit),
-                .external(.alamofire),
                 .external(.openapiGenerated)
             ]
         ),

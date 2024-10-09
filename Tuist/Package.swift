@@ -24,10 +24,6 @@ let package = Package(
     dependencies: [
         .package(path: "../OpenApiGenerator"),
         .package(
-            url: "https://github.com/Alamofire/Alamofire",
-            exact: "5.9.1"
-        ),
-        .package(
             url: "https://github.com/kean/Nuke.git",
             exact: "12.8.0"
         ),

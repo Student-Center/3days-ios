@@ -22,7 +22,7 @@ public struct AuthProfileGenderInputView: View {
         let model = AuthProfileGenderInputModel()
         let intent = AuthProfileGenderInputIntent(
             model: model,
-            externalData: .init()
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as AuthProfileGenderInputIntent.Intentable,
@@ -81,7 +81,9 @@ public struct AuthProfileGenderInputView: View {
         }
         .padding(.top, 10)
         .textureBackground()
-        .setNavigationWithPop()
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
+        }
         .setLoading(state.isLoading)
     }
 }

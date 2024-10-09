@@ -13,52 +13,72 @@ import struct Foundation.Date
 public protocol APIProtocol: Sendable {
     /// SMS 인증 요청
     ///
-    /// - 회원 가입 또는 로그인 토큰 발급을 위한 SMS 인증을 요청합니다.
+    /// 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
     ///
-    ///
-    /// - Remark: HTTP `POST /users/verifications`.
-    /// - Remark: Generated from `#/paths//users/verifications/post(requestVerification)`.
+    /// - Remark: HTTP `POST /auth/codes`.
+    /// - Remark: Generated from `#/paths//auth/codes/post(requestVerification)`.
     func requestVerification(_ input: Operations.requestVerification.Input) async throws -> Operations.requestVerification.Output
-    /// SMS 인증 코드 확인
+    /// SMS 인증 코드 확인 (기존 유저)
     ///
-    /// - SMS 인증 요청 시 발급된 verificationId와 함께 인증 코드를 입력하여 인증을 완료합니다.
-    /// - 새 사용자의 경우 회원 가입을 위한 registerToken을 발급합니다.
-    /// - 기존 사용자의 경우 로그인을 위한 accessToken과 refreshToken을 발급합니다.
+    /// 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
     ///
+    /// - Remark: HTTP `POST /auth/codes/{authCodeId}/existingUser`.
+    /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/existingUser/post(existingUserVerifyCode)`.
+    func existingUserVerifyCode(_ input: Operations.existingUserVerifyCode.Input) async throws -> Operations.existingUserVerifyCode.Output
+    /// SMS 인증 코드 확인 (신규 유저)
     ///
-    /// - Remark: HTTP `PUT /users/verifications/{verificationId}`.
-    /// - Remark: Generated from `#/paths//users/verifications/{verificationId}/put(verifyCode)`.
-    func verifyCode(_ input: Operations.verifyCode.Input) async throws -> Operations.verifyCode.Output
+    /// 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
+    ///
+    /// - Remark: HTTP `POST /auth/codes/{authCodeId}/newUser`.
+    /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/newUser/post(newUserVerifyCode)`.
+    func newUserVerifyCode(_ input: Operations.newUserVerifyCode.Input) async throws -> Operations.newUserVerifyCode.Output
     /// 회원 가입
     ///
-    /// - SMS 인증 시 발급된 registerToken을 이용하여 회원 가입을 완료합니다.
-    /// - 회원 가입 완료 시 accessToken과 refreshToken을 발급합니다.
-    ///
+    /// SMS 인증 후 발급된 registerToken으로 회원 가입을 완료합니다.
     ///
     /// - Remark: HTTP `POST /users`.
     /// - Remark: Generated from `#/paths//users/post(registerUser)`.
     func registerUser(_ input: Operations.registerUser.Input) async throws -> Operations.registerUser.Output
     /// 액세스 토큰 갱신
     ///
-    /// - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+    /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
     ///
-    ///
-    /// - Remark: HTTP `POST /users/token/refresh`.
-    /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)`.
+    /// - Remark: HTTP `POST /auth/token/refresh`.
+    /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)`.
     func refreshToken(_ input: Operations.refreshToken.Input) async throws -> Operations.refreshToken.Output
+    /// 지역 검색
+    ///
+    /// 지역 정보를 검색합니다.
+    ///
+    /// - Remark: HTTP `GET /locations`.
+    /// - Remark: Generated from `#/paths//locations/get(searchLocations)`.
+    func searchLocations(_ input: Operations.searchLocations.Input) async throws -> Operations.searchLocations.Output
+    /// 직장명 검색
+    ///
+    /// 직장을 검색합니다.
+    ///
+    /// - Remark: HTTP `GET /companies`.
+    /// - Remark: Generated from `#/paths//companies/get(searchCompanies)`.
+    func searchCompanies(_ input: Operations.searchCompanies.Input) async throws -> Operations.searchCompanies.Output
+    /// 직장 상세 정보 조회
+    ///
+    /// 직장 식별자에 해당하는 직장 상세 정보를 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /companies/{companyId}`.
+    /// - Remark: Generated from `#/paths//companies/{companyId}/get(getCompanyDetails)`.
+    func getCompanyDetails(_ input: Operations.getCompanyDetails.Input) async throws -> Operations.getCompanyDetails.Output
 }
 
 /// Convenience overloads for operation inputs.
 extension APIProtocol {
     /// SMS 인증 요청
     ///
-    /// - 회원 가입 또는 로그인 토큰 발급을 위한 SMS 인증을 요청합니다.
+    /// 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
     ///
-    ///
-    /// - Remark: HTTP `POST /users/verifications`.
-    /// - Remark: Generated from `#/paths//users/verifications/post(requestVerification)`.
+    /// - Remark: HTTP `POST /auth/codes`.
+    /// - Remark: Generated from `#/paths//auth/codes/post(requestVerification)`.
     public func requestVerification(
-        headers: Operations.requestVerification.Input.Headers = .init(),
+        headers: Operations.requestVerification.Input.Headers,
         body: Operations.requestVerification.Input.Body
     ) async throws -> Operations.requestVerification.Output {
         try await requestVerification(Operations.requestVerification.Input(
@@ -66,21 +86,35 @@ extension APIProtocol {
             body: body
         ))
     }
-    /// SMS 인증 코드 확인
+    /// SMS 인증 코드 확인 (기존 유저)
     ///
-    /// - SMS 인증 요청 시 발급된 verificationId와 함께 인증 코드를 입력하여 인증을 완료합니다.
-    /// - 새 사용자의 경우 회원 가입을 위한 registerToken을 발급합니다.
-    /// - 기존 사용자의 경우 로그인을 위한 accessToken과 refreshToken을 발급합니다.
+    /// 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
     ///
+    /// - Remark: HTTP `POST /auth/codes/{authCodeId}/existingUser`.
+    /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/existingUser/post(existingUserVerifyCode)`.
+    public func existingUserVerifyCode(
+        path: Operations.existingUserVerifyCode.Input.Path,
+        headers: Operations.existingUserVerifyCode.Input.Headers = .init(),
+        body: Operations.existingUserVerifyCode.Input.Body
+    ) async throws -> Operations.existingUserVerifyCode.Output {
+        try await existingUserVerifyCode(Operations.existingUserVerifyCode.Input(
+            path: path,
+            headers: headers,
+            body: body
+        ))
+    }
+    /// SMS 인증 코드 확인 (신규 유저)
     ///
-    /// - Remark: HTTP `PUT /users/verifications/{verificationId}`.
-    /// - Remark: Generated from `#/paths//users/verifications/{verificationId}/put(verifyCode)`.
-    public func verifyCode(
-        path: Operations.verifyCode.Input.Path,
-        headers: Operations.verifyCode.Input.Headers = .init(),
-        body: Operations.verifyCode.Input.Body
-    ) async throws -> Operations.verifyCode.Output {
-        try await verifyCode(Operations.verifyCode.Input(
+    /// 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
+    ///
+    /// - Remark: HTTP `POST /auth/codes/{authCodeId}/newUser`.
+    /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/newUser/post(newUserVerifyCode)`.
+    public func newUserVerifyCode(
+        path: Operations.newUserVerifyCode.Input.Path,
+        headers: Operations.newUserVerifyCode.Input.Headers = .init(),
+        body: Operations.newUserVerifyCode.Input.Body
+    ) async throws -> Operations.newUserVerifyCode.Output {
+        try await newUserVerifyCode(Operations.newUserVerifyCode.Input(
             path: path,
             headers: headers,
             body: body
@@ -88,14 +122,12 @@ extension APIProtocol {
     }
     /// 회원 가입
     ///
-    /// - SMS 인증 시 발급된 registerToken을 이용하여 회원 가입을 완료합니다.
-    /// - 회원 가입 완료 시 accessToken과 refreshToken을 발급합니다.
-    ///
+    /// SMS 인증 후 발급된 registerToken으로 회원 가입을 완료합니다.
     ///
     /// - Remark: HTTP `POST /users`.
     /// - Remark: Generated from `#/paths//users/post(registerUser)`.
     public func registerUser(
-        headers: Operations.registerUser.Input.Headers = .init(),
+        headers: Operations.registerUser.Input.Headers,
         body: Operations.registerUser.Input.Body
     ) async throws -> Operations.registerUser.Output {
         try await registerUser(Operations.registerUser.Input(
@@ -105,11 +137,10 @@ extension APIProtocol {
     }
     /// 액세스 토큰 갱신
     ///
-    /// - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+    /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
     ///
-    ///
-    /// - Remark: HTTP `POST /users/token/refresh`.
-    /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)`.
+    /// - Remark: HTTP `POST /auth/token/refresh`.
+    /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)`.
     public func refreshToken(
         headers: Operations.refreshToken.Input.Headers = .init(),
         body: Operations.refreshToken.Input.Body
@@ -117,6 +148,51 @@ extension APIProtocol {
         try await refreshToken(Operations.refreshToken.Input(
             headers: headers,
             body: body
+        ))
+    }
+    /// 지역 검색
+    ///
+    /// 지역 정보를 검색합니다.
+    ///
+    /// - Remark: HTTP `GET /locations`.
+    /// - Remark: Generated from `#/paths//locations/get(searchLocations)`.
+    public func searchLocations(
+        query: Operations.searchLocations.Input.Query,
+        headers: Operations.searchLocations.Input.Headers = .init()
+    ) async throws -> Operations.searchLocations.Output {
+        try await searchLocations(Operations.searchLocations.Input(
+            query: query,
+            headers: headers
+        ))
+    }
+    /// 직장명 검색
+    ///
+    /// 직장을 검색합니다.
+    ///
+    /// - Remark: HTTP `GET /companies`.
+    /// - Remark: Generated from `#/paths//companies/get(searchCompanies)`.
+    public func searchCompanies(
+        query: Operations.searchCompanies.Input.Query,
+        headers: Operations.searchCompanies.Input.Headers = .init()
+    ) async throws -> Operations.searchCompanies.Output {
+        try await searchCompanies(Operations.searchCompanies.Input(
+            query: query,
+            headers: headers
+        ))
+    }
+    /// 직장 상세 정보 조회
+    ///
+    /// 직장 식별자에 해당하는 직장 상세 정보를 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /companies/{companyId}`.
+    /// - Remark: Generated from `#/paths//companies/{companyId}/get(getCompanyDetails)`.
+    public func getCompanyDetails(
+        path: Operations.getCompanyDetails.Input.Path,
+        headers: Operations.getCompanyDetails.Input.Headers = .init()
+    ) async throws -> Operations.getCompanyDetails.Output {
+        try await getCompanyDetails(Operations.getCompanyDetails.Input(
+            path: path,
+            headers: headers
         ))
     }
 }
@@ -128,35 +204,228 @@ public enum Servers {}
 public enum Components {
     /// Types generated from the `#/components/schemas` section of the OpenAPI document.
     public enum Schemas {
+        /// - Remark: Generated from `#/components/schemas/ErrorResponse`.
+        public struct ErrorResponse: Codable, Hashable, Sendable {
+            /// 에러 발생 시각 (ISO 8601)
+            ///
+            /// - Remark: Generated from `#/components/schemas/ErrorResponse/time`.
+            public var time: Foundation.Date
+            /// 에러 유형
+            ///
+            /// - Remark: Generated from `#/components/schemas/ErrorResponse/type`.
+            public var _type: Swift.String
+            /// 에러 코드
+            ///
+            /// - Remark: Generated from `#/components/schemas/ErrorResponse/code`.
+            public var code: Swift.String
+            /// 상세 에러 메시지
+            ///
+            /// - Remark: Generated from `#/components/schemas/ErrorResponse/message`.
+            public var message: Swift.String?
+            /// Creates a new `ErrorResponse`.
+            ///
+            /// - Parameters:
+            ///   - time: 에러 발생 시각 (ISO 8601)
+            ///   - _type: 에러 유형
+            ///   - code: 에러 코드
+            ///   - message: 상세 에러 메시지
+            public init(
+                time: Foundation.Date,
+                _type: Swift.String,
+                code: Swift.String,
+                message: Swift.String? = nil
+            ) {
+                self.time = time
+                self._type = _type
+                self.code = code
+                self.message = message
+            }
+            public enum CodingKeys: String, CodingKey {
+                case time
+                case _type = "type"
+                case code
+                case message
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/SendAuthCodeRequest`.
+        public struct SendAuthCodeRequest: Codable, Hashable, Sendable {
+            /// 사용자의 전화번호 (한국 휴대폰 번호 형식)
+            ///
+            /// - Remark: Generated from `#/components/schemas/SendAuthCodeRequest/phoneNumber`.
+            public var phoneNumber: Swift.String
+            /// Creates a new `SendAuthCodeRequest`.
+            ///
+            /// - Parameters:
+            ///   - phoneNumber: 사용자의 전화번호 (한국 휴대폰 번호 형식)
+            public init(phoneNumber: Swift.String) {
+                self.phoneNumber = phoneNumber
+            }
+            public enum CodingKeys: String, CodingKey {
+                case phoneNumber
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/SendAuthCodeResponse`.
+        public struct SendAuthCodeResponse: Codable, Hashable, Sendable {
+            /// 인증 요청에 대한 고유 식별자 (UUID 형식)
+            ///
+            /// - Remark: Generated from `#/components/schemas/SendAuthCodeResponse/authCodeId`.
+            public var authCodeId: Swift.String
+            /// 사용자 상태 (신규 사용자 또는 기존 사용자)
+            ///
+            /// - Remark: Generated from `#/components/schemas/SendAuthCodeResponse/userStatus`.
+            @frozen public enum userStatusPayload: String, Codable, Hashable, Sendable {
+                case NEW = "NEW"
+                case EXISTING = "EXISTING"
+            }
+            /// 사용자 상태 (신규 사용자 또는 기존 사용자)
+            ///
+            /// - Remark: Generated from `#/components/schemas/SendAuthCodeResponse/userStatus`.
+            public var userStatus: Components.Schemas.SendAuthCodeResponse.userStatusPayload?
+            /// Creates a new `SendAuthCodeResponse`.
+            ///
+            /// - Parameters:
+            ///   - authCodeId: 인증 요청에 대한 고유 식별자 (UUID 형식)
+            ///   - userStatus: 사용자 상태 (신규 사용자 또는 기존 사용자)
+            public init(
+                authCodeId: Swift.String,
+                userStatus: Components.Schemas.SendAuthCodeResponse.userStatusPayload? = nil
+            ) {
+                self.authCodeId = authCodeId
+                self.userStatus = userStatus
+            }
+            public enum CodingKeys: String, CodingKey {
+                case authCodeId
+                case userStatus
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/VerifyCodeRequest`.
+        public struct VerifyCodeRequest: Codable, Hashable, Sendable {
+            /// 사용자가 입력한 SMS 인증 코드 (6자리 숫자)
+            ///
+            /// - Remark: Generated from `#/components/schemas/VerifyCodeRequest/verificationCode`.
+            public var verificationCode: Swift.String
+            /// Creates a new `VerifyCodeRequest`.
+            ///
+            /// - Parameters:
+            ///   - verificationCode: 사용자가 입력한 SMS 인증 코드 (6자리 숫자)
+            public init(verificationCode: Swift.String) {
+                self.verificationCode = verificationCode
+            }
+            public enum CodingKeys: String, CodingKey {
+                case verificationCode
+            }
+        }
+        /// 기존 사용자 인증 응답
+        ///
+        /// - Remark: Generated from `#/components/schemas/ExistingUserVerifyCodeResponse`.
+        public struct ExistingUserVerifyCodeResponse: Codable, Hashable, Sendable {
+            /// 액세스 토큰
+            ///
+            /// - Remark: Generated from `#/components/schemas/ExistingUserVerifyCodeResponse/accessToken`.
+            public var accessToken: Swift.String
+            /// 리프레시 토큰
+            ///
+            /// - Remark: Generated from `#/components/schemas/ExistingUserVerifyCodeResponse/refreshToken`.
+            public var refreshToken: Swift.String
+            /// 액세스 토큰의 유효 기간 (초 단위)
+            ///
+            /// - Remark: Generated from `#/components/schemas/ExistingUserVerifyCodeResponse/accessTokenExpiresIn`.
+            public var accessTokenExpiresIn: Swift.Int?
+            /// 리프레시 토큰의 유효 기간 (초 단위)
+            ///
+            /// - Remark: Generated from `#/components/schemas/ExistingUserVerifyCodeResponse/refreshTokenExpiresIn`.
+            public var refreshTokenExpiresIn: Swift.Int?
+            /// Creates a new `ExistingUserVerifyCodeResponse`.
+            ///
+            /// - Parameters:
+            ///   - accessToken: 액세스 토큰
+            ///   - refreshToken: 리프레시 토큰
+            ///   - accessTokenExpiresIn: 액세스 토큰의 유효 기간 (초 단위)
+            ///   - refreshTokenExpiresIn: 리프레시 토큰의 유효 기간 (초 단위)
+            public init(
+                accessToken: Swift.String,
+                refreshToken: Swift.String,
+                accessTokenExpiresIn: Swift.Int? = nil,
+                refreshTokenExpiresIn: Swift.Int? = nil
+            ) {
+                self.accessToken = accessToken
+                self.refreshToken = refreshToken
+                self.accessTokenExpiresIn = accessTokenExpiresIn
+                self.refreshTokenExpiresIn = refreshTokenExpiresIn
+            }
+            public enum CodingKeys: String, CodingKey {
+                case accessToken
+                case refreshToken
+                case accessTokenExpiresIn
+                case refreshTokenExpiresIn
+            }
+        }
+        /// 새 사용자 인증 응답
+        ///
+        /// - Remark: Generated from `#/components/schemas/NewUserVerifyCodeResponse`.
+        public struct NewUserVerifyCodeResponse: Codable, Hashable, Sendable {
+            /// 회원 가입 토큰의 유효 기간 (초 단위)
+            ///
+            /// - Remark: Generated from `#/components/schemas/NewUserVerifyCodeResponse/expiresIn`.
+            public var expiresIn: Swift.Int?
+            /// 회원 가입을 위한 토큰
+            ///
+            /// - Remark: Generated from `#/components/schemas/NewUserVerifyCodeResponse/registerToken`.
+            public var registerToken: Swift.String
+            /// Creates a new `NewUserVerifyCodeResponse`.
+            ///
+            /// - Parameters:
+            ///   - expiresIn: 회원 가입 토큰의 유효 기간 (초 단위)
+            ///   - registerToken: 회원 가입을 위한 토큰
+            public init(
+                expiresIn: Swift.Int? = nil,
+                registerToken: Swift.String
+            ) {
+                self.expiresIn = expiresIn
+                self.registerToken = registerToken
+            }
+            public enum CodingKeys: String, CodingKey {
+                case expiresIn
+                case registerToken
+            }
+        }
         /// 회원 가입 시 필요한 사용자 정보
         ///
-        /// - Remark: Generated from `#/components/schemas/UserRegistration`.
-        public struct UserRegistration: Codable, Hashable, Sendable {
+        /// - Remark: Generated from `#/components/schemas/RegisterUserRequest`.
+        public struct RegisterUserRequest: Codable, Hashable, Sendable {
             /// 사용자 이름
             ///
-            /// - Remark: Generated from `#/components/schemas/UserRegistration/name`.
+            /// - Remark: Generated from `#/components/schemas/RegisterUserRequest/name`.
             public var name: Swift.String
-            /// - Remark: Generated from `#/components/schemas/UserRegistration/profile`.
+            /// 사용자 전화번호
+            ///
+            /// - Remark: Generated from `#/components/schemas/RegisterUserRequest/phoneNumber`.
+            public var phoneNumber: Swift.String
+            /// - Remark: Generated from `#/components/schemas/RegisterUserRequest/profile`.
             public var profile: Components.Schemas.UserProfile
-            /// - Remark: Generated from `#/components/schemas/UserRegistration/desiredPartner`.
+            /// - Remark: Generated from `#/components/schemas/RegisterUserRequest/desiredPartner`.
             public var desiredPartner: Components.Schemas.UserDesiredPartner
-            /// Creates a new `UserRegistration`.
+            /// Creates a new `RegisterUserRequest`.
             ///
             /// - Parameters:
             ///   - name: 사용자 이름
+            ///   - phoneNumber: 사용자 전화번호
             ///   - profile:
             ///   - desiredPartner:
             public init(
                 name: Swift.String,
+                phoneNumber: Swift.String,
                 profile: Components.Schemas.UserProfile,
                 desiredPartner: Components.Schemas.UserDesiredPartner
             ) {
                 self.name = name
+                self.phoneNumber = phoneNumber
                 self.profile = profile
                 self.desiredPartner = desiredPartner
             }
             public enum CodingKeys: String, CodingKey {
                 case name
+                case phoneNumber
                 case profile
                 case desiredPartner
             }
@@ -165,60 +434,49 @@ public enum Components {
         ///
         /// - Remark: Generated from `#/components/schemas/UserProfile`.
         public struct UserProfile: Codable, Hashable, Sendable {
-            /// 사용자의 성별
-            ///
             /// - Remark: Generated from `#/components/schemas/UserProfile/gender`.
-            @frozen public enum genderPayload: String, Codable, Hashable, Sendable {
-                case MALE = "MALE"
-                case FEMALE = "FEMALE"
-            }
-            /// 사용자의 성별
-            ///
-            /// - Remark: Generated from `#/components/schemas/UserProfile/gender`.
-            public var gender: Components.Schemas.UserProfile.genderPayload
+            public var gender: Components.Schemas.Gender
             /// 사용자의 출생년도
             ///
             /// - Remark: Generated from `#/components/schemas/UserProfile/birthYear`.
             public var birthYear: Swift.Int
-            /// 사용자의 회사명
+            /// 사용자의 회사 ID
             ///
-            /// - Remark: Generated from `#/components/schemas/UserProfile/company`.
-            public var company: Swift.String
-            /// 사용자의 직업
+            /// - Remark: Generated from `#/components/schemas/UserProfile/companyId`.
+            public var companyId: Swift.String
+            /// - Remark: Generated from `#/components/schemas/UserProfile/jobOccupation`.
+            public var jobOccupation: Components.Schemas.JobOccupation
+            /// 사용자의 활동 지역 목록 ID 리스트
             ///
-            /// - Remark: Generated from `#/components/schemas/UserProfile/job`.
-            public var job: Swift.String
-            /// 사용자의 활동 지역 목록
-            ///
-            /// - Remark: Generated from `#/components/schemas/UserProfile/locations`.
-            public var locations: [Swift.String]
+            /// - Remark: Generated from `#/components/schemas/UserProfile/locationIds`.
+            public var locationIds: [Swift.String]
             /// Creates a new `UserProfile`.
             ///
             /// - Parameters:
-            ///   - gender: 사용자의 성별
+            ///   - gender:
             ///   - birthYear: 사용자의 출생년도
-            ///   - company: 사용자의 회사명
-            ///   - job: 사용자의 직업
-            ///   - locations: 사용자의 활동 지역 목록
+            ///   - companyId: 사용자의 회사 ID
+            ///   - jobOccupation:
+            ///   - locationIds: 사용자의 활동 지역 목록 ID 리스트
             public init(
-                gender: Components.Schemas.UserProfile.genderPayload,
+                gender: Components.Schemas.Gender,
                 birthYear: Swift.Int,
-                company: Swift.String,
-                job: Swift.String,
-                locations: [Swift.String]
+                companyId: Swift.String,
+                jobOccupation: Components.Schemas.JobOccupation,
+                locationIds: [Swift.String]
             ) {
                 self.gender = gender
                 self.birthYear = birthYear
-                self.company = company
-                self.job = job
-                self.locations = locations
+                self.companyId = companyId
+                self.jobOccupation = jobOccupation
+                self.locationIds = locationIds
             }
             public enum CodingKeys: String, CodingKey {
                 case gender
                 case birthYear
-                case company
-                case job
-                case locations
+                case companyId
+                case jobOccupation
+                case locationIds
             }
         }
         /// 사용자가 원하는 파트너의 조건
@@ -226,168 +484,80 @@ public enum Components {
         /// - Remark: Generated from `#/components/schemas/UserDesiredPartner`.
         public struct UserDesiredPartner: Codable, Hashable, Sendable {
             /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/birthYearRange`.
-            public struct birthYearRangePayload: Codable, Hashable, Sendable {
-                /// 원하는 파트너의 최소 년생 (ex, 1990)
-                ///
-                /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/birthYearRange/start`.
-                public var start: Swift.Int?
-                /// 원하는 파트너의 최대 년생 (ex, 2000)
-                ///
-                /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/birthYearRange/end`.
-                public var end: Swift.Int?
-                /// Creates a new `birthYearRangePayload`.
-                ///
-                /// - Parameters:
-                ///   - start: 원하는 파트너의 최소 년생 (ex, 1990)
-                ///   - end: 원하는 파트너의 최대 년생 (ex, 2000)
-                public init(
-                    start: Swift.Int? = nil,
-                    end: Swift.Int? = nil
-                ) {
-                    self.start = start
-                    self.end = end
-                }
-                public enum CodingKeys: String, CodingKey {
-                    case start
-                    case end
-                }
-            }
-            /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/birthYearRange`.
-            public var birthYearRange: Components.Schemas.UserDesiredPartner.birthYearRangePayload?
-            /// 원하는 파트너의 직업
-            ///
-            /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/job`.
-            public var job: Swift.String
-            /// 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
-            ///
+            public var birthYearRange: Components.Schemas.BirthYearRange?
+            /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/jobOccupations`.
+            public var jobOccupations: Components.Schemas.JobOccupations
             /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/preferDistance`.
-            @frozen public enum preferDistancePayload: String, Codable, Hashable, Sendable {
-                case ONLY_MY_AREA = "ONLY_MY_AREA"
-                case INCLUDE_SURROUNDING_REGIONS = "INCLUDE_SURROUNDING_REGIONS"
-                case ANYWHERE = "ANYWHERE"
-            }
-            /// 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
-            ///
-            /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/preferDistance`.
-            public var preferDistance: Components.Schemas.UserDesiredPartner.preferDistancePayload
+            public var preferDistance: Components.Schemas.PreferDistance
             /// Creates a new `UserDesiredPartner`.
             ///
             /// - Parameters:
             ///   - birthYearRange:
-            ///   - job: 원하는 파트너의 직업
-            ///   - preferDistance: 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
+            ///   - jobOccupations:
+            ///   - preferDistance:
             public init(
-                birthYearRange: Components.Schemas.UserDesiredPartner.birthYearRangePayload? = nil,
-                job: Swift.String,
-                preferDistance: Components.Schemas.UserDesiredPartner.preferDistancePayload
+                birthYearRange: Components.Schemas.BirthYearRange? = nil,
+                jobOccupations: Components.Schemas.JobOccupations,
+                preferDistance: Components.Schemas.PreferDistance
             ) {
                 self.birthYearRange = birthYearRange
-                self.job = job
+                self.jobOccupations = jobOccupations
                 self.preferDistance = preferDistance
             }
             public enum CodingKeys: String, CodingKey {
                 case birthYearRange
-                case job
+                case jobOccupations
                 case preferDistance
             }
         }
-        /// 사용자 정보
-        ///
-        /// - Remark: Generated from `#/components/schemas/User`.
-        public struct User: Codable, Hashable, Sendable {
-            /// 사용자 고유 식별자
+        /// - Remark: Generated from `#/components/schemas/BirthYearRange`.
+        public struct BirthYearRange: Codable, Hashable, Sendable {
+            /// 원하는 파트너의 최소 년생
             ///
-            /// - Remark: Generated from `#/components/schemas/User/id`.
-            public var id: Swift.String?
-            /// 사용자 이름
+            /// - Remark: Generated from `#/components/schemas/BirthYearRange/start`.
+            public var start: Swift.Int
+            /// 원하는 파트너의 최대 년생
             ///
-            /// - Remark: Generated from `#/components/schemas/User/name`.
-            public var name: Swift.String?
-            /// - Remark: Generated from `#/components/schemas/User/profile`.
-            public var profile: Components.Schemas.UserProfile?
-            /// - Remark: Generated from `#/components/schemas/User/desiredPartner`.
-            public var desiredPartner: Components.Schemas.UserDesiredPartner?
-            /// Creates a new `User`.
+            /// - Remark: Generated from `#/components/schemas/BirthYearRange/end`.
+            public var end: Swift.Int
+            /// Creates a new `BirthYearRange`.
             ///
             /// - Parameters:
-            ///   - id: 사용자 고유 식별자
-            ///   - name: 사용자 이름
-            ///   - profile:
-            ///   - desiredPartner:
+            ///   - start: 원하는 파트너의 최소 년생
+            ///   - end: 원하는 파트너의 최대 년생
             public init(
-                id: Swift.String? = nil,
-                name: Swift.String? = nil,
-                profile: Components.Schemas.UserProfile? = nil,
-                desiredPartner: Components.Schemas.UserDesiredPartner? = nil
+                start: Swift.Int,
+                end: Swift.Int
             ) {
-                self.id = id
-                self.name = name
-                self.profile = profile
-                self.desiredPartner = desiredPartner
+                self.start = start
+                self.end = end
             }
             public enum CodingKeys: String, CodingKey {
-                case id
-                case name
-                case profile
-                case desiredPartner
+                case start
+                case end
             }
         }
-        /// 새 사용자 인증 응답
-        ///
-        /// - Remark: Generated from `#/components/schemas/NewUserVerificationResponse`.
-        public struct NewUserVerificationResponse: Codable, Hashable, Sendable {
-            /// 회원 가입을 위한 토큰
+        /// - Remark: Generated from `#/components/schemas/RefreshTokenRequest`.
+        public struct RefreshTokenRequest: Codable, Hashable, Sendable {
+            /// 유효한 리프레시 토큰
             ///
-            /// - Remark: Generated from `#/components/schemas/NewUserVerificationResponse/registerToken`.
-            public var registerToken: Swift.String?
-            /// Creates a new `NewUserVerificationResponse`.
+            /// - Remark: Generated from `#/components/schemas/RefreshTokenRequest/refreshToken`.
+            public var refreshToken: Swift.String
+            /// Creates a new `RefreshTokenRequest`.
             ///
             /// - Parameters:
-            ///   - registerToken: 회원 가입을 위한 토큰
-            public init(registerToken: Swift.String? = nil) {
-                self.registerToken = registerToken
-            }
-            public enum CodingKeys: String, CodingKey {
-                case registerToken
-            }
-        }
-        /// 기존 사용자 인증 응답
-        ///
-        /// - Remark: Generated from `#/components/schemas/ExistingUserVerificationResponse`.
-        public struct ExistingUserVerificationResponse: Codable, Hashable, Sendable {
-            /// 액세스 토큰
-            ///
-            /// - Remark: Generated from `#/components/schemas/ExistingUserVerificationResponse/accessToken`.
-            public var accessToken: Swift.String?
-            /// 리프레시 토큰
-            ///
-            /// - Remark: Generated from `#/components/schemas/ExistingUserVerificationResponse/refreshToken`.
-            public var refreshToken: Swift.String?
-            /// 액세스 토큰의 유효 기간 (초 단위)
-            ///
-            /// - Remark: Generated from `#/components/schemas/ExistingUserVerificationResponse/expiresIn`.
-            public var expiresIn: Swift.Int?
-            /// Creates a new `ExistingUserVerificationResponse`.
-            ///
-            /// - Parameters:
-            ///   - accessToken: 액세스 토큰
-            ///   - refreshToken: 리프레시 토큰
-            ///   - expiresIn: 액세스 토큰의 유효 기간 (초 단위)
-            public init(
-                accessToken: Swift.String? = nil,
-                refreshToken: Swift.String? = nil,
-                expiresIn: Swift.Int? = nil
-            ) {
-                self.accessToken = accessToken
+            ///   - refreshToken: 유효한 리프레시 토큰
+            public init(refreshToken: Swift.String) {
                 self.refreshToken = refreshToken
-                self.expiresIn = expiresIn
             }
             public enum CodingKeys: String, CodingKey {
-                case accessToken
                 case refreshToken
-                case expiresIn
             }
         }
+        /// - Remark: Generated from `#/components/schemas/RegisterUserResponse`.
+        public typealias RegisterUserResponse = Components.Schemas.TokenResponse
+        /// - Remark: Generated from `#/components/schemas/RefreshTokenResponse`.
+        public typealias RefreshTokenResponse = Components.Schemas.TokenResponse
         /// 토큰 발급 응답
         ///
         /// - Remark: Generated from `#/components/schemas/TokenResponse`.
@@ -395,15 +565,15 @@ public enum Components {
             /// 액세스 토큰
             ///
             /// - Remark: Generated from `#/components/schemas/TokenResponse/accessToken`.
-            public var accessToken: Swift.String?
+            public var accessToken: Swift.String
             /// 리프레시 토큰
             ///
             /// - Remark: Generated from `#/components/schemas/TokenResponse/refreshToken`.
-            public var refreshToken: Swift.String?
+            public var refreshToken: Swift.String
             /// 액세스 토큰의 유효 기간 (초 단위)
             ///
             /// - Remark: Generated from `#/components/schemas/TokenResponse/expiresIn`.
-            public var expiresIn: Swift.Int?
+            public var expiresIn: Swift.Int
             /// Creates a new `TokenResponse`.
             ///
             /// - Parameters:
@@ -411,9 +581,9 @@ public enum Components {
             ///   - refreshToken: 리프레시 토큰
             ///   - expiresIn: 액세스 토큰의 유효 기간 (초 단위)
             public init(
-                accessToken: Swift.String? = nil,
-                refreshToken: Swift.String? = nil,
-                expiresIn: Swift.Int? = nil
+                accessToken: Swift.String,
+                refreshToken: Swift.String,
+                expiresIn: Swift.Int
             ) {
                 self.accessToken = accessToken
                 self.refreshToken = refreshToken
@@ -425,13 +595,381 @@ public enum Components {
                 case expiresIn
             }
         }
+        /// 위치 정보 리스트 응답
+        ///
+        /// - Remark: Generated from `#/components/schemas/SearchLocationsResponse`.
+        public struct SearchLocationsResponse: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/SearchLocationsResponse/locations`.
+            public var locations: [Components.Schemas.Location]
+            /// 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+            ///
+            /// - Remark: Generated from `#/components/schemas/SearchLocationsResponse/next`.
+            public var next: Swift.String?
+            /// Creates a new `SearchLocationsResponse`.
+            ///
+            /// - Parameters:
+            ///   - locations:
+            ///   - next: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+            public init(
+                locations: [Components.Schemas.Location],
+                next: Swift.String? = nil
+            ) {
+                self.locations = locations
+                self.next = next
+            }
+            public enum CodingKeys: String, CodingKey {
+                case locations
+                case next
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/Location`.
+        public struct Location: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/Location/id`.
+            public var id: Swift.String
+            /// - Remark: Generated from `#/components/schemas/Location/region`.
+            public var region: Swift.String
+            /// - Remark: Generated from `#/components/schemas/Location/subRegion`.
+            public var subRegion: Swift.String
+            /// Creates a new `Location`.
+            ///
+            /// - Parameters:
+            ///   - id:
+            ///   - region:
+            ///   - subRegion:
+            public init(
+                id: Swift.String,
+                region: Swift.String,
+                subRegion: Swift.String
+            ) {
+                self.id = id
+                self.region = region
+                self.subRegion = subRegion
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case region
+                case subRegion
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/SearchCompaniesResponse`.
+        public struct SearchCompaniesResponse: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/SearchCompaniesResponse/companies`.
+            public var companies: [Components.Schemas.Company]
+            /// 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+            ///
+            /// - Remark: Generated from `#/components/schemas/SearchCompaniesResponse/next`.
+            public var next: Swift.String?
+            /// Creates a new `SearchCompaniesResponse`.
+            ///
+            /// - Parameters:
+            ///   - companies:
+            ///   - next: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+            public init(
+                companies: [Components.Schemas.Company],
+                next: Swift.String? = nil
+            ) {
+                self.companies = companies
+                self.next = next
+            }
+            public enum CodingKeys: String, CodingKey {
+                case companies
+                case next
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/GetCompanyDetailsResponse`.
+        public struct GetCompanyDetailsResponse: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/GetCompanyDetailsResponse/company`.
+            public var company: Components.Schemas.Company
+            /// Creates a new `GetCompanyDetailsResponse`.
+            ///
+            /// - Parameters:
+            ///   - company:
+            public init(company: Components.Schemas.Company) {
+                self.company = company
+            }
+            public enum CodingKeys: String, CodingKey {
+                case company
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/Company`.
+        public struct Company: Codable, Hashable, Sendable {
+            /// 회사 식별자
+            ///
+            /// - Remark: Generated from `#/components/schemas/Company/id`.
+            public var id: Swift.String
+            /// 회사명
+            ///
+            /// - Remark: Generated from `#/components/schemas/Company/name`.
+            public var name: Swift.String
+            /// Creates a new `Company`.
+            ///
+            /// - Parameters:
+            ///   - id: 회사 식별자
+            ///   - name: 회사명
+            public init(
+                id: Swift.String,
+                name: Swift.String
+            ) {
+                self.id = id
+                self.name = name
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case name
+            }
+        }
+        /// 사용자의 운영 체제 유형
+        ///
+        /// - Remark: Generated from `#/components/schemas/OSType`.
+        @frozen public enum OSType: String, Codable, Hashable, Sendable {
+            case IOS = "IOS"
+            case AOS = "AOS"
+        }
+        /// 사용자의 성별
+        ///
+        /// - Remark: Generated from `#/components/schemas/Gender`.
+        @frozen public enum Gender: String, Codable, Hashable, Sendable {
+            case MALE = "MALE"
+            case FEMALE = "FEMALE"
+        }
+        /// 직업군 분류
+        ///
+        /// - Remark: Generated from `#/components/schemas/JobOccupation`.
+        @frozen public enum JobOccupation: String, Codable, Hashable, Sendable {
+            case BUSINESS_ADMIN = "BUSINESS_ADMIN"
+            case SALES_MARKETING = "SALES_MARKETING"
+            case RESEARCH_DEVELOPMENT = "RESEARCH_DEVELOPMENT"
+            case IT_INFORMATION = "IT_INFORMATION"
+            case FINANCE_ACCOUNTING = "FINANCE_ACCOUNTING"
+            case MANUFACTURING_PRODUCTION = "MANUFACTURING_PRODUCTION"
+            case EDUCATION_ACADEMIA = "EDUCATION_ACADEMIA"
+            case LAW_ADMINISTRATION = "LAW_ADMINISTRATION"
+            case MILITARY_SECURITY = "MILITARY_SECURITY"
+            case HEALTHCARE_MEDICAL = "HEALTHCARE_MEDICAL"
+            case MEDIA_ENTERTAINMENT = "MEDIA_ENTERTAINMENT"
+            case ARTS_DESIGN = "ARTS_DESIGN"
+            case SPORTS = "SPORTS"
+            case CONSTRUCTION_ENGINEERING = "CONSTRUCTION_ENGINEERING"
+            case TRANSPORTATION_LOGISTICS = "TRANSPORTATION_LOGISTICS"
+            case AGRICULTURE_FARMING = "AGRICULTURE_FARMING"
+            case SERVICE_INDUSTRY = "SERVICE_INDUSTRY"
+            case OTHER = "OTHER"
+        }
+        /// - Remark: Generated from `#/components/schemas/JobOccupations`.
+        public typealias JobOccupations = [Components.Schemas.JobOccupation]
+        /// 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
+        ///
+        /// - Remark: Generated from `#/components/schemas/PreferDistance`.
+        @frozen public enum PreferDistance: String, Codable, Hashable, Sendable {
+            case ONLY_MY_AREA = "ONLY_MY_AREA"
+            case INCLUDE_SURROUNDING_REGIONS = "INCLUDE_SURROUNDING_REGIONS"
+            case ANYWHERE = "ANYWHERE"
+        }
     }
     /// Types generated from the `#/components/parameters` section of the OpenAPI document.
-    public enum Parameters {}
+    public enum Parameters {
+        /// 사용자의 OS 유형 (IOS 또는 AOS)
+        ///
+        /// - Remark: Generated from `#/components/parameters/OSTypeHeader`.
+        public typealias OSTypeHeader = Components.Schemas.OSType
+        /// 번호 인증 후 발급받은 회원가입용 토큰
+        ///
+        /// - Remark: Generated from `#/components/parameters/RegisterTokenHeader`.
+        public typealias RegisterTokenHeader = Swift.String
+        /// 인증 요청 시 발급된 고유 식별자 (UUID 형식)
+        ///
+        /// - Remark: Generated from `#/components/parameters/AuthCodeIdPath`.
+        public typealias AuthCodeIdPath = Swift.String
+        /// 검색할 이름
+        ///
+        /// - Remark: Generated from `#/components/parameters/NameQuery`.
+        public typealias NameQuery = Swift.String
+        /// 페이지네이션을 위한 다음 검색 시작 ID
+        ///
+        /// - Remark: Generated from `#/components/parameters/NextQuery`.
+        public typealias NextQuery = Swift.String
+        /// 반환할 최대 결과 수
+        ///
+        /// - Remark: Generated from `#/components/parameters/LimitQuery`.
+        public typealias LimitQuery = Swift.Int
+        /// 조회할 회사의 고유 식별자
+        ///
+        /// - Remark: Generated from `#/components/parameters/CompanyIdPath`.
+        public typealias CompanyIdPath = Swift.String
+    }
     /// Types generated from the `#/components/requestBodies` section of the OpenAPI document.
     public enum RequestBodies {}
     /// Types generated from the `#/components/responses` section of the OpenAPI document.
-    public enum Responses {}
+    public enum Responses {
+        public struct BadRequest: Sendable, Hashable {
+            /// - Remark: Generated from `#/components/responses/BadRequest/content`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/components/responses/BadRequest/content/application\/json`.
+                case json(Components.Schemas.ErrorResponse)
+                /// The associated value of the enum case if `self` is `.json`.
+                ///
+                /// - Throws: An error if `self` is not `.json`.
+                /// - SeeAlso: `.json`.
+                public var json: Components.Schemas.ErrorResponse {
+                    get throws {
+                        switch self {
+                        case let .json(body):
+                            return body
+                        }
+                    }
+                }
+            }
+            /// Received HTTP response body
+            public var body: Components.Responses.BadRequest.Body
+            /// Creates a new `BadRequest`.
+            ///
+            /// - Parameters:
+            ///   - body: Received HTTP response body
+            public init(body: Components.Responses.BadRequest.Body) {
+                self.body = body
+            }
+        }
+        public struct RegisterTokenExpired: Sendable, Hashable {
+            /// - Remark: Generated from `#/components/responses/RegisterTokenExpired/content`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/components/responses/RegisterTokenExpired/content/application\/json`.
+                case json(Components.Schemas.ErrorResponse)
+                /// The associated value of the enum case if `self` is `.json`.
+                ///
+                /// - Throws: An error if `self` is not `.json`.
+                /// - SeeAlso: `.json`.
+                public var json: Components.Schemas.ErrorResponse {
+                    get throws {
+                        switch self {
+                        case let .json(body):
+                            return body
+                        }
+                    }
+                }
+            }
+            /// Received HTTP response body
+            public var body: Components.Responses.RegisterTokenExpired.Body
+            /// Creates a new `RegisterTokenExpired`.
+            ///
+            /// - Parameters:
+            ///   - body: Received HTTP response body
+            public init(body: Components.Responses.RegisterTokenExpired.Body) {
+                self.body = body
+            }
+        }
+        public struct NotFound: Sendable, Hashable {
+            /// - Remark: Generated from `#/components/responses/NotFound/content`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/components/responses/NotFound/content/application\/json`.
+                case json(Components.Schemas.ErrorResponse)
+                /// The associated value of the enum case if `self` is `.json`.
+                ///
+                /// - Throws: An error if `self` is not `.json`.
+                /// - SeeAlso: `.json`.
+                public var json: Components.Schemas.ErrorResponse {
+                    get throws {
+                        switch self {
+                        case let .json(body):
+                            return body
+                        }
+                    }
+                }
+            }
+            /// Received HTTP response body
+            public var body: Components.Responses.NotFound.Body
+            /// Creates a new `NotFound`.
+            ///
+            /// - Parameters:
+            ///   - body: Received HTTP response body
+            public init(body: Components.Responses.NotFound.Body) {
+                self.body = body
+            }
+        }
+        public struct InternalServerError: Sendable, Hashable {
+            /// - Remark: Generated from `#/components/responses/InternalServerError/content`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/components/responses/InternalServerError/content/application\/json`.
+                case json(Components.Schemas.ErrorResponse)
+                /// The associated value of the enum case if `self` is `.json`.
+                ///
+                /// - Throws: An error if `self` is not `.json`.
+                /// - SeeAlso: `.json`.
+                public var json: Components.Schemas.ErrorResponse {
+                    get throws {
+                        switch self {
+                        case let .json(body):
+                            return body
+                        }
+                    }
+                }
+            }
+            /// Received HTTP response body
+            public var body: Components.Responses.InternalServerError.Body
+            /// Creates a new `InternalServerError`.
+            ///
+            /// - Parameters:
+            ///   - body: Received HTTP response body
+            public init(body: Components.Responses.InternalServerError.Body) {
+                self.body = body
+            }
+        }
+        public struct RefreshTokenExpired: Sendable, Hashable {
+            /// - Remark: Generated from `#/components/responses/RefreshTokenExpired/content`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/components/responses/RefreshTokenExpired/content/application\/json`.
+                case json(Components.Schemas.ErrorResponse)
+                /// The associated value of the enum case if `self` is `.json`.
+                ///
+                /// - Throws: An error if `self` is not `.json`.
+                /// - SeeAlso: `.json`.
+                public var json: Components.Schemas.ErrorResponse {
+                    get throws {
+                        switch self {
+                        case let .json(body):
+                            return body
+                        }
+                    }
+                }
+            }
+            /// Received HTTP response body
+            public var body: Components.Responses.RefreshTokenExpired.Body
+            /// Creates a new `RefreshTokenExpired`.
+            ///
+            /// - Parameters:
+            ///   - body: Received HTTP response body
+            public init(body: Components.Responses.RefreshTokenExpired.Body) {
+                self.body = body
+            }
+        }
+        public struct InvalidRefreshToken: Sendable, Hashable {
+            /// - Remark: Generated from `#/components/responses/InvalidRefreshToken/content`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/components/responses/InvalidRefreshToken/content/application\/json`.
+                case json(Components.Schemas.ErrorResponse)
+                /// The associated value of the enum case if `self` is `.json`.
+                ///
+                /// - Throws: An error if `self` is not `.json`.
+                /// - SeeAlso: `.json`.
+                public var json: Components.Schemas.ErrorResponse {
+                    get throws {
+                        switch self {
+                        case let .json(body):
+                            return body
+                        }
+                    }
+                }
+            }
+            /// Received HTTP response body
+            public var body: Components.Responses.InvalidRefreshToken.Body
+            /// Creates a new `InvalidRefreshToken`.
+            ///
+            /// - Parameters:
+            ///   - body: Received HTTP response body
+            public init(body: Components.Responses.InvalidRefreshToken.Body) {
+                self.body = body
+            }
+        }
+    }
     /// Types generated from the `#/components/headers` section of the OpenAPI document.
     public enum Headers {}
 }
@@ -440,47 +978,38 @@ public enum Components {
 public enum Operations {
     /// SMS 인증 요청
     ///
-    /// - 회원 가입 또는 로그인 토큰 발급을 위한 SMS 인증을 요청합니다.
+    /// 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
     ///
-    ///
-    /// - Remark: HTTP `POST /users/verifications`.
-    /// - Remark: Generated from `#/paths//users/verifications/post(requestVerification)`.
+    /// - Remark: HTTP `POST /auth/codes`.
+    /// - Remark: Generated from `#/paths//auth/codes/post(requestVerification)`.
     public enum requestVerification {
         public static let id: Swift.String = "requestVerification"
         public struct Input: Sendable, Hashable {
-            /// - Remark: Generated from `#/paths/users/verifications/POST/header`.
+            /// - Remark: Generated from `#/paths/auth/codes/POST/header`.
             public struct Headers: Sendable, Hashable {
+                /// 사용자의 OS 유형 (IOS 또는 AOS)
+                ///
+                /// - Remark: Generated from `#/paths/auth/codes/POST/header/X-OS-Type`.
+                public var X_hyphen_OS_hyphen_Type: Components.Parameters.OSTypeHeader
                 public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.requestVerification.AcceptableContentType>]
                 /// Creates a new `Headers`.
                 ///
                 /// - Parameters:
+                ///   - X_hyphen_OS_hyphen_Type: 사용자의 OS 유형 (IOS 또는 AOS)
                 ///   - accept:
-                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.requestVerification.AcceptableContentType>] = .defaultValues()) {
+                public init(
+                    X_hyphen_OS_hyphen_Type: Components.Parameters.OSTypeHeader,
+                    accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.requestVerification.AcceptableContentType>] = .defaultValues()
+                ) {
+                    self.X_hyphen_OS_hyphen_Type = X_hyphen_OS_hyphen_Type
                     self.accept = accept
                 }
             }
             public var headers: Operations.requestVerification.Input.Headers
-            /// - Remark: Generated from `#/paths/users/verifications/POST/requestBody`.
+            /// - Remark: Generated from `#/paths/auth/codes/POST/requestBody`.
             @frozen public enum Body: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/verifications/POST/requestBody/json`.
-                public struct jsonPayload: Codable, Hashable, Sendable {
-                    /// 사용자의 전화번호 (한국 휴대폰 번호 형식)
-                    ///
-                    /// - Remark: Generated from `#/paths/users/verifications/POST/requestBody/json/phoneNumber`.
-                    public var phoneNumber: Swift.String?
-                    /// Creates a new `jsonPayload`.
-                    ///
-                    /// - Parameters:
-                    ///   - phoneNumber: 사용자의 전화번호 (한국 휴대폰 번호 형식)
-                    public init(phoneNumber: Swift.String? = nil) {
-                        self.phoneNumber = phoneNumber
-                    }
-                    public enum CodingKeys: String, CodingKey {
-                        case phoneNumber
-                    }
-                }
-                /// - Remark: Generated from `#/paths/users/verifications/POST/requestBody/content/application\/json`.
-                case json(Operations.requestVerification.Input.Body.jsonPayload)
+                /// - Remark: Generated from `#/paths/auth/codes/POST/requestBody/content/application\/json`.
+                case json(Components.Schemas.SendAuthCodeRequest)
             }
             public var body: Operations.requestVerification.Input.Body
             /// Creates a new `Input`.
@@ -489,7 +1018,7 @@ public enum Operations {
             ///   - headers:
             ///   - body:
             public init(
-                headers: Operations.requestVerification.Input.Headers = .init(),
+                headers: Operations.requestVerification.Input.Headers,
                 body: Operations.requestVerification.Input.Body
             ) {
                 self.headers = headers
@@ -498,32 +1027,15 @@ public enum Operations {
         }
         @frozen public enum Output: Sendable, Hashable {
             public struct Created: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/verifications/POST/responses/201/content`.
+                /// - Remark: Generated from `#/paths/auth/codes/POST/responses/201/content`.
                 @frozen public enum Body: Sendable, Hashable {
-                    /// - Remark: Generated from `#/paths/users/verifications/POST/responses/201/content/json`.
-                    public struct jsonPayload: Codable, Hashable, Sendable {
-                        /// 인증 요청에 대한 고유 식별자 (UUID 형식)
-                        ///
-                        /// - Remark: Generated from `#/paths/users/verifications/POST/responses/201/content/json/verificationId`.
-                        public var verificationId: Swift.String?
-                        /// Creates a new `jsonPayload`.
-                        ///
-                        /// - Parameters:
-                        ///   - verificationId: 인증 요청에 대한 고유 식별자 (UUID 형식)
-                        public init(verificationId: Swift.String? = nil) {
-                            self.verificationId = verificationId
-                        }
-                        public enum CodingKeys: String, CodingKey {
-                            case verificationId
-                        }
-                    }
-                    /// - Remark: Generated from `#/paths/users/verifications/POST/responses/201/content/application\/json`.
-                    case json(Operations.requestVerification.Output.Created.Body.jsonPayload)
+                    /// - Remark: Generated from `#/paths/auth/codes/POST/responses/201/content/application\/json`.
+                    case json(Components.Schemas.SendAuthCodeResponse)
                     /// The associated value of the enum case if `self` is `.json`.
                     ///
                     /// - Throws: An error if `self` is not `.json`.
                     /// - SeeAlso: `.json`.
-                    public var json: Operations.requestVerification.Output.Created.Body.jsonPayload {
+                    public var json: Components.Schemas.SendAuthCodeResponse {
                         get throws {
                             switch self {
                             case let .json(body):
@@ -544,7 +1056,7 @@ public enum Operations {
             }
             /// 인증 요청 성공
             ///
-            /// - Remark: Generated from `#/paths//users/verifications/post(requestVerification)/responses/201`.
+            /// - Remark: Generated from `#/paths//auth/codes/post(requestVerification)/responses/201`.
             ///
             /// HTTP response code: `201 created`.
             case created(Operations.requestVerification.Output.Created)
@@ -565,21 +1077,17 @@ public enum Operations {
                     }
                 }
             }
-            public struct BadRequest: Sendable, Hashable {
-                /// Creates a new `BadRequest`.
-                public init() {}
-            }
-            /// 잘못된 전화번호 형식
+            /// 잘못된 요청
             ///
-            /// - Remark: Generated from `#/paths//users/verifications/post(requestVerification)/responses/400`.
+            /// - Remark: Generated from `#/paths//auth/codes/post(requestVerification)/responses/400`.
             ///
             /// HTTP response code: `400 badRequest`.
-            case badRequest(Operations.requestVerification.Output.BadRequest)
+            case badRequest(Components.Responses.BadRequest)
             /// The associated value of the enum case if `self` is `.badRequest`.
             ///
             /// - Throws: An error if `self` is not `.badRequest`.
             /// - SeeAlso: `.badRequest`.
-            public var badRequest: Operations.requestVerification.Output.BadRequest {
+            public var badRequest: Components.Responses.BadRequest {
                 get throws {
                     switch self {
                     case let .badRequest(response):
@@ -623,68 +1131,48 @@ public enum Operations {
             }
         }
     }
-    /// SMS 인증 코드 확인
+    /// SMS 인증 코드 확인 (기존 유저)
     ///
-    /// - SMS 인증 요청 시 발급된 verificationId와 함께 인증 코드를 입력하여 인증을 완료합니다.
-    /// - 새 사용자의 경우 회원 가입을 위한 registerToken을 발급합니다.
-    /// - 기존 사용자의 경우 로그인을 위한 accessToken과 refreshToken을 발급합니다.
+    /// 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
     ///
-    ///
-    /// - Remark: HTTP `PUT /users/verifications/{verificationId}`.
-    /// - Remark: Generated from `#/paths//users/verifications/{verificationId}/put(verifyCode)`.
-    public enum verifyCode {
-        public static let id: Swift.String = "verifyCode"
+    /// - Remark: HTTP `POST /auth/codes/{authCodeId}/existingUser`.
+    /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/existingUser/post(existingUserVerifyCode)`.
+    public enum existingUserVerifyCode {
+        public static let id: Swift.String = "existingUserVerifyCode"
         public struct Input: Sendable, Hashable {
-            /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/path`.
+            /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/existingUser/POST/path`.
             public struct Path: Sendable, Hashable {
                 /// 인증 요청 시 발급된 고유 식별자 (UUID 형식)
                 ///
-                /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/path/verificationId`.
-                public var verificationId: Swift.String
+                /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/existingUser/POST/path/authCodeId`.
+                public var authCodeId: Components.Parameters.AuthCodeIdPath
                 /// Creates a new `Path`.
                 ///
                 /// - Parameters:
-                ///   - verificationId: 인증 요청 시 발급된 고유 식별자 (UUID 형식)
-                public init(verificationId: Swift.String) {
-                    self.verificationId = verificationId
+                ///   - authCodeId: 인증 요청 시 발급된 고유 식별자 (UUID 형식)
+                public init(authCodeId: Components.Parameters.AuthCodeIdPath) {
+                    self.authCodeId = authCodeId
                 }
             }
-            public var path: Operations.verifyCode.Input.Path
-            /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/header`.
+            public var path: Operations.existingUserVerifyCode.Input.Path
+            /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/existingUser/POST/header`.
             public struct Headers: Sendable, Hashable {
-                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.verifyCode.AcceptableContentType>]
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.existingUserVerifyCode.AcceptableContentType>]
                 /// Creates a new `Headers`.
                 ///
                 /// - Parameters:
                 ///   - accept:
-                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.verifyCode.AcceptableContentType>] = .defaultValues()) {
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.existingUserVerifyCode.AcceptableContentType>] = .defaultValues()) {
                     self.accept = accept
                 }
             }
-            public var headers: Operations.verifyCode.Input.Headers
-            /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/requestBody`.
+            public var headers: Operations.existingUserVerifyCode.Input.Headers
+            /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/existingUser/POST/requestBody`.
             @frozen public enum Body: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/requestBody/json`.
-                public struct jsonPayload: Codable, Hashable, Sendable {
-                    /// 사용자가 입력한 SMS 인증 코드 (6자리 숫자)
-                    ///
-                    /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/requestBody/json/verificationCode`.
-                    public var verificationCode: Swift.String?
-                    /// Creates a new `jsonPayload`.
-                    ///
-                    /// - Parameters:
-                    ///   - verificationCode: 사용자가 입력한 SMS 인증 코드 (6자리 숫자)
-                    public init(verificationCode: Swift.String? = nil) {
-                        self.verificationCode = verificationCode
-                    }
-                    public enum CodingKeys: String, CodingKey {
-                        case verificationCode
-                    }
-                }
-                /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/requestBody/content/application\/json`.
-                case json(Operations.verifyCode.Input.Body.jsonPayload)
+                /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/existingUser/POST/requestBody/content/application\/json`.
+                case json(Components.Schemas.VerifyCodeRequest)
             }
-            public var body: Operations.verifyCode.Input.Body
+            public var body: Operations.existingUserVerifyCode.Input.Body
             /// Creates a new `Input`.
             ///
             /// - Parameters:
@@ -692,9 +1180,9 @@ public enum Operations {
             ///   - headers:
             ///   - body:
             public init(
-                path: Operations.verifyCode.Input.Path,
-                headers: Operations.verifyCode.Input.Headers = .init(),
-                body: Operations.verifyCode.Input.Body
+                path: Operations.existingUserVerifyCode.Input.Path,
+                headers: Operations.existingUserVerifyCode.Input.Headers = .init(),
+                body: Operations.existingUserVerifyCode.Input.Body
             ) {
                 self.path = path
                 self.headers = headers
@@ -703,50 +1191,15 @@ public enum Operations {
         }
         @frozen public enum Output: Sendable, Hashable {
             public struct Ok: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/responses/200/content`.
+                /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/existingUser/POST/responses/200/content`.
                 @frozen public enum Body: Sendable, Hashable {
-                    /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/responses/200/content/json`.
-                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
-                        /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/responses/200/content/json/case1`.
-                        case NewUserVerificationResponse(Components.Schemas.NewUserVerificationResponse)
-                        /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/responses/200/content/json/case2`.
-                        case ExistingUserVerificationResponse(Components.Schemas.ExistingUserVerificationResponse)
-                        public init(from decoder: any Decoder) throws {
-                            var errors: [any Error] = []
-                            do {
-                                self = .NewUserVerificationResponse(try .init(from: decoder))
-                                return
-                            } catch {
-                                errors.append(error)
-                            }
-                            do {
-                                self = .ExistingUserVerificationResponse(try .init(from: decoder))
-                                return
-                            } catch {
-                                errors.append(error)
-                            }
-                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
-                                type: Self.self,
-                                codingPath: decoder.codingPath,
-                                errors: errors
-                            )
-                        }
-                        public func encode(to encoder: any Encoder) throws {
-                            switch self {
-                            case let .NewUserVerificationResponse(value):
-                                try value.encode(to: encoder)
-                            case let .ExistingUserVerificationResponse(value):
-                                try value.encode(to: encoder)
-                            }
-                        }
-                    }
-                    /// - Remark: Generated from `#/paths/users/verifications/{verificationId}/PUT/responses/200/content/application\/json`.
-                    case json(Operations.verifyCode.Output.Ok.Body.jsonPayload)
+                    /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/existingUser/POST/responses/200/content/application\/json`.
+                    case json(Components.Schemas.ExistingUserVerifyCodeResponse)
                     /// The associated value of the enum case if `self` is `.json`.
                     ///
                     /// - Throws: An error if `self` is not `.json`.
                     /// - SeeAlso: `.json`.
-                    public var json: Operations.verifyCode.Output.Ok.Body.jsonPayload {
+                    public var json: Components.Schemas.ExistingUserVerifyCodeResponse {
                         get throws {
                             switch self {
                             case let .json(body):
@@ -756,26 +1209,26 @@ public enum Operations {
                     }
                 }
                 /// Received HTTP response body
-                public var body: Operations.verifyCode.Output.Ok.Body
+                public var body: Operations.existingUserVerifyCode.Output.Ok.Body
                 /// Creates a new `Ok`.
                 ///
                 /// - Parameters:
                 ///   - body: Received HTTP response body
-                public init(body: Operations.verifyCode.Output.Ok.Body) {
+                public init(body: Operations.existingUserVerifyCode.Output.Ok.Body) {
                     self.body = body
                 }
             }
-            /// 인증 완료
+            /// 인증 완료 및 토큰 발급
             ///
-            /// - Remark: Generated from `#/paths//users/verifications/{verificationId}/put(verifyCode)/responses/200`.
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/existingUser/post(existingUserVerifyCode)/responses/200`.
             ///
             /// HTTP response code: `200 ok`.
-            case ok(Operations.verifyCode.Output.Ok)
+            case ok(Operations.existingUserVerifyCode.Output.Ok)
             /// The associated value of the enum case if `self` is `.ok`.
             ///
             /// - Throws: An error if `self` is not `.ok`.
             /// - SeeAlso: `.ok`.
-            public var ok: Operations.verifyCode.Output.Ok {
+            public var ok: Operations.existingUserVerifyCode.Output.Ok {
                 get throws {
                     switch self {
                     case let .ok(response):
@@ -788,21 +1241,17 @@ public enum Operations {
                     }
                 }
             }
-            public struct BadRequest: Sendable, Hashable {
-                /// Creates a new `BadRequest`.
-                public init() {}
-            }
-            /// 잘못되거나 만료된 인증 코드
+            /// 잘못된 요청
             ///
-            /// - Remark: Generated from `#/paths//users/verifications/{verificationId}/put(verifyCode)/responses/400`.
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/existingUser/post(existingUserVerifyCode)/responses/400`.
             ///
             /// HTTP response code: `400 badRequest`.
-            case badRequest(Operations.verifyCode.Output.BadRequest)
+            case badRequest(Components.Responses.BadRequest)
             /// The associated value of the enum case if `self` is `.badRequest`.
             ///
             /// - Throws: An error if `self` is not `.badRequest`.
             /// - SeeAlso: `.badRequest`.
-            public var badRequest: Operations.verifyCode.Output.BadRequest {
+            public var badRequest: Components.Responses.BadRequest {
                 get throws {
                     switch self {
                     case let .badRequest(response):
@@ -815,21 +1264,17 @@ public enum Operations {
                     }
                 }
             }
-            public struct NotFound: Sendable, Hashable {
-                /// Creates a new `NotFound`.
-                public init() {}
-            }
-            /// 존재하지 않는 verificationId
+            /// 리소스를 찾을 수 없음
             ///
-            /// - Remark: Generated from `#/paths//users/verifications/{verificationId}/put(verifyCode)/responses/404`.
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/existingUser/post(existingUserVerifyCode)/responses/404`.
             ///
             /// HTTP response code: `404 notFound`.
-            case notFound(Operations.verifyCode.Output.NotFound)
+            case notFound(Components.Responses.NotFound)
             /// The associated value of the enum case if `self` is `.notFound`.
             ///
             /// - Throws: An error if `self` is not `.notFound`.
             /// - SeeAlso: `.notFound`.
-            public var notFound: Operations.verifyCode.Output.NotFound {
+            public var notFound: Components.Responses.NotFound {
                 get throws {
                     switch self {
                     case let .notFound(response):
@@ -837,6 +1282,239 @@ public enum Operations {
                     default:
                         try throwUnexpectedResponseStatus(
                             expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/existingUser/post(existingUserVerifyCode)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// SMS 인증 코드 확인 (신규 유저)
+    ///
+    /// 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
+    ///
+    /// - Remark: HTTP `POST /auth/codes/{authCodeId}/newUser`.
+    /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/newUser/post(newUserVerifyCode)`.
+    public enum newUserVerifyCode {
+        public static let id: Swift.String = "newUserVerifyCode"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/newUser/POST/path`.
+            public struct Path: Sendable, Hashable {
+                /// 인증 요청 시 발급된 고유 식별자 (UUID 형식)
+                ///
+                /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/newUser/POST/path/authCodeId`.
+                public var authCodeId: Components.Parameters.AuthCodeIdPath
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - authCodeId: 인증 요청 시 발급된 고유 식별자 (UUID 형식)
+                public init(authCodeId: Components.Parameters.AuthCodeIdPath) {
+                    self.authCodeId = authCodeId
+                }
+            }
+            public var path: Operations.newUserVerifyCode.Input.Path
+            /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/newUser/POST/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.newUserVerifyCode.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.newUserVerifyCode.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.newUserVerifyCode.Input.Headers
+            /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/newUser/POST/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/newUser/POST/requestBody/content/application\/json`.
+                case json(Components.Schemas.VerifyCodeRequest)
+            }
+            public var body: Operations.newUserVerifyCode.Input.Body
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            ///   - body:
+            public init(
+                path: Operations.newUserVerifyCode.Input.Path,
+                headers: Operations.newUserVerifyCode.Input.Headers = .init(),
+                body: Operations.newUserVerifyCode.Input.Body
+            ) {
+                self.path = path
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/newUser/POST/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/codes/{authCodeId}/newUser/POST/responses/200/content/application\/json`.
+                    case json(Components.Schemas.NewUserVerifyCodeResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.NewUserVerifyCodeResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.newUserVerifyCode.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.newUserVerifyCode.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 인증 완료 및 토큰 발급
+            ///
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/newUser/post(newUserVerifyCode)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.newUserVerifyCode.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.newUserVerifyCode.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/newUser/post(newUserVerifyCode)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리소스를 찾을 수 없음
+            ///
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/newUser/post(newUserVerifyCode)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Components.Responses.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Components.Responses.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//auth/codes/{authCodeId}/newUser/post(newUserVerifyCode)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
                             response: self
                         )
                     }
@@ -875,9 +1553,7 @@ public enum Operations {
     }
     /// 회원 가입
     ///
-    /// - SMS 인증 시 발급된 registerToken을 이용하여 회원 가입을 완료합니다.
-    /// - 회원 가입 완료 시 accessToken과 refreshToken을 발급합니다.
-    ///
+    /// SMS 인증 후 발급된 registerToken으로 회원 가입을 완료합니다.
     ///
     /// - Remark: HTTP `POST /users`.
     /// - Remark: Generated from `#/paths//users/post(registerUser)`.
@@ -886,12 +1562,21 @@ public enum Operations {
         public struct Input: Sendable, Hashable {
             /// - Remark: Generated from `#/paths/users/POST/header`.
             public struct Headers: Sendable, Hashable {
+                /// 번호 인증 후 발급받은 회원가입용 토큰
+                ///
+                /// - Remark: Generated from `#/paths/users/POST/header/X-Register-Token`.
+                public var X_hyphen_Register_hyphen_Token: Components.Parameters.RegisterTokenHeader
                 public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.registerUser.AcceptableContentType>]
                 /// Creates a new `Headers`.
                 ///
                 /// - Parameters:
+                ///   - X_hyphen_Register_hyphen_Token: 번호 인증 후 발급받은 회원가입용 토큰
                 ///   - accept:
-                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.registerUser.AcceptableContentType>] = .defaultValues()) {
+                public init(
+                    X_hyphen_Register_hyphen_Token: Components.Parameters.RegisterTokenHeader,
+                    accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.registerUser.AcceptableContentType>] = .defaultValues()
+                ) {
+                    self.X_hyphen_Register_hyphen_Token = X_hyphen_Register_hyphen_Token
                     self.accept = accept
                 }
             }
@@ -899,7 +1584,7 @@ public enum Operations {
             /// - Remark: Generated from `#/paths/users/POST/requestBody`.
             @frozen public enum Body: Sendable, Hashable {
                 /// - Remark: Generated from `#/paths/users/POST/requestBody/content/application\/json`.
-                case json(Components.Schemas.UserRegistration)
+                case json(Components.Schemas.RegisterUserRequest)
             }
             public var body: Operations.registerUser.Input.Body
             /// Creates a new `Input`.
@@ -908,7 +1593,7 @@ public enum Operations {
             ///   - headers:
             ///   - body:
             public init(
-                headers: Operations.registerUser.Input.Headers = .init(),
+                headers: Operations.registerUser.Input.Headers,
                 body: Operations.registerUser.Input.Body
             ) {
                 self.headers = headers
@@ -936,12 +1621,12 @@ public enum Operations {
                 /// - Remark: Generated from `#/paths/users/POST/responses/201/content`.
                 @frozen public enum Body: Sendable, Hashable {
                     /// - Remark: Generated from `#/paths/users/POST/responses/201/content/application\/json`.
-                    case json(Components.Schemas.TokenResponse)
+                    case json(Components.Schemas.RegisterUserResponse)
                     /// The associated value of the enum case if `self` is `.json`.
                     ///
                     /// - Throws: An error if `self` is not `.json`.
                     /// - SeeAlso: `.json`.
-                    public var json: Components.Schemas.TokenResponse {
+                    public var json: Components.Schemas.RegisterUserResponse {
                         get throws {
                             switch self {
                             case let .json(body):
@@ -988,21 +1673,17 @@ public enum Operations {
                     }
                 }
             }
-            public struct BadRequest: Sendable, Hashable {
-                /// Creates a new `BadRequest`.
-                public init() {}
-            }
-            /// 잘못된 입력 데이터
+            /// 잘못된 요청
             ///
             /// - Remark: Generated from `#/paths//users/post(registerUser)/responses/400`.
             ///
             /// HTTP response code: `400 badRequest`.
-            case badRequest(Operations.registerUser.Output.BadRequest)
+            case badRequest(Components.Responses.BadRequest)
             /// The associated value of the enum case if `self` is `.badRequest`.
             ///
             /// - Throws: An error if `self` is not `.badRequest`.
             /// - SeeAlso: `.badRequest`.
-            public var badRequest: Operations.registerUser.Output.BadRequest {
+            public var badRequest: Components.Responses.BadRequest {
                 get throws {
                     switch self {
                     case let .badRequest(response):
@@ -1015,21 +1696,17 @@ public enum Operations {
                     }
                 }
             }
-            public struct Unauthorized: Sendable, Hashable {
-                /// Creates a new `Unauthorized`.
-                public init() {}
-            }
-            /// 유효하지 않거나 만료된 registerToken
+            /// 회원 가입 토큰 만료
             ///
             /// - Remark: Generated from `#/paths//users/post(registerUser)/responses/401`.
             ///
             /// HTTP response code: `401 unauthorized`.
-            case unauthorized(Operations.registerUser.Output.Unauthorized)
+            case unauthorized(Components.Responses.RegisterTokenExpired)
             /// The associated value of the enum case if `self` is `.unauthorized`.
             ///
             /// - Throws: An error if `self` is not `.unauthorized`.
             /// - SeeAlso: `.unauthorized`.
-            public var unauthorized: Operations.registerUser.Output.Unauthorized {
+            public var unauthorized: Components.Responses.RegisterTokenExpired {
                 get throws {
                     switch self {
                     case let .unauthorized(response):
@@ -1042,28 +1719,24 @@ public enum Operations {
                     }
                 }
             }
-            public struct Conflict: Sendable, Hashable {
-                /// Creates a new `Conflict`.
-                public init() {}
-            }
-            /// 이미 존재하는 사용자
+            /// 서버 오류
             ///
-            /// - Remark: Generated from `#/paths//users/post(registerUser)/responses/409`.
+            /// - Remark: Generated from `#/paths//users/post(registerUser)/responses/500`.
             ///
-            /// HTTP response code: `409 conflict`.
-            case conflict(Operations.registerUser.Output.Conflict)
-            /// The associated value of the enum case if `self` is `.conflict`.
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
             ///
-            /// - Throws: An error if `self` is not `.conflict`.
-            /// - SeeAlso: `.conflict`.
-            public var conflict: Operations.registerUser.Output.Conflict {
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
                 get throws {
                     switch self {
-                    case let .conflict(response):
+                    case let .internalServerError(response):
                         return response
                     default:
                         try throwUnexpectedResponseStatus(
-                            expectedStatus: "conflict",
+                            expectedStatus: "internalServerError",
                             response: self
                         )
                     }
@@ -1102,15 +1775,14 @@ public enum Operations {
     }
     /// 액세스 토큰 갱신
     ///
-    /// - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+    /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
     ///
-    ///
-    /// - Remark: HTTP `POST /users/token/refresh`.
-    /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)`.
+    /// - Remark: HTTP `POST /auth/token/refresh`.
+    /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)`.
     public enum refreshToken {
         public static let id: Swift.String = "refreshToken"
         public struct Input: Sendable, Hashable {
-            /// - Remark: Generated from `#/paths/users/token/refresh/POST/header`.
+            /// - Remark: Generated from `#/paths/auth/token/refresh/POST/header`.
             public struct Headers: Sendable, Hashable {
                 public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.refreshToken.AcceptableContentType>]
                 /// Creates a new `Headers`.
@@ -1122,27 +1794,10 @@ public enum Operations {
                 }
             }
             public var headers: Operations.refreshToken.Input.Headers
-            /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody`.
+            /// - Remark: Generated from `#/paths/auth/token/refresh/POST/requestBody`.
             @frozen public enum Body: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody/json`.
-                public struct jsonPayload: Codable, Hashable, Sendable {
-                    /// 유효한 리프레시 토큰
-                    ///
-                    /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody/json/refreshToken`.
-                    public var refreshToken: Swift.String?
-                    /// Creates a new `jsonPayload`.
-                    ///
-                    /// - Parameters:
-                    ///   - refreshToken: 유효한 리프레시 토큰
-                    public init(refreshToken: Swift.String? = nil) {
-                        self.refreshToken = refreshToken
-                    }
-                    public enum CodingKeys: String, CodingKey {
-                        case refreshToken
-                    }
-                }
-                /// - Remark: Generated from `#/paths/users/token/refresh/POST/requestBody/content/application\/json`.
-                case json(Operations.refreshToken.Input.Body.jsonPayload)
+                /// - Remark: Generated from `#/paths/auth/token/refresh/POST/requestBody/content/application\/json`.
+                case json(Components.Schemas.RefreshTokenRequest)
             }
             public var body: Operations.refreshToken.Input.Body
             /// Creates a new `Input`.
@@ -1160,15 +1815,15 @@ public enum Operations {
         }
         @frozen public enum Output: Sendable, Hashable {
             public struct Ok: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/token/refresh/POST/responses/200/content`.
+                /// - Remark: Generated from `#/paths/auth/token/refresh/POST/responses/200/content`.
                 @frozen public enum Body: Sendable, Hashable {
-                    /// - Remark: Generated from `#/paths/users/token/refresh/POST/responses/200/content/application\/json`.
-                    case json(Components.Schemas.TokenResponse)
+                    /// - Remark: Generated from `#/paths/auth/token/refresh/POST/responses/200/content/application\/json`.
+                    case json(Components.Schemas.RefreshTokenResponse)
                     /// The associated value of the enum case if `self` is `.json`.
                     ///
                     /// - Throws: An error if `self` is not `.json`.
                     /// - SeeAlso: `.json`.
-                    public var json: Components.Schemas.TokenResponse {
+                    public var json: Components.Schemas.RefreshTokenResponse {
                         get throws {
                             switch self {
                             case let .json(body):
@@ -1189,7 +1844,7 @@ public enum Operations {
             }
             /// 토큰 갱신 성공
             ///
-            /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)/responses/200`.
+            /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)/responses/200`.
             ///
             /// HTTP response code: `200 ok`.
             case ok(Operations.refreshToken.Output.Ok)
@@ -1210,21 +1865,40 @@ public enum Operations {
                     }
                 }
             }
-            public struct Unauthorized: Sendable, Hashable {
-                /// Creates a new `Unauthorized`.
-                public init() {}
-            }
-            /// 유효하지 않거나 만료된 리프레시 토큰
+            /// 유효하지 않은 리프레시 토큰
             ///
-            /// - Remark: Generated from `#/paths//users/token/refresh/post(refreshToken)/responses/401`.
+            /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.InvalidRefreshToken)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.InvalidRefreshToken {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리프레시 토큰 만료
+            ///
+            /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)/responses/401`.
             ///
             /// HTTP response code: `401 unauthorized`.
-            case unauthorized(Operations.refreshToken.Output.Unauthorized)
+            case unauthorized(Components.Responses.RefreshTokenExpired)
             /// The associated value of the enum case if `self` is `.unauthorized`.
             ///
             /// - Throws: An error if `self` is not `.unauthorized`.
             /// - SeeAlso: `.unauthorized`.
-            public var unauthorized: Operations.refreshToken.Output.Unauthorized {
+            public var unauthorized: Components.Responses.RefreshTokenExpired {
                 get throws {
                     switch self {
                     case let .unauthorized(response):
@@ -1232,6 +1906,549 @@ public enum Operations {
                     default:
                         try throwUnexpectedResponseStatus(
                             expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 지역 검색
+    ///
+    /// 지역 정보를 검색합니다.
+    ///
+    /// - Remark: HTTP `GET /locations`.
+    /// - Remark: Generated from `#/paths//locations/get(searchLocations)`.
+    public enum searchLocations {
+        public static let id: Swift.String = "searchLocations"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/locations/GET/query`.
+            public struct Query: Sendable, Hashable {
+                /// 검색할 이름
+                ///
+                /// - Remark: Generated from `#/paths/locations/GET/query/name`.
+                public var name: Components.Parameters.NameQuery
+                /// 페이지네이션을 위한 다음 검색 시작 ID
+                ///
+                /// - Remark: Generated from `#/paths/locations/GET/query/next`.
+                public var next: Components.Parameters.NextQuery?
+                /// 반환할 최대 결과 수
+                ///
+                /// - Remark: Generated from `#/paths/locations/GET/query/limit`.
+                public var limit: Components.Parameters.LimitQuery?
+                /// Creates a new `Query`.
+                ///
+                /// - Parameters:
+                ///   - name: 검색할 이름
+                ///   - next: 페이지네이션을 위한 다음 검색 시작 ID
+                ///   - limit: 반환할 최대 결과 수
+                public init(
+                    name: Components.Parameters.NameQuery,
+                    next: Components.Parameters.NextQuery? = nil,
+                    limit: Components.Parameters.LimitQuery? = nil
+                ) {
+                    self.name = name
+                    self.next = next
+                    self.limit = limit
+                }
+            }
+            public var query: Operations.searchLocations.Input.Query
+            /// - Remark: Generated from `#/paths/locations/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.searchLocations.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.searchLocations.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.searchLocations.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - query:
+            ///   - headers:
+            public init(
+                query: Operations.searchLocations.Input.Query,
+                headers: Operations.searchLocations.Input.Headers = .init()
+            ) {
+                self.query = query
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/locations/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/locations/GET/responses/200/content/application\/json`.
+                    case json(Components.Schemas.SearchLocationsResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.SearchLocationsResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.searchLocations.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.searchLocations.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 지역 검색 결과
+            ///
+            /// - Remark: Generated from `#/paths//locations/get(searchLocations)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.searchLocations.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.searchLocations.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//locations/get(searchLocations)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 직장명 검색
+    ///
+    /// 직장을 검색합니다.
+    ///
+    /// - Remark: HTTP `GET /companies`.
+    /// - Remark: Generated from `#/paths//companies/get(searchCompanies)`.
+    public enum searchCompanies {
+        public static let id: Swift.String = "searchCompanies"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/companies/GET/query`.
+            public struct Query: Sendable, Hashable {
+                /// 검색할 이름
+                ///
+                /// - Remark: Generated from `#/paths/companies/GET/query/name`.
+                public var name: Components.Parameters.NameQuery
+                /// 페이지네이션을 위한 다음 검색 시작 ID
+                ///
+                /// - Remark: Generated from `#/paths/companies/GET/query/next`.
+                public var next: Components.Parameters.NextQuery?
+                /// 반환할 최대 결과 수
+                ///
+                /// - Remark: Generated from `#/paths/companies/GET/query/limit`.
+                public var limit: Components.Parameters.LimitQuery?
+                /// Creates a new `Query`.
+                ///
+                /// - Parameters:
+                ///   - name: 검색할 이름
+                ///   - next: 페이지네이션을 위한 다음 검색 시작 ID
+                ///   - limit: 반환할 최대 결과 수
+                public init(
+                    name: Components.Parameters.NameQuery,
+                    next: Components.Parameters.NextQuery? = nil,
+                    limit: Components.Parameters.LimitQuery? = nil
+                ) {
+                    self.name = name
+                    self.next = next
+                    self.limit = limit
+                }
+            }
+            public var query: Operations.searchCompanies.Input.Query
+            /// - Remark: Generated from `#/paths/companies/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.searchCompanies.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.searchCompanies.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.searchCompanies.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - query:
+            ///   - headers:
+            public init(
+                query: Operations.searchCompanies.Input.Query,
+                headers: Operations.searchCompanies.Input.Headers = .init()
+            ) {
+                self.query = query
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/companies/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/companies/GET/responses/200/content/application\/json`.
+                    case json(Components.Schemas.SearchCompaniesResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.SearchCompaniesResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.searchCompanies.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.searchCompanies.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 검색 성공
+            ///
+            /// - Remark: Generated from `#/paths//companies/get(searchCompanies)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.searchCompanies.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.searchCompanies.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//companies/get(searchCompanies)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 직장 상세 정보 조회
+    ///
+    /// 직장 식별자에 해당하는 직장 상세 정보를 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /companies/{companyId}`.
+    /// - Remark: Generated from `#/paths//companies/{companyId}/get(getCompanyDetails)`.
+    public enum getCompanyDetails {
+        public static let id: Swift.String = "getCompanyDetails"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/companies/{companyId}/GET/path`.
+            public struct Path: Sendable, Hashable {
+                /// 조회할 회사의 고유 식별자
+                ///
+                /// - Remark: Generated from `#/paths/companies/{companyId}/GET/path/companyId`.
+                public var companyId: Components.Parameters.CompanyIdPath
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - companyId: 조회할 회사의 고유 식별자
+                public init(companyId: Components.Parameters.CompanyIdPath) {
+                    self.companyId = companyId
+                }
+            }
+            public var path: Operations.getCompanyDetails.Input.Path
+            /// - Remark: Generated from `#/paths/companies/{companyId}/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getCompanyDetails.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getCompanyDetails.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.getCompanyDetails.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            public init(
+                path: Operations.getCompanyDetails.Input.Path,
+                headers: Operations.getCompanyDetails.Input.Headers = .init()
+            ) {
+                self.path = path
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/companies/{companyId}/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/companies/{companyId}/GET/responses/200/content/application\/json`.
+                    case json(Components.Schemas.GetCompanyDetailsResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.GetCompanyDetailsResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getCompanyDetails.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getCompanyDetails.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 조회 성공
+            ///
+            /// - Remark: Generated from `#/paths//companies/{companyId}/get(getCompanyDetails)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.getCompanyDetails.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.getCompanyDetails.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리소스를 찾을 수 없음
+            ///
+            /// - Remark: Generated from `#/paths//companies/{companyId}/get(getCompanyDetails)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Components.Responses.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Components.Responses.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//companies/{companyId}/get(getCompanyDetails)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
                             response: self
                         )
                     }

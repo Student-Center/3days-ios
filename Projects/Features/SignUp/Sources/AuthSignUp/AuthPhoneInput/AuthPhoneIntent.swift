@@ -9,19 +9,24 @@
 import Foundation
 import CommonKit
 import CoreKit
+import NetworkKit
+import Model
 
 //MARK: - Intent
 class AuthPhoneInputIntent {
     private weak var model: AuthPhoneInputActionable?
-    private let externalData: DataModel
+    private let input: DataModel
+    private let authService: AuthServiceProtocol
 
     // MARK: Life cycle
     init(
         model: AuthPhoneInputActionable,
-        externalData: DataModel
+        input: DataModel,
+        authService: AuthServiceProtocol = AuthService.shared
     ) {
-        self.externalData = externalData
+        self.input = input
         self.model = model
+        self.authService = authService
     }
 }
 
@@ -29,7 +34,7 @@ class AuthPhoneInputIntent {
 extension AuthPhoneInputIntent {
     protocol Intentable {
         // content
-        func onTapNextButton()
+        func onTapNextButton(with Phone: String)
         func onChangePhoneInput(phone: String)
         
         // default
@@ -37,9 +42,7 @@ extension AuthPhoneInputIntent {
         func task() async
     }
     
-    struct DataModel {
-        let input: String
-    }
+    struct DataModel {}
 }
 
 //MARK: - Intentable
@@ -50,19 +53,53 @@ extension AuthPhoneInputIntent: AuthPhoneInputIntent.Intentable {
     func task() async {}
     
     // content
-    @MainActor
-    func onTapNextButton() {
-        AppCoordinator.shared.push(
-            .signUp(
-                .authPhoneVerify
+    func onTapNextButton(with phone: String) {
+        model?.setLoading(status: true)
+        Task {
+            await requestSendSMS(phone: Phone)
+        }
+    }
+    
+    func requestSendSMS(phone: String) async {
+        do {
+            let editedPhone = phone.replacingOccurrences(
+                of: "-",
+                with: ""
             )
-        )
+            let response = try await authService.requestSendSMS(phone: editedPhone)
+            await onReceivedSMSResponse(response)
+        } catch {
+            // TODO: Error 타입 정의
+            model?.showErrorAlert(
+                error: .init(
+                    title: "오류 발생",
+                    message: "다시 시도해주세요"
+                )
+            )
+        }
+    }
+    
+    func onReceivedSMSResponse(_ response: SMSSendResponse) async {
+        await pushNextView(smsResponse: response)
     }
     
     func onChangePhoneInput(phone: String) {
-        let editedPhone = phone.formattedPhoneNumber()
+        var editedPhone = phone.formattedPhoneNumber()
+        if editedPhone.count < 4 {
+            editedPhone = "010-"
+        }
         let isPhoneValidated = editedPhone.isValidPhoneNumber()
         model?.setEditedPhoneText(phone: editedPhone)
         model?.setPhoneValidated(value: isPhoneValidated)
+    }
+    
+    @MainActor
+    func pushNextView(smsResponse: SMSSendResponse) {
+        print(#function)
+        AppCoordinator.shared.push(
+            .signUp(
+                .authPhoneVerify(smsResponse)
+            )
+        )
     }
 }

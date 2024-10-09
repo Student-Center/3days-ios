@@ -12,7 +12,10 @@ let infoPlist = InfoPlist.extendingDefault(
         "App Enviroment": "$(APP_ENV)",
         "CFBundleDisplayName": "${INFOPLIST_KEY_CFBundleDisplayName}",
         "UIUserInterfaceStyle": "Light",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSAppTransportSecurity": [
+            "NSAllowsArbitraryLoads": true
+        ]
     ]
 )
 

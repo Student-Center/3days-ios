@@ -13,14 +13,14 @@ import CoreKit
 //MARK: - Intent
 class AuthAgreementIntent {
     private weak var model: AuthAgreementModelActionable?
-    private let externalData: DataModel
+    private let input: DataModel
 
     // MARK: Life cycle
     init(
         model: AuthAgreementModelActionable,
-        externalData: DataModel
+        input: DataModel
     ) {
-        self.externalData = externalData
+        self.input = input
         self.model = model
     }
 }
