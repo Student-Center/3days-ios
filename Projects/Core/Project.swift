@@ -12,17 +12,17 @@ let project: Project = .make(
         .make(target: .coreKit),
         .make(target: .model),
         .make(
-            target: .commonKit,
+            target: .networkKit,
             dependencies: [
+                .target(name: .model),
                 .target(name: .coreKit),
-                .target(name: .model)
+                .external(.openapiGenerated)
             ]
         ),
         .make(
-            target: .networkKit,
+            target: .commonKit,
             dependencies: [
-                .target(name: .commonKit),
-                .external(.openapiGenerated)
+                .target(name: .networkKit)
             ]
         ),
         .makeUnitTest(

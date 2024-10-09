@@ -44,6 +44,7 @@ public struct AuthPhoneVerifyView: View {
                 errorMessage: $container.model.errorMessage,
                 focused: _verifyTextFieldFocused
             )
+            .textContentType(.oneTimeCode)
             .onChange(of: verifyTextFieldFocused) {
                 intent.onChangeFocusState(verifyTextFieldFocused)
             }

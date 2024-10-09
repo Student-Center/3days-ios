@@ -15,8 +15,7 @@ let project: Project = .make(
             target: .signUp,
             dependencies: [
                 .project(target: .commonKit),
-                .project(target: .designCore),
-                .project(target: .networkKit)
+                .project(target: .designCore)
             ]
         ),
         .makeUnitTest(
@@ -29,8 +28,7 @@ let project: Project = .make(
             target: .main,
             dependencies: [
                 .project(target: .commonKit),
-                .project(target: .designCore),
-                .project(target: .networkKit)
+                .project(target: .designCore)
             ]
         )
     ]
