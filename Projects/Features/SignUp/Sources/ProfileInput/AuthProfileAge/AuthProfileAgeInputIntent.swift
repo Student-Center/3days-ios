@@ -69,7 +69,7 @@ extension AuthProfileAgeInputIntent: AuthProfileAgeInputIntent.Intentable {
         Task {
             // TODO: 순서 재정의
             await AppCoordinator.shared.push(
-                .signUp(.authName)
+                .signUp(.authCompany)
             )
         }
     }

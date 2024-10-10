@@ -20,7 +20,7 @@ actor LoggingMiddleware {
     private let logger: Logger
     package let bodyLoggingPolicy: BodyLoggingPolicy
 
-    package init(logger: Logger = defaultLogger, bodyLoggingConfiguration: BodyLoggingPolicy = .upTo(maxBytes: 2048)) {
+    package init(logger: Logger = defaultLogger, bodyLoggingConfiguration: BodyLoggingPolicy = .upTo(maxBytes: 10000)) {
         self.logger = logger
         self.bodyLoggingPolicy = bodyLoggingConfiguration
     }
@@ -77,19 +77,17 @@ extension LoggingMiddleware: ServerMiddleware {
 
 extension LoggingMiddleware {
     func log(_ request: HTTPRequest, _ requestBody: BodyLoggingPolicy.BodyLog) {
-        logger.debug(
-            "Request: \(request.method, privacy: .public) \(request.path ?? "<nil>", privacy: .public) body: \(requestBody, privacy: .auto)"
-        )
+        let decodedPath = request.path?.removingPercentEncoding ?? "<nil>"
+        print("Request: \(request.method) \(decodedPath) body: \(requestBody)")
     }
 
     func log(_ request: HTTPRequest, _ response: HTTPResponse, _ responseBody: BodyLoggingPolicy.BodyLog) {
-        logger.debug(
-            "Response: \(request.method, privacy: .public) \(request.path ?? "<nil>", privacy: .public) \(response.status, privacy: .public) body: \(responseBody, privacy: .auto)"
-        )
+        let decodedPath = request.path?.removingPercentEncoding ?? "<nil>"
+        print("Response: \(request.method) \(decodedPath) \(response.status) body: \(responseBody)")
     }
 
     func log(_ request: HTTPRequest, failedWith error: any Error) {
-        logger.warning("Request failed. Error: \(error.localizedDescription)")
+        print("Request failed. Error: \(error.localizedDescription)")
     }
 }
 

@@ -49,6 +49,27 @@ public struct AuthPhoneInputView: View {
             
             Spacer()
             
+            // only dev 인증 건너뛰기
+            #if STAGING || DEBUG
+            HStack {
+                Spacer()
+                Button("개발자 권력으로 건너뛰기") {
+                    // pushNextView 열어주지 않고 dev에서만 캐스팅하여 사용
+                    if let intent = intent as? AuthPhoneInputIntent {
+                        intent.pushNextView(
+                            smsResponse: .init(
+                                userType: .NEW,
+                                authCodeId: "DEV-CODE",
+                                phoneNumber: "010-1234-5678"
+                            )
+                        )
+                    }
+                }
+                Spacer()
+            }
+            #endif
+            // --
+            
             CTABottomButton(
                 title: "다음",
                 isActive: state.isPhoneValidated

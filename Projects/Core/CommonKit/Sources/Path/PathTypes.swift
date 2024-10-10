@@ -18,6 +18,22 @@ public enum PathType: Hashable {
     public static var debugPreviewTypes: [PathType] = [
         .designPreview,
         .main,
+        .signUp(.authPhoneInput),
+        .signUp(
+            .authPhoneVerify(
+                SMSSendResponse(
+                    userType: .NEW,
+                    authCodeId: "tempCode",
+                    phoneNumber: "010-1234-5678"
+                )
+            )
+        ),
+        .signUp(.authAgreement),
+        .signUp(.authGreeting),
+        .signUp(.authProfileGender),
+        .signUp(.authProfileAge),
+        .signUp(.authCompany),
+        .signUp(.authName),
         .signUp(.authPhoneInput)
     ]
     #endif
@@ -35,6 +51,7 @@ public enum PathType: Hashable {
             case .authGreeting: return "가입 후 환영"
             case .authProfileGender: return "성별 입력"
             case .authProfileAge: return "나이 입력"
+            case .authCompany: return "내 직장 입력"
             case .authName: return "이름 입력"
             }
         }
@@ -49,6 +66,7 @@ public enum SignUpSubViewType: Hashable {
     case authGreeting
     case authProfileGender
     case authProfileAge
+    case authCompany
     case authName
     
     public static func == (lhs: SignUpSubViewType, rhs: SignUpSubViewType) -> Bool {
@@ -69,8 +87,10 @@ public enum SignUpSubViewType: Hashable {
             hasher.combine(4)
         case .authProfileAge:
             hasher.combine(5)
-        case .authName:
+        case .authCompany:
             hasher.combine(6)
+        case .authName:
+            hasher.combine(7)
         }
     }
 }

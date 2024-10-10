@@ -14,7 +14,9 @@ jobs:
       run: |
           curl https://mise.run | sh
           mise install
-          
+    - name: Create Secret.swift file
+      run: |
+          echo '${{ secrets.SECRET_SWIFT }}' > ./Projects/Core/CoreKit/Sources/Secret.swift
     - name: Install Tuist dependencies
       run: mise x -- tuist install
       
