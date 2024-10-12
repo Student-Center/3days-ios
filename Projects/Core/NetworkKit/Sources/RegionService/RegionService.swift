@@ -18,7 +18,7 @@ public protocol RegionServiceProtocol {
 
 //MARK: - Service
 public final class RegionService {
-    public static var shared = RegionService()
+    public static let shared = RegionService()
     private init() {}
 }
 

@@ -90,7 +90,8 @@ public struct AuthRegionView: View {
             }
             
             CTABottomButton(
-                title: "다음"
+                title: "다음",
+                isActive: state.isValidated
             ) {
                 
             }

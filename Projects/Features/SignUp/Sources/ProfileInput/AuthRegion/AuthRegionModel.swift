@@ -39,7 +39,9 @@ final class AuthRegionModel: ObservableObject {
     @Published var subRegions: [RegionDomain] = []
     @Published var selectedSubRegions: [RegionDomain] = []
     
-    @Published var isValidated: Bool = false
+    var isValidated: Bool {
+        selectedMainRegion != nil && selectedSubRegions.isNotEmpty
+    }
     
     // default
     @Published var isLoading: Bool = false
@@ -58,7 +60,6 @@ protocol AuthRegionModelActionable: AnyObject {
     func setSelectedMainRegion(_ region: String)
     func setSubRegions(_ subRegions: [RegionDomain])
     func setSelectedSubRegion(_ subRegions: [RegionDomain])
-    func setValidation(value: Bool)
 
     // default
     func setLoading(status: Bool)
@@ -82,10 +83,6 @@ extension AuthRegionModel: AuthRegionModelActionable {
     }
     func setSelectedSubRegion(_ subRegions: [RegionDomain]) {
         self.selectedSubRegions = subRegions
-    }
-    
-    func setValidation(value: Bool) {
-        isValidated = value
     }
     
     // default
