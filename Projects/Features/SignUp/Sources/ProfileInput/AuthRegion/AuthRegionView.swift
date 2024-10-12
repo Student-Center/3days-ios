@@ -89,6 +89,7 @@ public struct AuthRegionView: View {
                             region: region,
                             isSelected: isSelected
                         )
+                        .shadow(.default)
                         .onTapGesture {
                             intent.onTapMainRegion(region)
                         }
@@ -110,6 +111,7 @@ public struct AuthRegionView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 24)
                     .foregroundStyle(.white)
+                    .shadow(.default)
                 RoundedRectangle(cornerRadius: 24)
                     .foregroundStyle(
                         DesignCore.Colors.blue50
@@ -124,82 +126,58 @@ public struct AuthRegionView: View {
                             .foregroundStyle(DesignCore.Colors.blue500)
                     }
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 5)
+                    .padding(.bottom, 0)
                     
                     GeometryReader { geometry in
-                        ScrollView {
-                            CustomTagListView(
-                                capsuleViews,
-                                horizontalSpace: 6,
-                                verticalSpace: 6
+                        ZStack {
+                            let tagModels = state.subRegions.map {
+                                TagModel(id: $0.id, name: $0.subRegion)
+                            }
+                            let selectedTagModels = state.selectedSubRegions.map {
+                                TagModel(id: $0.id, name: $0.subRegion)
+                            }
+                            TagListView(
+                                tagModels: tagModels,
+                                selectedTagModels: selectedTagModels,
+                                onSelectedTag: { index in
+                                    intent.onTapSubRegion(
+                                        totalSubRegions: state.selectedSubRegions,
+                                        selectedSubRegion: state.subRegions[index]
+                                    )
+                                }
                             )
                             .padding(.horizontal, 20)
                             .padding(.vertical, 5)
+                            .id(selectedTagModels.map { $0.id }.joined())
+                            .contentShape(Rectangle())
+                            
+                            VStack {
+                                LinearGradient(
+                                    colors: [DesignCore.Colors.blue50, .clear],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                                .frame(height: 20)
+                                .padding(.horizontal, 3)
+                                .offset(y: -2)
+                                
+                                Spacer()
+                                
+                                LinearGradient(
+                                    colors: [DesignCore.Colors.blue50, .clear],
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                )
+                                .frame(height: 20)
+                                .padding(.horizontal, 3)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 24))
                         }
+                        .frame(height: geometry.size.height)
                     }
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 10)
-            }
-        }
-    }
-    
-    var capsuleViews: [CustomTagSingleView<SubRegionCapsuleView>] {
-        state.subRegions.map { subRegion in
-            let index = state.selectedSubRegion.firstIndex { $0.id == subRegion.id }
-            return CustomTagSingleView {
-                SubRegionCapsuleView(
-                    subRegion: subRegion,
-                    isSelected: index != nil
-                ) {
-                    intent.onTapSubRegion(
-                        totalSubRegions: state.selectedSubRegion,
-                        selectedSubRegion: subRegion
-                    )
-                }
-            }
-        }
-    }
-    
-    struct SubRegionCapsuleView: View {
-        
-        let subRegion: RegionDomain
-        let isSelected: Bool
-        let handler: () -> Void
-        
-        var body: some View {
-            ZStack {
-                Text(subRegion.subRegion)
-                    .typography(.medium_14)
-                    .foregroundColor(isSelected ? .white : DesignCore.Colors.blue500)
-                    .padding(.vertical, 10)
-                    .padding(.horizontal, 12)
-                    .background {
-                        Capsule()
-                            .inset(by: 1)
-                            .stroke(
-                                isSelected ? .white : Color(hex: 0xDFE8EF),
-                                lineWidth: isSelected ? 3 : 1
-                            )
-                            .fill(
-                                isSelected ?
-                                LinearGradient(
-                                    colors: [
-                                        Color(hex: 0x93CAF8),
-                                        Color(hex: 0x76B6EB)
-                                    ],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )  : LinearGradient(
-                                    colors: [.white],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                    }
-                    .onTapGesture {
-                        handler()
-                    }
             }
         }
     }
@@ -214,7 +192,6 @@ public struct AuthRegionView: View {
                 .typography(.semibold_14)
                 .padding(.leading, 14)
         }
-        .shadow(.default)
         .frame(width: 90, height: 42)
     }
 }

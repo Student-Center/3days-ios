@@ -19,7 +19,7 @@ final class AuthRegionModel: ObservableObject {
         var mainRegions: [String] { get }
         var selectedMainRegion: String? { get }
         var subRegions: [RegionDomain] { get }
-        var selectedSubRegion: [RegionDomain] { get }
+        var selectedSubRegions: [RegionDomain] { get }
         
         var isValidated: Bool { get }
         
@@ -37,7 +37,7 @@ final class AuthRegionModel: ObservableObject {
     @Published var selectedMainRegion: String?
     
     @Published var subRegions: [RegionDomain] = []
-    @Published var selectedSubRegion: [RegionDomain] = []
+    @Published var selectedSubRegions: [RegionDomain] = []
     
     @Published var isValidated: Bool = false
     
@@ -81,7 +81,7 @@ extension AuthRegionModel: AuthRegionModelActionable {
         self.subRegions = subRegions
     }
     func setSelectedSubRegion(_ subRegions: [RegionDomain]) {
-        self.selectedSubRegion = subRegions
+        self.selectedSubRegions = subRegions
     }
     
     func setValidation(value: Bool) {

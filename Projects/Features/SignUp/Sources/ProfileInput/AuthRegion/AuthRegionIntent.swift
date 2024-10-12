@@ -81,7 +81,6 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
         } else {
             result.append(selectedSubRegion)
         }
-        
         model?.setSelectedSubRegion(result)
     }
     
