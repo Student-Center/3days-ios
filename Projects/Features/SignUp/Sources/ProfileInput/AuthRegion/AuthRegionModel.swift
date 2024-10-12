@@ -9,12 +9,18 @@
 import Foundation
 import CommonKit
 import CoreKit
+import SignUpDomain
 
 final class AuthRegionModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
+        var mainRegions: [String] { get }
+        var selectedMainRegion: String? { get }
+        var subRegions: [RegionDomain] { get }
+        var selectedSubRegion: [RegionDomain] { get }
+        
         var isValidated: Bool { get }
         
         // default
@@ -27,6 +33,12 @@ final class AuthRegionModel: ObservableObject {
     
     //MARK: State Properties
     // content
+    @Published var mainRegions: [String] = []
+    @Published var selectedMainRegion: String?
+    
+    @Published var subRegions: [RegionDomain] = []
+    @Published var selectedSubRegion: [RegionDomain] = []
+    
     @Published var isValidated: Bool = false
     
     // default
@@ -42,6 +54,10 @@ extension AuthRegionModel: AuthRegionModel.Stateful {}
 //MARK: - Actionable
 protocol AuthRegionModelActionable: AnyObject {
     // content
+    func setMainRegions(_ regions: [String])
+    func setSelectedMainRegion(_ region: String)
+    func setSubRegions(_ subRegions: [RegionDomain])
+    func setSelectedSubRegion(_ subRegions: [RegionDomain])
     func setValidation(value: Bool)
 
     // default
@@ -55,6 +71,19 @@ protocol AuthRegionModelActionable: AnyObject {
 
 extension AuthRegionModel: AuthRegionModelActionable {
     // content
+    func setMainRegions(_ regions: [String]) {
+        mainRegions = regions
+    }
+    func setSelectedMainRegion(_ region: String) {
+        selectedMainRegion = region
+    }
+    func setSubRegions(_ subRegions: [RegionDomain]) {
+        self.subRegions = subRegions
+    }
+    func setSelectedSubRegion(_ subRegions: [RegionDomain]) {
+        self.selectedSubRegion = subRegions
+    }
+    
     func setValidation(value: Bool) {
         isValidated = value
     }

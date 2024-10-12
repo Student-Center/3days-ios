@@ -34,6 +34,7 @@ public enum PathType: Hashable {
         .signUp(.authProfileAge),
         .signUp(.authCompany),
         .signUp(.authName),
+        .signUp(.authRegion),
         .signUp(.authPhoneInput)
     ]
     #endif
@@ -52,6 +53,7 @@ public enum PathType: Hashable {
             case .authProfileGender: return "성별 입력"
             case .authProfileAge: return "나이 입력"
             case .authCompany: return "내 직장 입력"
+            case .authRegion: return "내 지역, 선호 지역 입력"
             case .authName: return "이름 입력"
             }
         }
@@ -67,6 +69,7 @@ public enum SignUpSubViewType: Hashable {
     case authProfileGender
     case authProfileAge
     case authCompany
+    case authRegion
     case authName
     
     public static func == (lhs: SignUpSubViewType, rhs: SignUpSubViewType) -> Bool {
@@ -89,8 +92,10 @@ public enum SignUpSubViewType: Hashable {
             hasher.combine(5)
         case .authCompany:
             hasher.combine(6)
-        case .authName:
+        case .authRegion:
             hasher.combine(7)
+        case .authName:
+            hasher.combine(8)
         }
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import SignUpDomain
 
 public struct AuthRegionView: View {
     
@@ -17,43 +18,6 @@ public struct AuthRegionView: View {
     
     private var intent: AuthRegionIntent.Intentable { container.intent }
     private var state: AuthRegionModel.Stateful { container.model }
-    
-    @State var regionData = [
-        "강원",
-        "경기",
-        "경남",
-        "경북",
-        "광주",
-        "대구",
-        "대전",
-        "부산",
-        "서울",
-        "세종",
-        "울산",
-        "인천",
-        "전남",
-        "전북",
-        "제주",
-        "충남",
-        "충북"
-      ]
-    @State var selectedRegion = "경기"
-    
-    var subRegionData = [
-        "중원구",
-        "노원구",
-        "강남구",
-        "서초구",
-        "미추홀구",
-        "중구",
-        "곡반정동",
-        "우리집",
-        "긴구구구구",
-        "두글",
-        "우옹"
-    ]
-    
-    @State var selectedSubRegion = ["중원구", "노원구"]
     
     public init() {
         let model = AuthRegionModel()
@@ -119,14 +83,14 @@ public struct AuthRegionView: View {
         HStack {
             ScrollView {
                 VStack(spacing: 4) {
-                    ForEach(regionData, id: \.self) { region in
-                        let isSelected = region == selectedRegion
+                    ForEach(state.mainRegions, id: \.self) { region in
+                        let isSelected = region == state.selectedMainRegion
                         regionLabel(
                             region: region,
                             isSelected: isSelected
                         )
                         .onTapGesture {
-                            selectedRegion = region
+                            intent.onTapMainRegion(region)
                         }
                     }
                 }
@@ -152,14 +116,15 @@ public struct AuthRegionView: View {
                     )
                     .padding(3)
                 
-                VStack {
+                VStack(spacing: 0) {
                     HStack(spacing: 4) {
                         DesignCore.Images.locationMark.image
-                        LeftAlignText(selectedRegion)
+                        LeftAlignText(state.selectedMainRegion ?? "")
                             .typography(.medium_14)
                             .foregroundStyle(DesignCore.Colors.blue500)
                     }
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 5)
                     
                     GeometryReader { geometry in
                         ScrollView {
@@ -169,31 +134,42 @@ public struct AuthRegionView: View {
                                 verticalSpace: 6
                             )
                             .padding(.horizontal, 20)
+                            .padding(.vertical, 5)
                         }
                     }
                 }
-                .padding(.vertical, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 10)
             }
         }
     }
     
     var capsuleViews: [CustomTagSingleView<SubRegionCapsuleView>] {
-        subRegionData.map { data in
-            let index = selectedSubRegion.firstIndex { $0 == data }
+        state.subRegions.map { subRegion in
+            let index = state.selectedSubRegion.firstIndex { $0.id == subRegion.id }
             return CustomTagSingleView {
-                SubRegionCapsuleView(text: data, isSelected: index != nil)
+                SubRegionCapsuleView(
+                    subRegion: subRegion,
+                    isSelected: index != nil
+                ) {
+                    intent.onTapSubRegion(
+                        totalSubRegions: state.selectedSubRegion,
+                        selectedSubRegion: subRegion
+                    )
+                }
             }
         }
     }
     
     struct SubRegionCapsuleView: View {
         
-        let text: String
+        let subRegion: RegionDomain
         let isSelected: Bool
+        let handler: () -> Void
         
         var body: some View {
             ZStack {
-                Text(text)
+                Text(subRegion.subRegion)
                     .typography(.medium_14)
                     .foregroundColor(isSelected ? .white : DesignCore.Colors.blue500)
                     .padding(.vertical, 10)
@@ -220,6 +196,9 @@ public struct AuthRegionView: View {
                                     endPoint: .trailing
                                 )
                             )
+                    }
+                    .onTapGesture {
+                        handler()
                     }
             }
         }

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import OpenapiGenerated
 
 public struct RegionDomain {
     public let id: String
@@ -21,5 +22,11 @@ public struct RegionDomain {
         self.id = id
         self.mainRegion = mainRegion
         self.subRegion = subRegion
+    }
+    
+    public init(dto: Components.Schemas.Location) {
+        self.id = dto.id
+        self.mainRegion = dto.region
+        self.subRegion = dto.subRegion
     }
 }
