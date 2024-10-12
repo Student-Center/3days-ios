@@ -52,6 +52,7 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
     func onAppear() {}
     
     func task() async {
+        model?.setLoading(status: true)
         let mainRegions = await requestMainRegions()
         fetchMainRegions(mainRegions)
         guard mainRegions.isNotEmpty else { return }
@@ -79,6 +80,8 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
             .firstIndex(where: { $0.id == selectedSubRegion.id }) {
             result.remove(at: index)
         } else {
+            // 갯수 10개 제한
+            guard result.count <= 10 else { return }
             result.append(selectedSubRegion)
         }
         model?.setSelectedSubRegion(result)
@@ -99,6 +102,7 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
     
     func requestSubRegions(mainRegion: String) async -> [RegionDomain] {
         do {
+            model?.setLoading(status: false)
             return try await RegionService.shared.requestSubRegions(mainRegion: mainRegion)
                 .map { RegionDomain(dto: $0) }
             

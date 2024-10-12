@@ -18,8 +18,6 @@ class TagListCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let backgroundGradientLayer = CAGradientLayer()
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
@@ -31,15 +29,10 @@ class TagListCollectionViewCell: UICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        backgroundGradientLayer.frame = contentView.bounds
-        backgroundGradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
-        backgroundGradientLayer.endPoint = CGPoint(x: 1, y: 0.5)
-        
         contentView.layer.cornerRadius = contentView.bounds.height / 2
     }
     
     private func setupUI() {
-        contentView.layer.addSublayer(backgroundGradientLayer)
         contentView.layer.masksToBounds = true
         
         contentView.addSubview(label)
@@ -66,17 +59,12 @@ class TagListCollectionViewCell: UICollectionViewCell {
         UIView.performWithoutAnimation {
             if isTagSelected {
                 label.textColor = .white
-                backgroundGradientLayer.colors = [
-                    UIColor(hex: 0x93CAF8).cgColor,
-                    UIColor(hex: 0x76B6EB).cgColor
-                ]
-                backgroundGradientLayer.backgroundColor = UIColor.clear.cgColor
+                contentView.backgroundColor = UIColor(hex: 0x93CAF8)
                 contentView.layer.borderColor = UIColor.white.cgColor
                 contentView.layer.borderWidth = 3
             } else {
                 label.textColor = UIColor(resource: .blue500)
-                backgroundGradientLayer.colors = []
-                backgroundGradientLayer.backgroundColor = UIColor.white.cgColor
+                contentView.backgroundColor = .white
                 contentView.layer.borderColor = UIColor(hex: 0xDFE8EF).cgColor
                 contentView.layer.borderWidth = 1
             }

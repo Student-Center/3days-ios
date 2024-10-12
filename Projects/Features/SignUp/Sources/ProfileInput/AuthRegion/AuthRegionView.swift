@@ -42,19 +42,50 @@ public struct AuthRegionView: View {
                 mainMessage: "당신의 활동 지역은 어디인가요?"
             ) {
                 VStack {
-                    LeftAlignText("내 지역")
-                        .typography(.regular_14)
-                        .foregroundStyle(DesignCore.Colors.blue500)
-                        .padding(.bottom, 10)
-                    
-                    VStack {
-                        ZStack {
-                            leftRegionScrollView
-                            rightSubRegionSectionView
+                    ScrollViewReader { reader in
+                        HStack(alignment: .center) {
+                            VStack(alignment: .center) {
+                                Spacer()
+                                Text("내 지역")
+                                    .typography(.regular_14)
+                                    .foregroundStyle(DesignCore.Colors.blue500)
+                                    .padding(.bottom, 10)
+                            }
+                            .frame(width: 46, height: 34)
+                            ScrollView(.horizontal) {
+                                HStack {
+                                    ForEach(0 ..< state.selectedSubRegions.count, id: \.self) { index in
+                                        let subRegion = state.selectedSubRegions[index]
+                                        selectedRegionSingleChip(text: subRegion.subRegion)
+                                            .id(subRegion.id)
+                                            .onTapGesture {
+                                                intent.onTapSubRegion(
+                                                    totalSubRegions: state.selectedSubRegions,
+                                                    selectedSubRegion: subRegion
+                                                )
+                                            }
+                                            .onAppear {
+                                                if index == state.selectedSubRegions.count - 1 {
+                                                    withAnimation {
+                                                        reader.scrollTo(subRegion.id)
+                                                    }
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+                            .scrollIndicators(.hidden)
                         }
-                        Spacer()
+                        
+                        VStack {
+                            ZStack {
+                                leftRegionScrollView
+                                rightSubRegionSectionView
+                            }
+                            Spacer()
+                        }
+                        .padding(.bottom, 90)
                     }
-                    .padding(.bottom, 90)
                 }
             }
             
@@ -78,6 +109,39 @@ public struct AuthRegionView: View {
         .setLoading(state.isLoading)
     }
     
+    @ViewBuilder
+    func selectedRegionSingleChip(text: String) -> some View {
+        HStack(spacing: 4) {
+            Text(text)
+            Image(systemName: "xmark")
+                .resizable()
+                .frame(width: 10, height: 10)
+        }
+        .typography(.medium_14)
+        .foregroundColor(.white)
+        .padding(.horizontal, 12)
+        .frame(height: 34)
+        .background {
+            Capsule()
+                .inset(by: 1)
+                .stroke(
+                    .white,
+                    lineWidth: 4
+                )
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(hex: 0x93CAF8),
+                            Color(hex: 0x76B6EB)
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+        }
+        
+    }
+        
     @ViewBuilder
     var leftRegionScrollView: some View {
         HStack {
