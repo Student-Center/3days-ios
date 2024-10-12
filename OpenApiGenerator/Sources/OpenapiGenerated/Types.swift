@@ -39,6 +39,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `POST /users`.
     /// - Remark: Generated from `#/paths//users/post(registerUser)`.
     func registerUser(_ input: Operations.registerUser.Input) async throws -> Operations.registerUser.Output
+    /// 내 프로필 조회
+    ///
+    /// 현재 로그인한 사용자의 프로필 정보를 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)`.
+    func getMyUserInfo(_ input: Operations.getMyUserInfo.Input) async throws -> Operations.getMyUserInfo.Output
     /// 액세스 토큰 갱신
     ///
     /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
@@ -46,13 +53,20 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `POST /auth/token/refresh`.
     /// - Remark: Generated from `#/paths//auth/token/refresh/post(refreshToken)`.
     func refreshToken(_ input: Operations.refreshToken.Input) async throws -> Operations.refreshToken.Output
-    /// 지역 검색
+    /// 지역 목록 조회
     ///
-    /// 지역 정보를 검색합니다.
+    /// 시, 도 단위의 주요 행정 구역 목록을 조회합니다.
     ///
-    /// - Remark: HTTP `GET /locations`.
-    /// - Remark: Generated from `#/paths//locations/get(searchLocations)`.
-    func searchLocations(_ input: Operations.searchLocations.Input) async throws -> Operations.searchLocations.Output
+    /// - Remark: HTTP `GET /locations/regions`.
+    /// - Remark: Generated from `#/paths//locations/regions/get(getLocationRegions)`.
+    func getLocationRegions(_ input: Operations.getLocationRegions.Input) async throws -> Operations.getLocationRegions.Output
+    /// 지역 목록 조회
+    ///
+    /// 시, 도 단위의 주요 지역을 기반으로 지역을 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /locations/{regionName}`.
+    /// - Remark: Generated from `#/paths//locations/{regionName}/get(getLocationsByRegion)`.
+    func getLocationsByRegion(_ input: Operations.getLocationsByRegion.Input) async throws -> Operations.getLocationsByRegion.Output
     /// 직장명 검색
     ///
     /// 직장을 검색합니다.
@@ -135,6 +149,15 @@ extension APIProtocol {
             body: body
         ))
     }
+    /// 내 프로필 조회
+    ///
+    /// 현재 로그인한 사용자의 프로필 정보를 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)`.
+    public func getMyUserInfo(headers: Operations.getMyUserInfo.Input.Headers = .init()) async throws -> Operations.getMyUserInfo.Output {
+        try await getMyUserInfo(Operations.getMyUserInfo.Input(headers: headers))
+    }
     /// 액세스 토큰 갱신
     ///
     /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
@@ -150,18 +173,27 @@ extension APIProtocol {
             body: body
         ))
     }
-    /// 지역 검색
+    /// 지역 목록 조회
     ///
-    /// 지역 정보를 검색합니다.
+    /// 시, 도 단위의 주요 행정 구역 목록을 조회합니다.
     ///
-    /// - Remark: HTTP `GET /locations`.
-    /// - Remark: Generated from `#/paths//locations/get(searchLocations)`.
-    public func searchLocations(
-        query: Operations.searchLocations.Input.Query,
-        headers: Operations.searchLocations.Input.Headers = .init()
-    ) async throws -> Operations.searchLocations.Output {
-        try await searchLocations(Operations.searchLocations.Input(
-            query: query,
+    /// - Remark: HTTP `GET /locations/regions`.
+    /// - Remark: Generated from `#/paths//locations/regions/get(getLocationRegions)`.
+    public func getLocationRegions(headers: Operations.getLocationRegions.Input.Headers = .init()) async throws -> Operations.getLocationRegions.Output {
+        try await getLocationRegions(Operations.getLocationRegions.Input(headers: headers))
+    }
+    /// 지역 목록 조회
+    ///
+    /// 시, 도 단위의 주요 지역을 기반으로 지역을 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /locations/{regionName}`.
+    /// - Remark: Generated from `#/paths//locations/{regionName}/get(getLocationsByRegion)`.
+    public func getLocationsByRegion(
+        path: Operations.getLocationsByRegion.Input.Path,
+        headers: Operations.getLocationsByRegion.Input.Headers = .init()
+    ) async throws -> Operations.getLocationsByRegion.Output {
+        try await getLocationsByRegion(Operations.getLocationsByRegion.Input(
+            path: path,
             headers: headers
         ))
     }
@@ -430,6 +462,53 @@ public enum Components {
                 case desiredPartner
             }
         }
+        /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse`.
+        public struct GetMyUserInfoResponse: Codable, Hashable, Sendable {
+            /// 사용자 식별자
+            ///
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/id`.
+            public var id: Swift.String?
+            /// 사용자 이름
+            ///
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/name`.
+            public var name: Swift.String
+            /// 사용자의 전화번호 (한국 휴대폰 번호 형식)
+            ///
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/phoneNumber`.
+            public var phoneNumber: Swift.String
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/profile`.
+            public var profile: Components.Schemas.UserProfile
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/desiredPartner`.
+            public var desiredPartner: Components.Schemas.UserDesiredPartner
+            /// Creates a new `GetMyUserInfoResponse`.
+            ///
+            /// - Parameters:
+            ///   - id: 사용자 식별자
+            ///   - name: 사용자 이름
+            ///   - phoneNumber: 사용자의 전화번호 (한국 휴대폰 번호 형식)
+            ///   - profile:
+            ///   - desiredPartner:
+            public init(
+                id: Swift.String? = nil,
+                name: Swift.String,
+                phoneNumber: Swift.String,
+                profile: Components.Schemas.UserProfile,
+                desiredPartner: Components.Schemas.UserDesiredPartner
+            ) {
+                self.id = id
+                self.name = name
+                self.phoneNumber = phoneNumber
+                self.profile = profile
+                self.desiredPartner = desiredPartner
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case name
+                case phoneNumber
+                case profile
+                case desiredPartner
+            }
+        }
         /// 사용자 프로필 정보
         ///
         /// - Remark: Generated from `#/components/schemas/UserProfile`.
@@ -595,33 +674,8 @@ public enum Components {
                 case expiresIn
             }
         }
-        /// 위치 정보 리스트 응답
-        ///
-        /// - Remark: Generated from `#/components/schemas/SearchLocationsResponse`.
-        public struct SearchLocationsResponse: Codable, Hashable, Sendable {
-            /// - Remark: Generated from `#/components/schemas/SearchLocationsResponse/locations`.
-            public var locations: [Components.Schemas.Location]
-            /// 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
-            ///
-            /// - Remark: Generated from `#/components/schemas/SearchLocationsResponse/next`.
-            public var next: Swift.String?
-            /// Creates a new `SearchLocationsResponse`.
-            ///
-            /// - Parameters:
-            ///   - locations:
-            ///   - next: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
-            public init(
-                locations: [Components.Schemas.Location],
-                next: Swift.String? = nil
-            ) {
-                self.locations = locations
-                self.next = next
-            }
-            public enum CodingKeys: String, CodingKey {
-                case locations
-                case next
-            }
-        }
+        /// - Remark: Generated from `#/components/schemas/GetLocationRegionsResponse`.
+        public typealias GetLocationRegionsResponse = [Swift.String]
         /// - Remark: Generated from `#/components/schemas/Location`.
         public struct Location: Codable, Hashable, Sendable {
             /// - Remark: Generated from `#/components/schemas/Location/id`.
@@ -882,6 +936,34 @@ public enum Components {
             /// - Parameters:
             ///   - body: Received HTTP response body
             public init(body: Components.Responses.NotFound.Body) {
+                self.body = body
+            }
+        }
+        public struct Unauthorized: Sendable, Hashable {
+            /// - Remark: Generated from `#/components/responses/Unauthorized/content`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/components/responses/Unauthorized/content/application\/json`.
+                case json(Components.Schemas.ErrorResponse)
+                /// The associated value of the enum case if `self` is `.json`.
+                ///
+                /// - Throws: An error if `self` is not `.json`.
+                /// - SeeAlso: `.json`.
+                public var json: Components.Schemas.ErrorResponse {
+                    get throws {
+                        switch self {
+                        case let .json(body):
+                            return body
+                        }
+                    }
+                }
+            }
+            /// Received HTTP response body
+            public var body: Components.Responses.Unauthorized.Body
+            /// Creates a new `Unauthorized`.
+            ///
+            /// - Parameters:
+            ///   - body: Received HTTP response body
+            public init(body: Components.Responses.Unauthorized.Body) {
                 self.body = body
             }
         }
@@ -1773,6 +1855,164 @@ public enum Operations {
             }
         }
     }
+    /// 내 프로필 조회
+    ///
+    /// 현재 로그인한 사용자의 프로필 정보를 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)`.
+    public enum getMyUserInfo {
+        public static let id: Swift.String = "getMyUserInfo"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/my/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getMyUserInfo.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getMyUserInfo.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.getMyUserInfo.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            public init(headers: Operations.getMyUserInfo.Input.Headers = .init()) {
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/my/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/my/GET/responses/200/content/application\/json`.
+                    case json(Components.Schemas.GetMyUserInfoResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.GetMyUserInfoResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getMyUserInfo.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getMyUserInfo.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 조회 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.getMyUserInfo.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.getMyUserInfo.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
     /// 액세스 토큰 갱신
     ///
     /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
@@ -1965,82 +2205,46 @@ public enum Operations {
             }
         }
     }
-    /// 지역 검색
+    /// 지역 목록 조회
     ///
-    /// 지역 정보를 검색합니다.
+    /// 시, 도 단위의 주요 행정 구역 목록을 조회합니다.
     ///
-    /// - Remark: HTTP `GET /locations`.
-    /// - Remark: Generated from `#/paths//locations/get(searchLocations)`.
-    public enum searchLocations {
-        public static let id: Swift.String = "searchLocations"
+    /// - Remark: HTTP `GET /locations/regions`.
+    /// - Remark: Generated from `#/paths//locations/regions/get(getLocationRegions)`.
+    public enum getLocationRegions {
+        public static let id: Swift.String = "getLocationRegions"
         public struct Input: Sendable, Hashable {
-            /// - Remark: Generated from `#/paths/locations/GET/query`.
-            public struct Query: Sendable, Hashable {
-                /// 검색할 이름
-                ///
-                /// - Remark: Generated from `#/paths/locations/GET/query/name`.
-                public var name: Components.Parameters.NameQuery
-                /// 페이지네이션을 위한 다음 검색 시작 ID
-                ///
-                /// - Remark: Generated from `#/paths/locations/GET/query/next`.
-                public var next: Components.Parameters.NextQuery?
-                /// 반환할 최대 결과 수
-                ///
-                /// - Remark: Generated from `#/paths/locations/GET/query/limit`.
-                public var limit: Components.Parameters.LimitQuery?
-                /// Creates a new `Query`.
-                ///
-                /// - Parameters:
-                ///   - name: 검색할 이름
-                ///   - next: 페이지네이션을 위한 다음 검색 시작 ID
-                ///   - limit: 반환할 최대 결과 수
-                public init(
-                    name: Components.Parameters.NameQuery,
-                    next: Components.Parameters.NextQuery? = nil,
-                    limit: Components.Parameters.LimitQuery? = nil
-                ) {
-                    self.name = name
-                    self.next = next
-                    self.limit = limit
-                }
-            }
-            public var query: Operations.searchLocations.Input.Query
-            /// - Remark: Generated from `#/paths/locations/GET/header`.
+            /// - Remark: Generated from `#/paths/locations/regions/GET/header`.
             public struct Headers: Sendable, Hashable {
-                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.searchLocations.AcceptableContentType>]
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getLocationRegions.AcceptableContentType>]
                 /// Creates a new `Headers`.
                 ///
                 /// - Parameters:
                 ///   - accept:
-                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.searchLocations.AcceptableContentType>] = .defaultValues()) {
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getLocationRegions.AcceptableContentType>] = .defaultValues()) {
                     self.accept = accept
                 }
             }
-            public var headers: Operations.searchLocations.Input.Headers
+            public var headers: Operations.getLocationRegions.Input.Headers
             /// Creates a new `Input`.
             ///
             /// - Parameters:
-            ///   - query:
             ///   - headers:
-            public init(
-                query: Operations.searchLocations.Input.Query,
-                headers: Operations.searchLocations.Input.Headers = .init()
-            ) {
-                self.query = query
+            public init(headers: Operations.getLocationRegions.Input.Headers = .init()) {
                 self.headers = headers
             }
         }
         @frozen public enum Output: Sendable, Hashable {
             public struct Ok: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/locations/GET/responses/200/content`.
+                /// - Remark: Generated from `#/paths/locations/regions/GET/responses/200/content`.
                 @frozen public enum Body: Sendable, Hashable {
-                    /// - Remark: Generated from `#/paths/locations/GET/responses/200/content/application\/json`.
-                    case json(Components.Schemas.SearchLocationsResponse)
+                    /// - Remark: Generated from `#/paths/locations/regions/GET/responses/200/content/application\/json`.
+                    case json(Components.Schemas.GetLocationRegionsResponse)
                     /// The associated value of the enum case if `self` is `.json`.
                     ///
                     /// - Throws: An error if `self` is not `.json`.
                     /// - SeeAlso: `.json`.
-                    public var json: Components.Schemas.SearchLocationsResponse {
+                    public var json: Components.Schemas.GetLocationRegionsResponse {
                         get throws {
                             switch self {
                             case let .json(body):
@@ -2050,26 +2254,26 @@ public enum Operations {
                     }
                 }
                 /// Received HTTP response body
-                public var body: Operations.searchLocations.Output.Ok.Body
+                public var body: Operations.getLocationRegions.Output.Ok.Body
                 /// Creates a new `Ok`.
                 ///
                 /// - Parameters:
                 ///   - body: Received HTTP response body
-                public init(body: Operations.searchLocations.Output.Ok.Body) {
+                public init(body: Operations.getLocationRegions.Output.Ok.Body) {
                     self.body = body
                 }
             }
-            /// 지역 검색 결과
+            /// 조회 성공
             ///
-            /// - Remark: Generated from `#/paths//locations/get(searchLocations)/responses/200`.
+            /// - Remark: Generated from `#/paths//locations/regions/get(getLocationRegions)/responses/200`.
             ///
             /// HTTP response code: `200 ok`.
-            case ok(Operations.searchLocations.Output.Ok)
+            case ok(Operations.getLocationRegions.Output.Ok)
             /// The associated value of the enum case if `self` is `.ok`.
             ///
             /// - Throws: An error if `self` is not `.ok`.
             /// - SeeAlso: `.ok`.
-            public var ok: Operations.searchLocations.Output.Ok {
+            public var ok: Operations.getLocationRegions.Output.Ok {
                 get throws {
                     switch self {
                     case let .ok(response):
@@ -2084,7 +2288,185 @@ public enum Operations {
             }
             /// 서버 오류
             ///
-            /// - Remark: Generated from `#/paths//locations/get(searchLocations)/responses/500`.
+            /// - Remark: Generated from `#/paths//locations/regions/get(getLocationRegions)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 지역 목록 조회
+    ///
+    /// 시, 도 단위의 주요 지역을 기반으로 지역을 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /locations/{regionName}`.
+    /// - Remark: Generated from `#/paths//locations/{regionName}/get(getLocationsByRegion)`.
+    public enum getLocationsByRegion {
+        public static let id: Swift.String = "getLocationsByRegion"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/locations/{regionName}/GET/path`.
+            public struct Path: Sendable, Hashable {
+                /// 조회할 지역의 시, 도 이름
+                ///
+                /// - Remark: Generated from `#/paths/locations/{regionName}/GET/path/regionName`.
+                public var regionName: Swift.String
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - regionName: 조회할 지역의 시, 도 이름
+                public init(regionName: Swift.String) {
+                    self.regionName = regionName
+                }
+            }
+            public var path: Operations.getLocationsByRegion.Input.Path
+            /// - Remark: Generated from `#/paths/locations/{regionName}/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getLocationsByRegion.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getLocationsByRegion.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.getLocationsByRegion.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            public init(
+                path: Operations.getLocationsByRegion.Input.Path,
+                headers: Operations.getLocationsByRegion.Input.Headers = .init()
+            ) {
+                self.path = path
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/locations/{regionName}/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/locations/{regionName}/GET/responses/200/content/application\/json`.
+                    case json([Components.Schemas.Location])
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: [Components.Schemas.Location] {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getLocationsByRegion.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getLocationsByRegion.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 조회 성공
+            ///
+            /// - Remark: Generated from `#/paths//locations/{regionName}/get(getLocationsByRegion)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.getLocationsByRegion.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.getLocationsByRegion.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리소스를 찾을 수 없음
+            ///
+            /// - Remark: Generated from `#/paths//locations/{regionName}/get(getLocationsByRegion)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Components.Responses.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Components.Responses.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//locations/{regionName}/get(getLocationsByRegion)/responses/500`.
             ///
             /// HTTP response code: `500 internalServerError`.
             case internalServerError(Components.Responses.InternalServerError)

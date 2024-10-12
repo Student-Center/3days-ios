@@ -80,7 +80,7 @@ public struct Client: APIProtocol {
             },
             deserializer: { response, responseBody in
                 switch response.status.code {
-                case 200, 201:
+                case 201:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
                     let body: Operations.requestVerification.Output.Created.Body
                     let chosenContentType = try converter.bestContentType(
@@ -552,6 +552,109 @@ public struct Client: APIProtocol {
             }
         )
     }
+    /// 내 프로필 조회
+    ///
+    /// 현재 로그인한 사용자의 프로필 정보를 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)`.
+    public func getMyUserInfo(_ input: Operations.getMyUserInfo.Input) async throws -> Operations.getMyUserInfo.Output {
+        try await client.send(
+            input: input,
+            forOperation: Operations.getMyUserInfo.id,
+            serializer: { input in
+                let path = try converter.renderedPath(
+                    template: "/users/my",
+                    parameters: []
+                )
+                var request: HTTPTypes.HTTPRequest = .init(
+                    soar_path: path,
+                    method: .get
+                )
+                suppressMutabilityWarning(&request)
+                converter.setAcceptHeader(
+                    in: &request.headerFields,
+                    contentTypes: input.headers.accept
+                )
+                return (request, nil)
+            },
+            deserializer: { response, responseBody in
+                switch response.status.code {
+                case 200:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Operations.getMyUserInfo.Output.Ok.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.GetMyUserInfoResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .ok(.init(body: body))
+                case 401:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.Unauthorized.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .unauthorized(.init(body: body))
+                case 500:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.InternalServerError.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .internalServerError(.init(body: body))
+                default:
+                    return .undocumented(
+                        statusCode: response.status.code,
+                        .init()
+                    )
+                }
+            }
+        )
+    }
     /// 액세스 토큰 갱신
     ///
     /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
@@ -686,19 +789,19 @@ public struct Client: APIProtocol {
             }
         )
     }
-    /// 지역 검색
+    /// 지역 목록 조회
     ///
-    /// 지역 정보를 검색합니다.
+    /// 시, 도 단위의 주요 행정 구역 목록을 조회합니다.
     ///
-    /// - Remark: HTTP `GET /locations`.
-    /// - Remark: Generated from `#/paths//locations/get(searchLocations)`.
-    public func searchLocations(_ input: Operations.searchLocations.Input) async throws -> Operations.searchLocations.Output {
+    /// - Remark: HTTP `GET /locations/regions`.
+    /// - Remark: Generated from `#/paths//locations/regions/get(getLocationRegions)`.
+    public func getLocationRegions(_ input: Operations.getLocationRegions.Input) async throws -> Operations.getLocationRegions.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.searchLocations.id,
+            forOperation: Operations.getLocationRegions.id,
             serializer: { input in
                 let path = try converter.renderedPath(
-                    template: "/locations",
+                    template: "/locations/regions",
                     parameters: []
                 )
                 var request: HTTPTypes.HTTPRequest = .init(
@@ -706,27 +809,6 @@ public struct Client: APIProtocol {
                     method: .get
                 )
                 suppressMutabilityWarning(&request)
-                try converter.setQueryItemAsURI(
-                    in: &request,
-                    style: .form,
-                    explode: true,
-                    name: "name",
-                    value: input.query.name
-                )
-                try converter.setQueryItemAsURI(
-                    in: &request,
-                    style: .form,
-                    explode: true,
-                    name: "next",
-                    value: input.query.next
-                )
-                try converter.setQueryItemAsURI(
-                    in: &request,
-                    style: .form,
-                    explode: true,
-                    name: "limit",
-                    value: input.query.limit
-                )
                 converter.setAcceptHeader(
                     in: &request.headerFields,
                     contentTypes: input.headers.accept
@@ -737,7 +819,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.searchLocations.Output.Ok.Body
+                    let body: Operations.getLocationRegions.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -747,7 +829,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Components.Schemas.SearchLocationsResponse.self,
+                            Components.Schemas.GetLocationRegionsResponse.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -757,6 +839,111 @@ public struct Client: APIProtocol {
                         preconditionFailure("bestContentType chose an invalid content type.")
                     }
                     return .ok(.init(body: body))
+                case 500:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.InternalServerError.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .internalServerError(.init(body: body))
+                default:
+                    return .undocumented(
+                        statusCode: response.status.code,
+                        .init()
+                    )
+                }
+            }
+        )
+    }
+    /// 지역 목록 조회
+    ///
+    /// 시, 도 단위의 주요 지역을 기반으로 지역을 조회합니다.
+    ///
+    /// - Remark: HTTP `GET /locations/{regionName}`.
+    /// - Remark: Generated from `#/paths//locations/{regionName}/get(getLocationsByRegion)`.
+    public func getLocationsByRegion(_ input: Operations.getLocationsByRegion.Input) async throws -> Operations.getLocationsByRegion.Output {
+        try await client.send(
+            input: input,
+            forOperation: Operations.getLocationsByRegion.id,
+            serializer: { input in
+                let path = try converter.renderedPath(
+                    template: "/locations/{}",
+                    parameters: [
+                        input.path.regionName
+                    ]
+                )
+                var request: HTTPTypes.HTTPRequest = .init(
+                    soar_path: path,
+                    method: .get
+                )
+                suppressMutabilityWarning(&request)
+                converter.setAcceptHeader(
+                    in: &request.headerFields,
+                    contentTypes: input.headers.accept
+                )
+                return (request, nil)
+            },
+            deserializer: { response, responseBody in
+                switch response.status.code {
+                case 200:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Operations.getLocationsByRegion.Output.Ok.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            [Components.Schemas.Location].self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .ok(.init(body: body))
+                case 404:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.NotFound.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .notFound(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
                     let body: Components.Responses.InternalServerError.Body
