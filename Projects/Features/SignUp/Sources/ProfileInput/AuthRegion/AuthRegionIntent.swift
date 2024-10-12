@@ -122,4 +122,9 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
     
     // content
     func onTapNextButton() {}
+    
+    @MainActor
+    func pushNextView() {
+        AppCoordinator.shared.push(.signUp(.authName))
+    }
 }
