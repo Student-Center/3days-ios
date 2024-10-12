@@ -16,14 +16,18 @@ import NetworkKit
 class AuthRegionIntent {
     private weak var model: AuthRegionModelActionable?
     private let input: DataModel
+    private let regionService: RegionServiceProtocol
+    let maxSelectCount = 10
 
     // MARK: Life cycle
     init(
         model: AuthRegionModelActionable,
-        input: DataModel
+        input: DataModel,
+        regionService: RegionServiceProtocol = RegionService.shared
     ) {
         self.input = input
         self.model = model
+        self.regionService = regionService
     }
 }
 
@@ -82,7 +86,7 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
             result.remove(at: index)
         } else {
             // 갯수 10개 제한
-            guard result.count < 10 else { return }
+            guard result.count < maxSelectCount else { return }
             result.append(selectedSubRegion)
         }
         model?.setSelectedSubRegion(result)
@@ -90,7 +94,7 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
     
     func requestMainRegions() async -> [String] {
         do {
-            return try await RegionService.shared.requestMainRegions()
+            return try await regionService.requestMainRegions()
         } catch {
             print(error)
             return []
@@ -103,7 +107,7 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
     
     func requestSubRegions(mainRegion: String) async -> [RegionDomain] {
         do {
-            return try await RegionService.shared.requestSubRegions(mainRegion: mainRegion)
+            return try await regionService.requestSubRegions(mainRegion: mainRegion)
                 .map { RegionDomain(dto: $0) }
             
         } catch {
