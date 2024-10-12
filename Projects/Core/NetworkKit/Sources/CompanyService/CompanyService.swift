@@ -20,7 +20,7 @@ public protocol CompanyServiceProtocol {
 
 //MARK: - Service
 public final class CompanyService {
-    public static var shared = CompanyService()
+    public static let shared = CompanyService()
     private init() {}
 }
 

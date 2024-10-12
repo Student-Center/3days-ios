@@ -27,8 +27,11 @@ public enum ServerType: String {
            let serverType = ServerType(rawValue: appEnviroment) {
             return serverType
         }
-        assert(false, "App Enviroment가 설정되지 않았습니다")
+        #if STAGING || DEBUG
+        return .dev
+        #else
         return .prod
+        #endif
     }()
     
     public static var current: ServerType {

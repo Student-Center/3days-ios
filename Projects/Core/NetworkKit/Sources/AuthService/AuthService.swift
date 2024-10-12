@@ -28,7 +28,7 @@ public protocol AuthServiceProtocol {
 
 //MARK: - Service
 public final class AuthService {
-    public static var shared = AuthService()
+    public static let shared = AuthService()
     private init() {}
 }
 
