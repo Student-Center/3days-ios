@@ -148,6 +148,6 @@ extension AuthCompanyIntent: AuthCompanyIntent.Intentable {
     
     @MainActor
     func pushNextView() {
-        AppCoordinator.shared.push(.signUp(.authRegion))
+        AppCoordinator.shared.push(.signUp(.authJobOccupation))
     }
 }

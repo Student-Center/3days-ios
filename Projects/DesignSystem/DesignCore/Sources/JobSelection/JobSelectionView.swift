@@ -49,6 +49,7 @@ public struct JobSelectionView: View {
                     }
                 }
             }
+            .padding(.vertical, 12)
             .padding(.horizontal, 30)
         }
     }
