@@ -88,7 +88,6 @@ public struct AuthCompanyView: View {
                                     company: company
                                 )
                             } nextPageHandler: {
-                                print("다음 페이지~")
                                 if let nextSearchKey = state.nextSearchKey {
                                     print("\(nextSearchKey)로 호출")
                                     intent.needRequestNextPage(

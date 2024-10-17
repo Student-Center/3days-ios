@@ -33,6 +33,7 @@ public enum PathType: Hashable {
         .signUp(.authProfileGender),
         .signUp(.authProfileAge),
         .signUp(.authCompany),
+        .signUp(.authJobOccupation),
         .signUp(.authName),
         .signUp(.authRegion),
         .signUp(.authPhoneInput)
@@ -53,6 +54,7 @@ public enum PathType: Hashable {
             case .authProfileGender: return "성별 입력"
             case .authProfileAge: return "나이 입력"
             case .authCompany: return "내 직장 입력"
+            case .authJobOccupation: return "내 직업 직군"
             case .authRegion: return "내 지역, 선호 지역 입력"
             case .authName: return "이름 입력"
             }
@@ -69,6 +71,7 @@ public enum SignUpSubViewType: Hashable {
     case authProfileGender
     case authProfileAge
     case authCompany
+    case authJobOccupation
     case authRegion
     case authName
     
@@ -92,10 +95,12 @@ public enum SignUpSubViewType: Hashable {
             hasher.combine(5)
         case .authCompany:
             hasher.combine(6)
-        case .authRegion:
+        case .authJobOccupation:
             hasher.combine(7)
-        case .authName:
+        case .authRegion:
             hasher.combine(8)
+        case .authName:
+            hasher.combine(9)
         }
     }
 }

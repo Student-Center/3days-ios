@@ -15,6 +15,8 @@ struct ProfileInputTemplatedView<ContentView: View>: View {
     let maxPage: Int
     let subMessage: String
     let mainMessage: String
+    var hPadding: CGFloat = 26
+    
     @ViewBuilder var contentView: () -> ContentView
     
     var body: some View {
@@ -45,7 +47,7 @@ struct ProfileInputTemplatedView<ContentView: View>: View {
             .padding(.horizontal, 26)
             
             contentView()
-                .padding(.horizontal, 26)
+                .padding(.horizontal, hPadding)
         }
     }
 }
