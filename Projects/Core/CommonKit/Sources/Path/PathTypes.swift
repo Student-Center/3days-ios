@@ -36,7 +36,9 @@ public enum PathType: Hashable {
         .signUp(.authJobOccupation),
         .signUp(.authName),
         .signUp(.authRegion),
-        .signUp(.authPhoneInput)
+        .signUp(.authPhoneInput),
+        
+        .signUp(.dreamPartnerAgeRange)
     ]
     #endif
     
@@ -57,6 +59,8 @@ public enum PathType: Hashable {
             case .authJobOccupation: return "내 직업 직군"
             case .authRegion: return "내 지역, 선호 지역 입력"
             case .authName: return "이름 입력"
+                
+            case .dreamPartnerAgeRange: return "이상형 나이대"
             }
         }
     }
@@ -74,6 +78,8 @@ public enum SignUpSubViewType: Hashable {
     case authJobOccupation
     case authRegion
     case authName
+    
+    case dreamPartnerAgeRange
     
     public static func == (lhs: SignUpSubViewType, rhs: SignUpSubViewType) -> Bool {
         return lhs.hashValue == rhs.hashValue
@@ -101,6 +107,9 @@ public enum SignUpSubViewType: Hashable {
             hasher.combine(8)
         case .authName:
             hasher.combine(9)
+            
+        case .dreamPartnerAgeRange:
+            hasher.combine(10)
         }
     }
 }
