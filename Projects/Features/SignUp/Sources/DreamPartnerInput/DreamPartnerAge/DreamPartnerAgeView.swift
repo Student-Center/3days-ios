@@ -126,7 +126,7 @@ public struct DreamPartnerAgeView: View {
             intent.onChangeUpperValue(value: upperValue)
         }
         .onChange(of: lowerValue) {
-            intent.onChangeUpperValue(value: lowerValue)
+            intent.onChangeLowerValue(value: lowerValue)
         }
         .task {
             await intent.task()
