@@ -45,6 +45,11 @@ extension PathType {
                 
             case .dreamPartnerAgeRange:
                 DreamPartnerAgeView()
+            case .dreamPartnerJobOccupation:
+                DreamPartnerJobView()
+            case .dreamPartnerDistance:
+                // 임시
+                EmptyView()
             }
         }
     }

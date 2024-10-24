@@ -63,6 +63,6 @@ extension DreamPartnerAgeIntent: DreamPartnerAgeIntent.Intentable {
     
     @MainActor
     func pushNextView() {
-        
+        AppCoordinator.shared.push(.signUp(.dreamPartnerJobOccupation))
     }
 }
