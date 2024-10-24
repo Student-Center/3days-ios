@@ -44,9 +44,21 @@ public struct DreamPartnerDistanceView: View {
                 ) {
                     VStack(spacing: 12) {
                         HStack {
-                            Text("내 활동 지역")
+                            Text("🏢 내 활동 지역")
+                                .pretendard(weight: ._400, size: 14)
                             Text("용인, 강남")
+                                .typography(.semibold_14)
                         }
+                        .foregroundStyle(DesignCore.Colors.grey400)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background {
+                            Capsule()
+                                .inset(by: 1)
+                                .stroke(Color(hex: 0xEDE9C1), lineWidth: 2)
+                                .fill(DesignCore.Colors.yellow50)
+                        }
+                        .padding(.bottom, 10)
                         
                         ForEach(DreamPartnerDistanceType.allCases, id: \.self) { type in
                             buttonView(
@@ -65,7 +77,7 @@ public struct DreamPartnerDistanceView: View {
                 Spacer()
             }
             
-            CTABottomButton(title: "다음") {
+            CTABottomButton(title: "다음", isActive: state.isValidated) {
                 intent.onTapNextButton()
             }
         }
