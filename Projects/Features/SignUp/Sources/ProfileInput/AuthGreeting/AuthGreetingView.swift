@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthGreetingView: View {
     
@@ -18,11 +19,11 @@ public struct AuthGreetingView: View {
     private var intent: AuthGreetingIntent.Intentable { container.intent }
     private var state: AuthGreetingModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = AuthGreetingModel()
         let intent = AuthGreetingIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as AuthGreetingIntent.Intentable,
@@ -44,9 +45,7 @@ public struct AuthGreetingView: View {
             Spacer()
             
             CTAButton(title: "알려주러 가기") {
-                AppCoordinator.shared.push(
-                    .signUp(.authProfileGender)
-                )
+                intent.onTapNextButton()
             }
             .padding(.horizontal, 24)
             .opacity(state.isAppeared ? 1.0 : 0.0)
@@ -77,6 +76,6 @@ public struct AuthGreetingView: View {
 
 #Preview {
     NavigationView {
-        AuthGreetingView()
+        AuthGreetingView(.mock)
     }
 }

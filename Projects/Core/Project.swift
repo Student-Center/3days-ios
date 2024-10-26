@@ -10,13 +10,11 @@ let project: Project = .make(
     ]),
     targets: [
         .make(target: .coreKit),
-        .make(target: .model),
         .make(
             target: .networkKit,
             dependencies: [
-                .target(name: .model),
-                .target(name: .coreKit),
-                .external(.openapiGenerated)
+                .project(target: .model),
+                .target(name: .coreKit)
             ]
         ),
         .make(

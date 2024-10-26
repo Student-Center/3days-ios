@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthNameInputView: View {
     
@@ -18,11 +19,13 @@ public struct AuthNameInputView: View {
     private var intent: AuthNameInputIntent.Intentable { container.intent }
     private var state: AuthNameInputModel.Stateful { container.model }
     
-    public init() {
+    @State var inputText = String()
+    
+    public init(_ input: SignUpFormDomain) {
         let model = AuthNameInputModel()
         let intent = AuthNameInputIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as AuthNameInputIntent.Intentable,
@@ -61,7 +64,7 @@ public struct AuthNameInputView: View {
                 backgroundView
                 TextField(
                     "김위브",
-                    text: $container.model.inputText
+                    text: $inputText
                 )
                 .keyboardType(.namePhonePad)
                 .interactiveDismissDisabled()
@@ -73,6 +76,12 @@ public struct AuthNameInputView: View {
                 .pretendard(weight: ._400, size: 28)
                 .foregroundStyle(DesignCore.Colors.grey500)
                 .offset(y: -4)
+                .onChange(of: inputText) {
+                    intent.onChangeInputText(text: inputText)
+                }
+                .onChange(of: state.inputText) {
+                    inputText = state.inputText
+                }
             }
             
             Spacer()
@@ -82,7 +91,7 @@ public struct AuthNameInputView: View {
                 backgroundStyle: LinearGradient.gradientA,
                 isActive: state.inputText.count >= 2
             ) {
-                
+                intent.onTapNextButton(state: state)
             }
         }
         .task {
@@ -103,6 +112,6 @@ public struct AuthNameInputView: View {
 
 #Preview {
     NavigationView {
-        AuthNameInputView()
+        AuthNameInputView(.mock)
     }
 }

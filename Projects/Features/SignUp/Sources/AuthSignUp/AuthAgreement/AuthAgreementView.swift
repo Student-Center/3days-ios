@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthAgreementView: View {
     
@@ -18,11 +19,11 @@ public struct AuthAgreementView: View {
     private var intent: AuthAgreementIntent.Intentable { container.intent }
     private var state: AuthAgreementModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = AuthAgreementModel()
         let intent = AuthAgreementIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as AuthAgreementIntent.Intentable,
@@ -66,6 +67,6 @@ public struct AuthAgreementView: View {
 
 #Preview {
     NavigationView {
-        AuthAgreementView()
+        AuthAgreementView(.mock)
     }
 }

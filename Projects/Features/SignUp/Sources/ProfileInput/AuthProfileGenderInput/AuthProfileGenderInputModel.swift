@@ -9,7 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
-import SignUpDomain
+import Model
 
 final class AuthProfileGenderInputModel: ObservableObject {
     

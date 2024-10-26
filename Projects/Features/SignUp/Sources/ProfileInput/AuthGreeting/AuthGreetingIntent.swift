@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 //MARK: - Intent
 class AuthGreetingIntent {
@@ -36,7 +37,9 @@ extension AuthGreetingIntent {
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -50,5 +53,20 @@ extension AuthGreetingIntent: AuthGreetingIntent.Intentable {
     }
     
     // content
-    func onTapNextButton() {}
+    func onTapNextButton() {
+        Task {
+            await pushNextView()
+        }
+    }
+    
+    @MainActor
+    func pushNextView() {
+        AppCoordinator.shared.push(
+            .signUp(
+                .authProfileGender(
+                    input: input.input
+                )
+            )
+        )
+    }
 }

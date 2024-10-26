@@ -9,6 +9,7 @@
 import Foundation
 import Model
 import CoreKit
+import OpenapiGenerated
 
 enum AuthEndpointError: Error {
     case emptyToken
@@ -24,6 +25,9 @@ public protocol AuthServiceProtocol {
     func requestExistingUserVerifyCode(
         _ request: SMSVerificationRequest
     ) async throws -> ExistingUserVerificationResponse
+    func requestSignUp(
+        domain: SignUpFormDomain
+    ) async throws -> Components.Schemas.RegisterUserResponse
 }
 
 //MARK: - Service
@@ -70,6 +74,23 @@ extension AuthService: AuthServiceProtocol {
             refreshToken: response.refreshToken,
             accessToken: response.accessToken
         )
+    }
+    
+    public func requestSignUp(
+        domain: SignUpFormDomain
+    ) async throws -> Components.Schemas.RegisterUserResponse {
+        guard let body = domain.toDto else {
+            print("⚠️ 도메인 -> DTO 변환 실패!")
+            throw NetworkError.dtoConversionFailed
+        }
+        
+        let response = try await client.registerUser(
+            headers: .init(
+                X_hyphen_Register_hyphen_Token: domain.registerToken
+            ),
+            body: .json(body)
+        )
+        return try response.created.body.json
     }
 }
 

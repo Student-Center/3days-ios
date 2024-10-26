@@ -28,17 +28,17 @@ public enum PathType: Hashable {
                 )
             )
         ),
-        .signUp(.authAgreement),
-        .signUp(.authGreeting),
-        .signUp(.authProfileGender),
-        .signUp(.authProfileAge),
-        .signUp(.authCompany),
-        .signUp(.authJobOccupation),
-        .signUp(.authName),
-        .signUp(.authRegion),
+        .signUp(.authAgreement(input: .mock)),
+        .signUp(.authGreeting(input: .mock)),
+        .signUp(.authProfileGender(input: .mock)),
+        .signUp(.authProfileAge(input: .mock)),
+        .signUp(.authCompany(input: .mock)),
+        .signUp(.authJobOccupation(input: .mock)),
+        .signUp(.authName(input: .mock)),
+        .signUp(.authRegion(input: .mock)),
         .signUp(.authPhoneInput),
         
-        .signUp(.dreamPartnerAgeRange)
+        .signUp(.dreamPartnerAgeRange(input: .mock))
     ]
     #endif
     
@@ -71,19 +71,19 @@ public enum PathType: Hashable {
 public enum SignUpSubViewType: Hashable {
     case authPhoneInput
     case authPhoneVerify(SMSSendResponse)
-    case authAgreement
+    case authAgreement(input: SignUpFormDomain)
     
-    case authGreeting
-    case authProfileGender
-    case authProfileAge
-    case authCompany
-    case authJobOccupation
-    case authRegion
-    case authName
+    case authGreeting(input: SignUpFormDomain)
+    case authProfileGender(input: SignUpFormDomain)
+    case authProfileAge(input: SignUpFormDomain)
+    case authCompany(input: SignUpFormDomain)
+    case authJobOccupation(input: SignUpFormDomain)
+    case authRegion(input: SignUpFormDomain)
+    case authName(input: SignUpFormDomain)
     
-    case dreamPartnerAgeRange
-    case dreamPartnerJobOccupation
-    case dreamPartnerDistance
+    case dreamPartnerAgeRange(input: SignUpFormDomain)
+    case dreamPartnerJobOccupation(input: SignUpFormDomain)
+    case dreamPartnerDistance(input: SignUpFormDomain)
     
     public static func == (lhs: SignUpSubViewType, rhs: SignUpSubViewType) -> Bool {
         return lhs.hashValue == rhs.hashValue

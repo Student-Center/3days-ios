@@ -10,7 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
-import SignUpDomain
+import Model
 
 public struct DreamPartnerDistanceView: View {
     
@@ -19,11 +19,11 @@ public struct DreamPartnerDistanceView: View {
     private var intent: DreamPartnerDistanceIntent.Intentable { container.intent }
     private var state: DreamPartnerDistanceModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = DreamPartnerDistanceModel()
         let intent = DreamPartnerDistanceIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as DreamPartnerDistanceIntent.Intentable,
@@ -78,7 +78,7 @@ public struct DreamPartnerDistanceView: View {
             }
             
             CTABottomButton(title: "다음", isActive: state.isValidated) {
-                intent.onTapNextButton()
+                intent.onTapNextButton(state: state)
             }
         }
         .task {
@@ -137,6 +137,6 @@ public struct DreamPartnerDistanceView: View {
 
 #Preview {
     NavigationView {
-        DreamPartnerDistanceView()
+        DreamPartnerDistanceView(.mock)
     }
 }

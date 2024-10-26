@@ -8,7 +8,7 @@
 
 import SwiftUI
 import DesignCore
-import SignUpDomain
+import Model
 
 extension GenderType {
     public var unselectedImage: Image {

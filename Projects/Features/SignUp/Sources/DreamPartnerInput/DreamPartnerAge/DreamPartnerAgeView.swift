@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 enum AgeUpDownType {
     case up
@@ -58,11 +59,11 @@ public struct DreamPartnerAgeView: View {
     private var intent: DreamPartnerAgeIntent.Intentable { container.intent }
     private var state: DreamPartnerAgeModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = DreamPartnerAgeModel()
         let intent = DreamPartnerAgeIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as DreamPartnerAgeIntent.Intentable,
@@ -118,7 +119,7 @@ public struct DreamPartnerAgeView: View {
             VStack {
                 Spacer()
                 CTABottomButton(title: "다음") {
-                        
+                    intent.onTapNextButton(state: state)
                 }
             }
         }
@@ -211,6 +212,6 @@ struct BottomSheetPickerView: View {
 
 #Preview {
     NavigationView {
-        DreamPartnerAgeView()
+        DreamPartnerAgeView(.mock)
     }
 }

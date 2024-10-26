@@ -40,20 +40,22 @@ extension AuthCompanyIntent {
         func onTextChanged(text: String)
         func onCompanySelected(company: CompanySearchResponse)
         func onTapNoCompanyToggle()
-        func onTapNextButton()
         func onChangedFocusState(_ value: Bool)
         func onTapSameCompanyMatching(isAgree: Bool)
         func needRequestNextPage(
             keyword: String,
             next: String
         )
+        func onTapNextButton(state: AuthCompanyModel.Stateful)
         
         // default
         func onAppear()
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -140,14 +142,16 @@ extension AuthCompanyIntent: AuthCompanyIntent.Intentable {
             print(error)
         }
     }
-    func onTapNextButton() {
+    func onTapNextButton(state: AuthCompanyModel.Stateful) {
         Task {
-            await pushNextView()
+            var payload = input.input
+            payload.profile?.companyId = state.selectedCompany?.id
+            await pushNextView(payload: payload)
         }
     }
     
     @MainActor
-    func pushNextView() {
-        AppCoordinator.shared.push(.signUp(.authJobOccupation))
+    func pushNextView(payload: SignUpFormDomain) {
+        AppCoordinator.shared.push(.signUp(.authJobOccupation(input: payload)))
     }
 }

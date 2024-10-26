@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct DreamPartnerJobView: View {
     
@@ -18,11 +19,11 @@ public struct DreamPartnerJobView: View {
     private var intent: DreamPartnerJobIntent.Intentable { container.intent }
     private var state: DreamPartnerJobModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = DreamPartnerJobModel()
         let intent = DreamPartnerJobIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as DreamPartnerJobIntent.Intentable,
@@ -54,7 +55,7 @@ public struct DreamPartnerJobView: View {
                 title: "다음",
                 isActive: state.isValidated
             ) {
-                intent.onTapNextButton()
+                intent.onTapNextButton(state: state)
             }
         }
         .task {
@@ -74,6 +75,6 @@ public struct DreamPartnerJobView: View {
 
 #Preview {
     NavigationView {
-        DreamPartnerJobView()
+        DreamPartnerJobView(.mock)
     }
 }

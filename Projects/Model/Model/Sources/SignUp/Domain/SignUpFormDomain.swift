@@ -16,11 +16,18 @@ public struct SignUpFormDomain {
     public var profile: SignUpProfileDomain?
     public var dreamPartner: SignUpDreamPartnerDomain?
     
-    public var toDomain: Components.Schemas.RegisterUserRequest? {
+    public var toDto: Components.Schemas.RegisterUserRequest? {
         guard let name,
               let phone,
               let profile = profile?.toDto,
-              let dreamPartner = dreamPartner?.toDto else { return nil }
+              let dreamPartner = dreamPartner?.toDto else {
+            print("⚠️ SignUpFormDomain dto 변환 실패!")
+            print("⚠️ name: \(name)")
+            print("⚠️ phone: \(phone)")
+            print("⚠️ profile: \(profile)")
+            print("⚠️ dreamPartner: \(dreamPartner)")
+            return nil
+        }
         return .init(
             name: name,
             phoneNumber: phone,
@@ -28,20 +35,41 @@ public struct SignUpFormDomain {
             desiredPartner: dreamPartner
         )
     }
+    
+    public init(
+        registerToken: String,
+        name: String? = nil,
+        phone: String? = nil,
+        profile: SignUpProfileDomain? = .init(locationIds: []),
+        dreamPartner: SignUpDreamPartnerDomain? = .init(jobOccupations: [])
+    ) {
+        self.registerToken = registerToken
+        self.name = name
+        self.phone = phone
+        self.profile = profile
+        self.dreamPartner = dreamPartner
+    }
+    
+    static public var mock: Self {
+        return .init(registerToken: "")
+    }
 }
 
 public struct SignUpProfileDomain {
-    public let gender: GenderType?
-    public let birthYear: Int?
-    public let companyId: String?
-    public let jobOccupation: String?
-    public let locationIds: [String]
+    public var gender: GenderType?
+    public var birthYear: Int?
+    public var companyId: String?
+    public var jobOccupation: String?
+    public var locationIds: [String]
     
     var toDto: Components.Schemas.UserProfile? {
         guard let gender,
               let birthYear,
               let jobOccupation,
-              let jobOccupationRequest = Components.Schemas.JobOccupation(rawValue: jobOccupation) else { return nil }
+              let jobOccupationRequest = Components.Schemas.JobOccupation(rawValue: jobOccupation) else {
+            print("⚠️ SignUpProfileDomain dto 변환 실패!")
+            return nil
+        }
         return .init(
             gender: gender.toDto,
             birthYear: birthYear,
@@ -49,6 +77,20 @@ public struct SignUpProfileDomain {
             jobOccupation: jobOccupationRequest,
             locationIds: locationIds
         )
+    }
+    
+    public init(
+        gender: GenderType? = nil,
+        birthYear: Int? = nil,
+        companyId: String? = nil,
+        jobOccupation: String? = nil,
+        locationIds: [String]
+    ) {
+        self.gender = gender
+        self.birthYear = birthYear
+        self.companyId = companyId
+        self.jobOccupation = jobOccupation
+        self.locationIds = locationIds
     }
 }
 
@@ -60,6 +102,7 @@ public struct SignUpDreamPartnerDomain {
     
     var toDto: Components.Schemas.UserDesiredPartner? {
         guard let distanceType else {
+            print("⚠️ distanceType dto 변환 실패!")
             return nil
         }
         let jobOccupations = jobOccupations.compactMap {
@@ -73,6 +116,18 @@ public struct SignUpDreamPartnerDomain {
             jobOccupations: jobOccupations,
             preferDistance: distanceType.toDto
         )
+    }
+    
+    public init(
+        lowerBirthYearGap: Int? = nil,
+        upperBirthYearGap: Int? = nil,
+        jobOccupations: [String],
+        distanceType: DreamPartnerDistanceType? = nil
+    ) {
+        self.lowerBirthYearGap = lowerBirthYearGap
+        self.upperBirthYearGap = upperBirthYearGap
+        self.jobOccupations = jobOccupations
+        self.distanceType = distanceType
     }
 }
 

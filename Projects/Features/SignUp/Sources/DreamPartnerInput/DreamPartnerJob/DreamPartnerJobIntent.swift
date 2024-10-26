@@ -10,6 +10,7 @@ import Foundation
 import CommonKit
 import CoreKit
 import DesignCore
+import Model
 
 //MARK: - Intent
 class DreamPartnerJobIntent {
@@ -31,14 +32,16 @@ extension DreamPartnerJobIntent {
     protocol Intentable {
         // content
         func onTapJobOccupation(selectedAllJobs: [JobOccupation], selectedJob: JobOccupation)
-        func onTapNextButton()
+        func onTapNextButton(state: DreamPartnerJobModel.Stateful)
         
         // default
         func onAppear()
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -66,14 +69,16 @@ extension DreamPartnerJobIntent: DreamPartnerJobIntent.Intentable {
         model?.setSelectedJobArray(resultJobs)
     }
     
-    func onTapNextButton() {
+    func onTapNextButton(state: DreamPartnerJobModel.Stateful) {
         Task {
-            await pushNextView()
+            var payload = input.input
+            payload.dreamPartner?.jobOccupations = state.selectedJobArray.map { $0.requestValue }
+            await pushNextView(payload: payload)
         }
     }
     
     @MainActor
-    func pushNextView() {
-        AppCoordinator.shared.push(.signUp(.dreamPartnerDistance))
+    func pushNextView(payload: SignUpFormDomain) {
+        AppCoordinator.shared.push(.signUp(.dreamPartnerDistance(input: payload)))
     }
 }

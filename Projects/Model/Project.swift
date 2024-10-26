@@ -2,7 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project: Project = .make(
-    name: "Domain",
+    name: "Model",
     settings: .settings(configurations: [
         .debug(name: .debug),
         .release(name: .configuration("Staging")),
@@ -10,17 +10,9 @@ let project: Project = .make(
     ]),
     targets: [
         .make(
-            target: .commonDomain,
+            target: .model,
             dependencies: [
-                .external(.openapiGenerated),
-                .project(target: .model)
-            ]
-        ),
-        .make(
-            target: .signUpDomain,
-            dependencies: [
-                .external(.openapiGenerated),
-                .project(target: .model)
+                .external(.openapiGenerated)
             ]
         )
     ]
