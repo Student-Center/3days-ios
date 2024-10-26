@@ -42,6 +42,14 @@ extension PathType {
                 AuthRegionView()
             case .authName:
                 AuthNameInputView()
+                
+            case .dreamPartnerAgeRange:
+                DreamPartnerAgeView()
+            case .dreamPartnerJobOccupation:
+                DreamPartnerJobView()
+            case .dreamPartnerDistance:
+                // 임시
+                EmptyView()
             }
         }
     }

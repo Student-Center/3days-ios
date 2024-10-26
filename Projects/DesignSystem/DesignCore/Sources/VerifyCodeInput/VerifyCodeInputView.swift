@@ -96,6 +96,10 @@ public struct VerifyCodeInputView: View {
     }
     
     private func getCharFromString(index: Int) -> String {
+        if verifyCode == "" {
+            return ""
+        }
+        
         if index >= verifyCode.count {
             return ""
         }
