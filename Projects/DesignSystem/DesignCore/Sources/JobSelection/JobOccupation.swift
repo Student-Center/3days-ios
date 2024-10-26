@@ -94,3 +94,28 @@ extension JobOccupation {
         }
     }
 }
+
+extension JobOccupation {
+    public var requestValue: String {
+        switch self {
+        case .business: return "BUSINESS_ADMIN"
+        case .marketing: return "SALES_MARKETING"
+        case .research: return "RESEARCH_DEVELOPMENT"
+        case .IT: return "IT_INFORMATION"
+        case .financial: return "FINANCE_ACCOUNTING"
+        case .manufacture: return "MANUFACTURING_PRODUCTION"
+        case .education: return "EDUCATION_ACADEMIA"
+        case .law: return "LAW_ADMINISTRATION"
+        case .policeFirefighterMilitary: return "MILITARY_SECURITY"
+        case .medical: return "HEALTHCARE_MEDICAL"
+        case .mediaPress: return "MEDIA_ENTERTAINMENT"
+        case .artCulture: return "ARTS_DESIGN"
+        case .sports: return "SPORTS"
+        case .construction: return "CONSTRUCTION_ENGINEERING"
+        case .transport: return "TRANSPORTATION_LOGISTICS"
+        case .farming: return "AGRICULTURE_FARMING"
+        case .service: return "SERVICE_INDUSTRY"
+        case .etc: return "OTHER"
+        }
+    }
+}

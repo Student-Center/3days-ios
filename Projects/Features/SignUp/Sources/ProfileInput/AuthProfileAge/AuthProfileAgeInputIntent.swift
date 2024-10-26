@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import SignUpDomain
 
 //MARK: - Intent
 class AuthProfileAgeInputIntent {

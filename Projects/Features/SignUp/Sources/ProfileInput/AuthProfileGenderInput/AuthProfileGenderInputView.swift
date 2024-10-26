@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import SignUpDomain
 
 public struct AuthProfileGenderInputView: View {
     

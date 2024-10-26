@@ -563,7 +563,7 @@ public enum Components {
         /// - Remark: Generated from `#/components/schemas/UserDesiredPartner`.
         public struct UserDesiredPartner: Codable, Hashable, Sendable {
             /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/birthYearRange`.
-            public var birthYearRange: Components.Schemas.BirthYearRange?
+            public var birthYearRange: Components.Schemas.BirthYearRange
             /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/jobOccupations`.
             public var jobOccupations: Components.Schemas.JobOccupations
             /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/preferDistance`.
@@ -575,7 +575,7 @@ public enum Components {
             ///   - jobOccupations:
             ///   - preferDistance:
             public init(
-                birthYearRange: Components.Schemas.BirthYearRange? = nil,
+                birthYearRange: Components.Schemas.BirthYearRange,
                 jobOccupations: Components.Schemas.JobOccupations,
                 preferDistance: Components.Schemas.PreferDistance
             ) {
@@ -594,19 +594,19 @@ public enum Components {
             /// 원하는 파트너의 최소 년생
             ///
             /// - Remark: Generated from `#/components/schemas/BirthYearRange/start`.
-            public var start: Swift.Int
+            public var start: Swift.Int?
             /// 원하는 파트너의 최대 년생
             ///
             /// - Remark: Generated from `#/components/schemas/BirthYearRange/end`.
-            public var end: Swift.Int
+            public var end: Swift.Int?
             /// Creates a new `BirthYearRange`.
             ///
             /// - Parameters:
             ///   - start: 원하는 파트너의 최소 년생
             ///   - end: 원하는 파트너의 최대 년생
             public init(
-                start: Swift.Int,
-                end: Swift.Int
+                start: Swift.Int? = nil,
+                end: Swift.Int? = nil
             ) {
                 self.start = start
                 self.end = end
