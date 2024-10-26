@@ -522,7 +522,7 @@ public enum Components {
             /// 사용자의 회사 ID
             ///
             /// - Remark: Generated from `#/components/schemas/UserProfile/companyId`.
-            public var companyId: Swift.String
+            public var companyId: Swift.String?
             /// - Remark: Generated from `#/components/schemas/UserProfile/jobOccupation`.
             public var jobOccupation: Components.Schemas.JobOccupation
             /// 사용자의 활동 지역 목록 ID 리스트
@@ -540,7 +540,7 @@ public enum Components {
             public init(
                 gender: Components.Schemas.Gender,
                 birthYear: Swift.Int,
-                companyId: Swift.String,
+                companyId: Swift.String? = nil,
                 jobOccupation: Components.Schemas.JobOccupation,
                 locationIds: [Swift.String]
             ) {
@@ -568,25 +568,33 @@ public enum Components {
             public var jobOccupations: Components.Schemas.JobOccupations
             /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/preferDistance`.
             public var preferDistance: Components.Schemas.PreferDistance
+            /// 같은 회사에 근무하는 파트너를 허용하는지 여부 (companyID가 없을 경우 null)
+            ///
+            /// - Remark: Generated from `#/components/schemas/UserDesiredPartner/allowSameCompany`.
+            public var allowSameCompany: Swift.Bool?
             /// Creates a new `UserDesiredPartner`.
             ///
             /// - Parameters:
             ///   - birthYearRange:
             ///   - jobOccupations:
             ///   - preferDistance:
+            ///   - allowSameCompany: 같은 회사에 근무하는 파트너를 허용하는지 여부 (companyID가 없을 경우 null)
             public init(
                 birthYearRange: Components.Schemas.BirthYearRange,
                 jobOccupations: Components.Schemas.JobOccupations,
-                preferDistance: Components.Schemas.PreferDistance
+                preferDistance: Components.Schemas.PreferDistance,
+                allowSameCompany: Swift.Bool? = nil
             ) {
                 self.birthYearRange = birthYearRange
                 self.jobOccupations = jobOccupations
                 self.preferDistance = preferDistance
+                self.allowSameCompany = allowSameCompany
             }
             public enum CodingKeys: String, CodingKey {
                 case birthYearRange
                 case jobOccupations
                 case preferDistance
+                case allowSameCompany
             }
         }
         /// - Remark: Generated from `#/components/schemas/BirthYearRange`.
