@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthProfileGenderInputView: View {
     
@@ -18,11 +19,11 @@ public struct AuthProfileGenderInputView: View {
     private var intent: AuthProfileGenderInputIntent.Intentable { container.intent }
     private var state: AuthProfileGenderInputModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = AuthProfileGenderInputModel()
         let intent = AuthProfileGenderInputIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as AuthProfileGenderInputIntent.Intentable,
@@ -66,7 +67,8 @@ public struct AuthProfileGenderInputView: View {
                 title: "다음",
                 isActive: state.selectedGender != nil
             ) {
-                intent.onTapNextButton()
+                guard let gender = state.selectedGender else { return }
+                intent.onTapNextButton(gender)
             }
         }
         .animation(
@@ -90,6 +92,6 @@ public struct AuthProfileGenderInputView: View {
 
 #Preview {
     NavigationView {
-        AuthProfileGenderInputView()
+        AuthProfileGenderInputView(.mock)
     }
 }

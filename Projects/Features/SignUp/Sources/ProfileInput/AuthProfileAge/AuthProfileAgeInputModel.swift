@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 final class AuthProfileAgeInputModel: ObservableObject {
     

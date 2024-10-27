@@ -10,6 +10,7 @@ import Foundation
 import CommonKit
 import CoreKit
 import DesignCore
+import Model
 
 //MARK: - Intent
 class AuthJobIntent {
@@ -31,14 +32,16 @@ extension AuthJobIntent {
     protocol Intentable {
         // content
         func onTapJobOccupation(selectedAllJobs: [JobOccupation], selectedJob: JobOccupation)
-        func onTapNextButton()
+        func onTapNextButton(state: AuthJobModel.Stateful)
         
         // default
         func onAppear()
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -66,14 +69,23 @@ extension AuthJobIntent: AuthJobIntent.Intentable {
         model?.setSelectedJobArray(resultJobs)
     }
     
-    func onTapNextButton() {
+    func onTapNextButton(state: AuthJobModel.Stateful) {
         Task {
-            await pushNextView()
+            guard let selectedJob = state.selectedJobArray.first else { return }
+            var payload = input.input
+            payload.profile?.jobOccupation = selectedJob.requestValue
+            await pushNextView(payload: payload)
         }
     }
     
     @MainActor
-    func pushNextView() {
-        AppCoordinator.shared.push(.signUp(.authRegion))
+    func pushNextView(payload: SignUpFormDomain) {
+        AppCoordinator.shared.push(
+            .signUp(
+                .authRegion(
+                    input: payload
+                )
+            )
+        )
     }
 }

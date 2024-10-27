@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 //MARK: - Intent
 class AuthAgreementIntent {
@@ -36,7 +37,9 @@ extension AuthAgreementIntent {
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -50,7 +53,7 @@ extension AuthAgreementIntent: AuthAgreementIntent.Intentable {
     func onTapNextButton() {
         Task {
             await AppCoordinator.shared.changeRootView(
-                .signUp(.authGreeting)
+                .signUp(.authGreeting(input: input.input))
             )
         }
     }

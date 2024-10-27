@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthJobView: View {
     
@@ -18,11 +19,11 @@ public struct AuthJobView: View {
     private var intent: AuthJobIntent.Intentable { container.intent }
     private var state: AuthJobModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = AuthJobModel()
         let intent = AuthJobIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as AuthJobIntent.Intentable,
@@ -54,7 +55,7 @@ public struct AuthJobView: View {
                 title: "다음",
                 isActive: state.isValidated
             ) {
-                intent.onTapNextButton()
+                intent.onTapNextButton(state: state)
             }
         }
         .task {
@@ -74,6 +75,6 @@ public struct AuthJobView: View {
 
 #Preview {
     NavigationView {
-        AuthJobView()
+        AuthJobView(.mock)
     }
 }

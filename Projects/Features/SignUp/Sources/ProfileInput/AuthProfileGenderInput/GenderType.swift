@@ -8,19 +8,17 @@
 
 import SwiftUI
 import DesignCore
+import Model
 
-enum GenderType: CaseIterable {
-    case male
-    case female
-    
-    var unselectedImage: Image {
+extension GenderType {
+    public var unselectedImage: Image {
         switch self {
         case .male: DesignCore.Images.maleUnselected.image
         case .female: DesignCore.Images.femaleUnselected.image
         }
     }
     
-    var selectedImage: Image {
+    public var selectedImage: Image {
         switch self {
         case .male: DesignCore.Images.maleSelected.image
         case .female: DesignCore.Images.femaleSelected.image

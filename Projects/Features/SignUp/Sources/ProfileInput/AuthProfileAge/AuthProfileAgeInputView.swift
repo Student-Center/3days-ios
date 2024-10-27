@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthProfileAgeInputView: View {
     
@@ -20,11 +21,13 @@ public struct AuthProfileAgeInputView: View {
     private var intent: AuthProfileAgeInputIntent.Intentable { container.intent }
     private var state: AuthProfileAgeInputModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = AuthProfileAgeInputModel()
         let intent = AuthProfileAgeInputIntent(
             model: model,
-            input: .init(targetGender: .male)
+            input: .init(
+                input: input
+            )
         )
         let container = MVIContainer(
             intent: intent as AuthProfileAgeInputIntent.Intentable,
@@ -99,7 +102,7 @@ public struct AuthProfileAgeInputView: View {
                 title: "다음",
                 isActive: state.isValidated
             ) {
-                intent.onTapNextButton()
+                intent.onTapNextButton(state.birthYear)
             }
         }
         .task {
@@ -120,6 +123,6 @@ public struct AuthProfileAgeInputView: View {
 
 #Preview {
     NavigationView {
-        AuthProfileAgeInputView()
+        AuthProfileAgeInputView(.mock)
     }
 }

@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 //MARK: - Intent
 class AuthProfileGenderInputIntent {
@@ -30,14 +31,16 @@ extension AuthProfileGenderInputIntent {
     protocol Intentable {
         // content
         func onTapGender(_ gender: GenderType)
-        func onTapNextButton()
+        func onTapNextButton(_ gender: GenderType)
         
         // default
         func onAppear()
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -51,11 +54,18 @@ extension AuthProfileGenderInputIntent: AuthProfileGenderInputIntent.Intentable 
     func task() async {}
     
     // content
-    func onTapNextButton() {
+    func onTapNextButton(_ gender: GenderType) {
         Task {
-            await AppCoordinator.shared.push(
-                .signUp(.authProfileAge)
-            )
+            var payload = input.input
+            payload.profile?.gender = gender
+            await pushNextView(payload: payload)
         }
+    }
+    
+    @MainActor
+    func pushNextView(payload: SignUpFormDomain) {
+        AppCoordinator.shared.push(
+            .signUp(.authProfileAge(input: payload))
+        )
     }
 }

@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct AuthCompanyView: View {
     
@@ -21,11 +22,11 @@ public struct AuthCompanyView: View {
     @FocusState var showDropDown: Bool
     @State var isShowSameCompanyPopup = false
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = AuthCompanyModel()
         let intent = AuthCompanyIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as AuthCompanyIntent.Intentable,
@@ -156,7 +157,7 @@ public struct AuthCompanyView: View {
                     isShowSameCompanyPopup = true
                 } else {
                     /// 회사 정확하게 파악 불가하다면 다음 뷰로
-                    intent.onTapNextButton()
+                    intent.onTapNextButton(state: state)
                 }
             }
         }
@@ -203,7 +204,7 @@ public struct AuthCompanyView: View {
                 ) {
                     intent.onTapSameCompanyMatching(isAgree: false)
                     isShowSameCompanyPopup = false
-                    intent.onTapNextButton()
+                    intent.onTapNextButton(state: state)
                 }
                 
                 CTAButton(
@@ -213,7 +214,7 @@ public struct AuthCompanyView: View {
                 ) {
                     intent.onTapSameCompanyMatching(isAgree: true)
                     isShowSameCompanyPopup = false
-                    intent.onTapNextButton()
+                    intent.onTapNextButton(state: state)
                 }
             }
         }
@@ -224,6 +225,6 @@ public struct AuthCompanyView: View {
 
 #Preview {
     NavigationView {
-        AuthCompanyView()
+        AuthCompanyView(.mock)
     }
 }

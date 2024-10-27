@@ -117,8 +117,15 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
     
     /// user type 에 따라 다음으로 이동할 뷰를 리턴합니다.
     func getNextPath(userType: UserType) -> PathType {
+        let registerToken = TokenManager.registerToken ?? ""
+        var payload = SignUpFormDomain(registerToken: registerToken)
+        payload.phone = input.smsResponse.phoneNumber
         switch userType {
-        case .NEW: return .signUp(.authAgreement)
+        case .NEW: return .signUp(
+            .authAgreement(
+                input: payload
+            )
+        )
         case .EXISTING: return .main
         }
     }

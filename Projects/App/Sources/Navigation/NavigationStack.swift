@@ -17,6 +17,12 @@ extension PathType {
         switch self {
         case .designPreview:
             DesignPreviewView()
+        case .authDebug:
+            #if DEBUG || STAGING
+            AuthDebugInfoView()
+            #else
+            EmptyView()
+            #endif
         case .main:
             SplashAnimatedView()
         case .signUp(let subView):
@@ -25,31 +31,30 @@ extension PathType {
                 AuthPhoneInputView()
             case .authPhoneVerify(let smsResponse):
                 AuthPhoneVerifyView(smsResponse)
-            case .authAgreement:
-                AuthAgreementView()
+            case .authAgreement(let input):
+                AuthAgreementView(input)
                 
-            case .authGreeting:
-                AuthGreetingView()
-            case .authProfileGender:
-                AuthProfileGenderInputView()
-            case .authProfileAge:
-                AuthProfileAgeInputView()
-            case .authCompany:
-                AuthCompanyView()
-            case .authJobOccupation:
-                AuthJobView()
-            case .authRegion:
-                AuthRegionView()
-            case .authName:
-                AuthNameInputView()
+            case .authGreeting(let input):
+                AuthGreetingView(input)
+            case .authProfileGender(let input):
+                AuthProfileGenderInputView(input)
+            case .authProfileAge(let input):
+                AuthProfileAgeInputView(input)
+            case .authCompany(let input):
+                AuthCompanyView(input)
+            case .authJobOccupation(let input):
+                AuthJobView(input)
+            case .authRegion(let input):
+                AuthRegionView(input)
+            case .authName(let input):
+                AuthNameInputView(input)
                 
-            case .dreamPartnerAgeRange:
-                DreamPartnerAgeView()
-            case .dreamPartnerJobOccupation:
-                DreamPartnerJobView()
-            case .dreamPartnerDistance:
-                // 임시
-                EmptyView()
+            case .dreamPartnerAgeRange(let input):
+                DreamPartnerAgeView(input)
+            case .dreamPartnerJobOccupation(let input):
+                DreamPartnerJobView(input)
+            case .dreamPartnerDistance(let input):
+                DreamPartnerDistanceView(input)
             }
         }
     }

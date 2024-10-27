@@ -11,14 +11,12 @@ public enum TargetName: String {
     case devApp = "DevApp"
     case prodApp = "ProdApp"
     case coreKit = "CoreKit"
-    case model = "Model"
     case commonKit = "CommonKit"
     case networkKit = "NetworkKit"
     case designCore = "DesignCore"
     
-    //MARK: - Domain Layer
-    case commonDomain = "CommonDomain"
-    case signUpDomain = "SignUpDomain"
+    //MARK: - Model Layer
+    case model = "Model"
     
     //MARK: - Features
     case designPreview = "DesignPreview"
@@ -31,10 +29,10 @@ public extension TargetName {
         switch self {
         case .devApp, .prodApp:
             return .app
-        case .coreKit, .networkKit, .model, .commonKit:
+        case .coreKit, .networkKit, .commonKit:
             return .core
-        case .commonDomain, .signUpDomain:
-            return .domain
+        case .model:
+            return .model
         case .designCore:
             return .designSystem
         case .main, .designPreview, .signUp:
@@ -66,7 +64,7 @@ public extension TargetName {
 public enum ProjectPath: String, CaseIterable {
     case app = "Projects/App"
     case core = "Projects/Core"
-    case domain = "Projects/Domain"
+    case model = "Projects/Model"
     case designSystem = "Projects/DesignSystem"
     case feature = "Projects/Features"
 }

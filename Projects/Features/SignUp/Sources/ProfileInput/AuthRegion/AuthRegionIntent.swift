@@ -9,8 +9,8 @@
 import Foundation
 import CommonKit
 import CoreKit
-import SignUpDomain
 import NetworkKit
+import Model
 
 //MARK: - Intent
 class AuthRegionIntent {
@@ -35,7 +35,7 @@ class AuthRegionIntent {
 extension AuthRegionIntent {
     protocol Intentable {
         // content
-        func onTapNextButton()
+        func onTapNextButton(state: AuthRegionModel.Stateful)
         func onTapMainRegion(_ region: String)
         func onTapSubRegion(
             totalSubRegions: [RegionDomain],
@@ -47,7 +47,9 @@ extension AuthRegionIntent {
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -121,10 +123,22 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
     }
     
     // content
-    func onTapNextButton() {}
+    func onTapNextButton(state: AuthRegionModel.Stateful) {
+        Task {
+            var payload = input.input
+            payload.profile?.locationIds = state.selectedSubRegions.map { $0.id }
+            await pushNextView(payload: payload)
+        }
+    }
     
     @MainActor
-    func pushNextView() {
-        AppCoordinator.shared.push(.signUp(.authName))
+    func pushNextView(payload: SignUpFormDomain) {
+        AppCoordinator.shared.push(
+            .signUp(
+                .authName(
+                    input: payload
+                )
+            )
+        )
     }
 }

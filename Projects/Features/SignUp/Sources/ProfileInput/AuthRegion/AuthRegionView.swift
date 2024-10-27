@@ -10,7 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
-import SignUpDomain
+import Model
 
 public struct AuthRegionView: View {
     
@@ -19,11 +19,11 @@ public struct AuthRegionView: View {
     private var intent: AuthRegionIntent.Intentable { container.intent }
     private var state: AuthRegionModel.Stateful { container.model }
     
-    public init() {
+    public init(_ input: SignUpFormDomain) {
         let model = AuthRegionModel()
         let intent = AuthRegionIntent(
             model: model,
-            input: .init()
+            input: .init(input: input)
         )
         let container = MVIContainer(
             intent: intent as AuthRegionIntent.Intentable,
@@ -93,7 +93,7 @@ public struct AuthRegionView: View {
                 title: "다음",
                 isActive: state.isValidated
             ) {
-                
+                intent.onTapNextButton(state: state)
             }
         }
         .task {
@@ -263,6 +263,6 @@ public struct AuthRegionView: View {
 
 #Preview {
     NavigationView {
-        AuthRegionView()
+        AuthRegionView(.mock)
     }
 }

@@ -9,20 +9,24 @@
 import Foundation
 import CommonKit
 import CoreKit
-import SignUpDomain
+import Model
+import NetworkKit
 
 //MARK: - Intent
 class DreamPartnerDistanceIntent {
     private weak var model: DreamPartnerDistanceModelActionable?
     private let input: DataModel
+    private let authService: AuthServiceProtocol
 
     // MARK: Life cycle
     init(
         model: DreamPartnerDistanceModelActionable,
-        input: DataModel
+        input: DataModel,
+        service: AuthServiceProtocol = AuthService.shared
     ) {
         self.input = input
         self.model = model
+        self.authService = service
     }
 }
 
@@ -31,14 +35,16 @@ extension DreamPartnerDistanceIntent {
     protocol Intentable {
         // content
         func onTapDistanceType(_ type: DreamPartnerDistanceType)
-        func onTapNextButton()
+        func onTapNextButton(state: DreamPartnerDistanceModel.Stateful)
         
         // default
         func onAppear()
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -52,5 +58,31 @@ extension DreamPartnerDistanceIntent: DreamPartnerDistanceIntent.Intentable {
     func task() async {}
     
     // content
-    func onTapNextButton() {}
+    func onTapNextButton(
+        state: DreamPartnerDistanceModel.Stateful
+    ) {
+        Task {
+            var payload = input.input
+            payload.dreamPartner?.distanceType = state.selectedDistanceType
+            await requestSignUp(payload: payload)
+        }
+    }
+    
+    func requestSignUp(payload: SignUpFormDomain) async {
+        do {
+            let response = try await authService.requestSignUp(
+                domain: payload
+            )
+            TokenManager.accessToken = response.accessToken
+            TokenManager.refreshToken = response.refreshToken
+            await pushNextView()
+        } catch {
+            print(error)
+        }
+    }
+    
+    @MainActor
+    func pushNextView() {
+        AppCoordinator.shared.push(.authDebug)
+    }
 }

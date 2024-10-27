@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 //MARK: - Intent
 class DreamPartnerAgeIntent {
@@ -31,14 +32,16 @@ extension DreamPartnerAgeIntent {
         // content
         func onChangeUpperValue(value: String?)
         func onChangeLowerValue(value: String?)
-        func onTapNextButton()
+        func onTapNextButton(state: DreamPartnerAgeModel.Stateful)
         
         // default
         func onAppear()
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let input: SignUpFormDomain
+    }
 }
 
 //MARK: - Intentable
@@ -55,14 +58,25 @@ extension DreamPartnerAgeIntent: DreamPartnerAgeIntent.Intentable {
     func onChangeLowerValue(value: String?) {
         model?.setLowerValue(value: value)
     }
-    func onTapNextButton() {
+    func onTapNextButton(state: DreamPartnerAgeModel.Stateful) {
         Task {
-            await pushNextView()
+            guard let upperValue = state.upperValue,
+                  let lowerValue = state.lowerValue else { return }
+            var payload = input.input
+            payload.dreamPartner?.upperBirthYearGap = Int(upperValue)
+            payload.dreamPartner?.lowerBirthYearGap = Int(lowerValue)
+            await pushNextView(payload: payload)
         }
     }
     
     @MainActor
-    func pushNextView() {
-        AppCoordinator.shared.push(.signUp(.dreamPartnerJobOccupation))
+    func pushNextView(payload: SignUpFormDomain) {
+        AppCoordinator.shared.push(
+            .signUp(
+                .dreamPartnerJobOccupation(
+                    input: payload
+                )
+            )
+        )
     }
 }

@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 //MARK: - Intent
 class AuthProfileAgeInputIntent {
@@ -31,7 +32,7 @@ extension AuthProfileAgeInputIntent {
     protocol Intentable {
         // content
         func onFocusChanged(_ value: Bool)
-        func onTapNextButton()
+        func onTapNextButton(_ year: String)
         func onYearChanged(_ year: String)
         
         // default
@@ -40,7 +41,7 @@ extension AuthProfileAgeInputIntent {
     }
     
     struct DataModel {
-        let targetGender: GenderType
+        let input: SignUpFormDomain
     }
 }
 
@@ -48,7 +49,7 @@ extension AuthProfileAgeInputIntent {
 extension AuthProfileAgeInputIntent: AuthProfileAgeInputIntent.Intentable {
     // default
     func onAppear() {
-        model?.setTargetGender(input.targetGender)
+        model?.setTargetGender(input.input.profile?.gender ?? .male)
     }
     
     func task() async {}
@@ -65,11 +66,12 @@ extension AuthProfileAgeInputIntent: AuthProfileAgeInputIntent.Intentable {
     func onFocusChanged(_ value: Bool) {
         model?.setFocuse(value)
     }
-    func onTapNextButton() {
+    func onTapNextButton(_ year: String) {
         Task {
-            // TODO: 순서 재정의
+            var payload = input.input
+            payload.profile?.birthYear = Int(year)
             await AppCoordinator.shared.push(
-                .signUp(.authCompany)
+                .signUp(.authCompany(input: payload))
             )
         }
     }

@@ -9,6 +9,7 @@
 import Foundation
 import Model
 import CoreKit
+import OpenapiGenerated
 
 public class AuthServiceMock: AuthServiceProtocol {
     public init() {}
@@ -33,6 +34,14 @@ public class AuthServiceMock: AuthServiceProtocol {
         return ExistingUserVerificationResponse(
             refreshToken: "refreshToken",
             accessToken: "accessToken"
+        )
+    }
+    
+    public func requestSignUp(domain: SignUpFormDomain) async throws -> Components.Schemas.RegisterUserResponse {
+        return .init(
+            accessToken: "accessToken",
+            refreshToken: "refreshToken",
+            expiresIn: 90
         )
     }
 }
