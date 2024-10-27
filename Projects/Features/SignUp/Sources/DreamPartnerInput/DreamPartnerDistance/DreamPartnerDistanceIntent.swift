@@ -75,13 +75,14 @@ extension DreamPartnerDistanceIntent: DreamPartnerDistanceIntent.Intentable {
             )
             TokenManager.accessToken = response.accessToken
             TokenManager.refreshToken = response.refreshToken
+            await pushNextView()
         } catch {
             print(error)
         }
     }
     
     @MainActor
-    func pushNextView(payload: SignUpFormDomain) {
+    func pushNextView() {
         AppCoordinator.shared.push(.authDebug)
     }
 }
