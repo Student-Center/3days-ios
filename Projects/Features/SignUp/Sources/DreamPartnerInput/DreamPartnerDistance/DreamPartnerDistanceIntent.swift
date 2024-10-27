@@ -82,6 +82,6 @@ extension DreamPartnerDistanceIntent: DreamPartnerDistanceIntent.Intentable {
     
     @MainActor
     func pushNextView(payload: SignUpFormDomain) {
-        
+        AppCoordinator.shared.push(.authDebug)
     }
 }

@@ -110,6 +110,9 @@ extension AuthService {
         TokenManager.accessToken = result.accessToken
         TokenManager.refreshToken = result.refreshToken
         
+//        let response = try await client.getMyUserInfo()
+//        response.ok.body.json.profile.
+//
         return RefreshTokenResponse(
             refreshToken: result.refreshToken,
             accessToken: result.accessToken

@@ -17,6 +17,12 @@ extension PathType {
         switch self {
         case .designPreview:
             DesignPreviewView()
+        case .authDebug:
+            #if DEBUG || STAGING
+            AuthDebugInfoView()
+            #else
+            EmptyView()
+            #endif
         case .main:
             SplashAnimatedView()
         case .signUp(let subView):
