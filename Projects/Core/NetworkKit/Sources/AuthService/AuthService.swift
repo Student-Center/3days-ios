@@ -28,6 +28,7 @@ public protocol AuthServiceProtocol {
     func requestSignUp(
         domain: SignUpFormDomain
     ) async throws -> Components.Schemas.RegisterUserResponse
+    func requestMyUserInfo() async throws -> UserInfo
 }
 
 //MARK: - Service
@@ -91,6 +92,11 @@ extension AuthService: AuthServiceProtocol {
             body: .json(body)
         )
         return try response.created.body.json
+    }
+    
+    public func requestMyUserInfo() async throws -> UserInfo {
+        let response = try await client.getMyUserInfo()
+        return try UserInfo(from: response.ok.body.json)
     }
 }
 

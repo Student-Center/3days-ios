@@ -14,6 +14,7 @@
 import OpenAPIRuntime
 import Foundation
 import HTTPTypes
+import CoreKit
 
 /// A middleware that retries the request under certain conditions.
 ///
@@ -131,7 +132,8 @@ extension RetryingMiddleware: ClientMiddleware {
                 do {
                     let tokenResponse = try await AuthService.shared.refreshAccessToken()
                     guard let accesstoken = tokenResponse.accessToken,
-                          let refreshToken = tokenResponse.refreshToken else {
+                          let _ = tokenResponse.refreshToken else {
+                        AuthState.change(.loggedOut)
                         throw AuthEndpointError.tokenResponseNotValid
                     }
                     
@@ -148,6 +150,7 @@ extension RetryingMiddleware: ClientMiddleware {
                     continue  // 재시도 루프 다시 호출!
                 } catch {
                     print("리프레시 토큰 발급 실패")
+                    AuthState.change(.loggedOut)
                     throw error  // 토큰 갱신 실패 시 오류 반환
                 }
             }

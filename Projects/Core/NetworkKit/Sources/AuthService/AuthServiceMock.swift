@@ -44,4 +44,26 @@ public class AuthServiceMock: AuthServiceProtocol {
             expiresIn: 90
         )
     }
+    
+    public func requestMyUserInfo() async throws -> UserInfo {
+        return .init(
+            id: "",
+            name: "",
+            phone: "",
+            profile: .init(
+                gender: .female,
+                birthYear: 0,
+                companyId: nil,
+                jobOccupation: "",
+                locations: []
+            ),
+            dreamPartner: .init(
+                upperBirthYear: nil,
+                lowerBirthYear: nil,
+                jobOccupations: [],
+                distanceType: .anywhere,
+                allowSameCompany: nil
+            )
+        )
+    }
 }
