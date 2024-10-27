@@ -25,7 +25,7 @@ let project: Project = .make(
             ]
         ),
         .make(
-            target: .main,
+            target: .home,
             dependencies: [
                 .project(target: .commonKit),
                 .project(target: .designCore)

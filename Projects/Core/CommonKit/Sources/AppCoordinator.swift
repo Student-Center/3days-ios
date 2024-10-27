@@ -22,7 +22,7 @@ public final class AppCoordinator: ObservableObject {
     //MARK: - Properties
     @Published public var authState: AuthState = .none
     @Published public var userInfo: UserInfo?
-    @Published public var navigationStack: [PathType] = [.main]
+    @Published public var navigationStack: [PathType] = [.intro]
     let authService = AuthService.shared
     
     //MARK: - Methods
@@ -30,6 +30,10 @@ public final class AppCoordinator: ObservableObject {
         AuthState.changeHandler = { [weak self] state in
             DispatchQueue.main.async {
                 self?.authState = state
+                if state == .loggedOut {
+                    self?.navigationStack = [.intro]
+                    self?.userInfo = nil
+                }
             }
         }
     }

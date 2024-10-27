@@ -9,6 +9,7 @@
 import SwiftUI
 import CommonKit
 import SignUp
+import Home
 import DesignPreview
 
 extension PathType {
@@ -23,8 +24,13 @@ extension PathType {
             #else
             EmptyView()
             #endif
-        case .main:
+        case .intro:
             SplashAnimatedView()
+            
+        // features
+        case .home:
+            HomeView()
+            
         case .signUp(let subView):
             switch subView {
             case .authPhoneInput:

@@ -126,7 +126,7 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
                 input: payload
             )
         )
-        case .EXISTING: return .main
+        case .EXISTING: return .intro
         }
     }
     

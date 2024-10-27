@@ -20,7 +20,7 @@ let infoPlist = InfoPlist.extendingDefault(
 )
 
 let appDependencies: [TargetDependency] = [
-    .project(target: .main),
+    .project(target: .home),
     .project(target: .signUp),
     .project(target: .designPreview)
 ]
