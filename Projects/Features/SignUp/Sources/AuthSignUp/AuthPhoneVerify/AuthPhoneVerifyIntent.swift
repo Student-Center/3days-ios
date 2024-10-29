@@ -100,6 +100,10 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
             // Existing User - 메인 뷰로 이동
             TokenManager.accessToken = response.accessToken
             TokenManager.refreshToken = response.refreshToken
+            AppCoordinator.shared.validateToken(
+                accessToken: response.accessToken,
+                refreshToken: response.refreshToken
+            )
         }
     }
     
@@ -117,16 +121,17 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
     
     /// user type 에 따라 다음으로 이동할 뷰를 리턴합니다.
     func getNextPath(userType: UserType) -> PathType {
-        let registerToken = TokenManager.registerToken ?? ""
-        var payload = SignUpFormDomain(registerToken: registerToken)
-        payload.phone = input.smsResponse.phoneNumber
         switch userType {
-        case .NEW: return .signUp(
-            .authAgreement(
-                input: payload
-            )
+        case .NEW: 
+            let registerToken = TokenManager.registerToken ?? ""
+            var payload = SignUpFormDomain(registerToken: registerToken)
+            payload.phone = input.smsResponse.phoneNumber
+            return .signUp(
+                .authAgreement(
+                    input: payload
+                )
         )
-        case .EXISTING: return .intro
+        case .EXISTING: return .home
         }
     }
     

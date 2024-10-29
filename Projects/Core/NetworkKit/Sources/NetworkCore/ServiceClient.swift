@@ -23,5 +23,13 @@ struct ServiceClient {
         ]
     )
     
+    static let refreshClient = Client(
+        serverURL: URL(string: ServerType.current.baseURL)!,
+        transport: URLSessionTransport(),
+        middlewares: [
+            LoggingMiddleware()
+        ]
+    )
+    
     private init() {}
 }
