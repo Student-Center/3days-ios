@@ -104,7 +104,9 @@ extension RetryingMiddleware: ClientMiddleware {
         var currentRequest = request
 
         for attempt in 1...maxAttemptCount {
-            print("Attempt \(attempt)")
+            if attempt > 1 {
+                print("🙏 시도 횟수: \(attempt)")
+            }
 
             let (response, responseBody): (HTTPResponse, HTTPBody?)
 
@@ -125,29 +127,10 @@ extension RetryingMiddleware: ClientMiddleware {
                 (response, responseBody) = try await next(currentRequest, body, baseURL)
             }
             
-            // 401 Unauthorized 응답 처리
-            if response.status.code == 401 && attempt < maxAttemptCount {
+            // 🔥 403 - accessToken 만료, refreshToken 으로 갱신 시도
+            if response.status.code == 403 && attempt < maxAttemptCount {
                 do {
-                    if let errorResponse = try await decodeErrorResponse(from: responseBody) {
-                        print(errorResponse)
-                        // accessToken 만료
-                        if errorResponse.code == "1006" {
-                            print("1006 들어옴")
-                        }
-                        // refreshToken 만료
-                        if errorResponse.code == "1008" {
-                            print("1008 들어옴")
-                            // 끝, 로그인 할 방법 없음
-                            AuthState.change(.loggedOut)
-                            throw AuthEndpointError.refreshTokenExpired
-                        }
-                    } else {
-                        print("디코딩 실패 !!")
-                    }
-                    
-                    print("♻️ 401 Error, 리프레시 토큰 재발급 요청")
-                    // 토큰 갱신 시도
-                    // request
+                    debugPrint("🚨 Access Token 만료, 갱신 시도합니다.")
                     let response = try await AuthService.shared.refreshAccessToken()
                     
                     // ✅ 리프레시 토큰 response OK
@@ -156,23 +139,22 @@ extension RetryingMiddleware: ClientMiddleware {
                         TokenManager.accessToken = tokenResponse.accessToken
                         TokenManager.refreshToken = tokenResponse.refreshToken
                         // 요청 헤더에 새로운 액세스 토큰을 추가
-                        var newTokenHeader = currentRequest.headerFields
-                        newTokenHeader.append(
-                            HTTPField(
-                                name: .authorization,
-                                value: "Bearer \(tokenResponse.accessToken)"
-                            )
-                        )
-                        
-                        currentRequest.headerFields = newTokenHeader
-                        continue  // 재시도 루프 다시 호출!
+                        currentRequest.headerFields[.authorization] = "Bearer \(tokenResponse.accessToken)"
+                        continue
                     }
                 } catch {
-                    print("리프레시 토큰 발급 실패")
+                    print("🚨 Access Token 발급 실패")
                     AuthState.change(.loggedOut)
                     print(error)
-                    throw error  // 토큰 갱신 실패 시 오류 반환
+                    throw error
                 }
+            }
+            
+            // 🔥 401 - refreshToken 만료
+            if response.status.code == 401 {
+                debugPrint("🚨 refreshToken 만료, 로그아웃 합니다.")
+                AuthState.change(.loggedOut)
+                return (response, responseBody)
             }
 
             if signals.contains(response.status.code) && attempt < maxAttemptCount {
@@ -212,12 +194,10 @@ extension RetryingMiddleware: ClientMiddleware {
                 return date
             }
             
-            // 디버깅을 위해 실제 날짜 문자열 출력
-            print("🚨 Failed to parse date: \(dateStr)")
             throw DecodingError.dataCorrupted(
                 DecodingError.Context(
                     codingPath: decoder.codingPath,
-                    debugDescription: "Date string does not match expected format: \(dateStr)"
+                    debugDescription: "Date string 포맷이 안맞음..: \(dateStr)"
                 )
             )
         }

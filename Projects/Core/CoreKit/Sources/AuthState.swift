@@ -19,8 +19,8 @@ public extension AuthState {
     static func change(_ state: AuthState) {
         print("⚠️ Auth 상태 \(state)로 변경")
         if state == .loggedOut {
-            TokenManager.accessToken = ""
-            TokenManager.refreshToken = ""
+            TokenManager.accessToken = nil
+            TokenManager.refreshToken = nil
         }
         changeHandler?(state)
     }
