@@ -21,7 +21,7 @@ class AuthCompanyTest: XCTestCase {
         state = AuthCompanyModel()
         intent = AuthCompanyIntent(
             model: state,
-            input: .init(),
+            input: .init(input: .mock),
             companyService: CompanyServiceMock()
         )
         intent.onAppear()
