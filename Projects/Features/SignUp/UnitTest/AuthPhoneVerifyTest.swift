@@ -62,10 +62,10 @@ class AuthPhoneVerifyTest: XCTestCase {
     
     func testVerificationResult() {
         let homePath = intent.getNextPath(userType: .EXISTING)
-        XCTAssertEqual(homePath, PathType.main)
+        XCTAssertEqual(homePath, PathType.home)
         
         let signUpProcessPath = intent.getNextPath(userType: .NEW)
-        XCTAssertEqual(signUpProcessPath, PathType.signUp(.authAgreement))
+        XCTAssertEqual(signUpProcessPath, PathType.signUp(.authAgreement(input: .mock)))
     }
     
     func testErrorReceivced() {

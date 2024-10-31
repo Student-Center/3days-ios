@@ -12,8 +12,10 @@
 //
 //===----------------------------------------------------------------------===//
 import OpenAPIRuntime
+import OpenapiGenerated
 import Foundation
 import HTTPTypes
+import CoreKit
 
 /// A middleware that retries the request under certain conditions.
 ///
@@ -102,7 +104,9 @@ extension RetryingMiddleware: ClientMiddleware {
         var currentRequest = request
 
         for attempt in 1...maxAttemptCount {
-            print("Attempt \(attempt)")
+            if attempt > 1 {
+                print("🙏 시도 횟수: \(attempt)")
+            }
 
             let (response, responseBody): (HTTPResponse, HTTPBody?)
 
@@ -123,33 +127,34 @@ extension RetryingMiddleware: ClientMiddleware {
                 (response, responseBody) = try await next(currentRequest, body, baseURL)
             }
             
-            // 401 Unauthorized 응답 처리
-            if response.status.code == 401 && attempt < maxAttemptCount {
-                print("♻️ 401 Error, 리프레시 토큰 재발급 요청")
-
-                // 토큰 갱신 시도
+            // 🔥 403 - accessToken 만료, refreshToken 으로 갱신 시도
+            if response.status.code == 403 && attempt < maxAttemptCount {
                 do {
-                    let tokenResponse = try await AuthService.shared.refreshAccessToken()
-                    guard let accesstoken = tokenResponse.accessToken,
-                          let refreshToken = tokenResponse.refreshToken else {
-                        throw AuthEndpointError.tokenResponseNotValid
+                    debugPrint("🚨 Access Token 만료, 갱신 시도합니다.")
+                    let response = try await AuthService.shared.refreshAccessToken()
+                    
+                    // ✅ 리프레시 토큰 response OK
+                    if let tokenResponse = try? response.ok.body.json {
+                        // 토큰 저장
+                        TokenManager.accessToken = tokenResponse.accessToken
+                        TokenManager.refreshToken = tokenResponse.refreshToken
+                        // 요청 헤더에 새로운 액세스 토큰을 추가
+                        currentRequest.headerFields[.authorization] = "Bearer \(tokenResponse.accessToken)"
+                        continue
                     }
-                    
-                    // 요청 헤더에 새로운 액세스 토큰을 추가
-                    var newTokenHeader = currentRequest.headerFields
-                    newTokenHeader.append(
-                        HTTPField(
-                            name: .authorization,
-                            value: "Bearer \(accesstoken)"
-                        )
-                    )
-                    
-                    currentRequest.headerFields = newTokenHeader
-                    continue  // 재시도 루프 다시 호출!
                 } catch {
-                    print("리프레시 토큰 발급 실패")
-                    throw error  // 토큰 갱신 실패 시 오류 반환
+                    print("🚨 Access Token 발급 실패")
+                    AuthState.change(.loggedOut)
+                    print(error)
+                    throw error
                 }
+            }
+            
+            // 🔥 401 - refreshToken 만료
+            if response.status.code == 401 {
+                debugPrint("🚨 refreshToken 만료, 로그아웃 합니다.")
+                AuthState.change(.loggedOut)
+                return (response, responseBody)
             }
 
             if signals.contains(response.status.code) && attempt < maxAttemptCount {
@@ -162,6 +167,49 @@ extension RetryingMiddleware: ClientMiddleware {
         }
         
         preconditionFailure("Unreachable")
+    }
+    
+    func decodeErrorResponse(from responseBody: HTTPBody?) async throws -> Components.Schemas.ErrorResponse? {
+        guard let responseBody = responseBody else { return nil }
+        
+        // HTTP body를 String으로 변환 (최대 10MB까지)
+        let jsonString = try await String(collecting: responseBody, upTo: 10 * 1024 * 1024)
+        guard let jsonData = jsonString.data(using: .utf8) else { return nil }
+        
+        let decoder = JSONDecoder()
+        
+        // ISO8601 날짜 포맷터 설정
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateStr = try container.decode(String.self)
+            
+            // RFC3339 / ISO8601 나노초 파싱을 위한 DateFormatter
+            let formatter = DateFormatter()
+            formatter.calendar = Calendar(identifier: .iso8601)
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSZZZZZ"
+            
+            if let date = formatter.date(from: dateStr) {
+                return date
+            }
+            
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Date string 포맷이 안맞음..: \(dateStr)"
+                )
+            )
+        }
+        
+        do {
+            let response = try decoder.decode(Components.Schemas.ErrorResponse.self, from: jsonData)
+            return response
+        } catch {
+            print("🚨 Decoding error: \(error)")
+            print("Raw JSON: \(jsonString)")
+            throw error
+        }
     }
 }
 

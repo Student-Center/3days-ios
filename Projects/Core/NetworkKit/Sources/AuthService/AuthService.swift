@@ -14,6 +14,7 @@ import OpenapiGenerated
 enum AuthEndpointError: Error {
     case emptyToken
     case tokenResponseNotValid
+    case refreshTokenExpired
 }
 
 //MARK: - Service Protocol
@@ -28,6 +29,7 @@ public protocol AuthServiceProtocol {
     func requestSignUp(
         domain: SignUpFormDomain
     ) async throws -> Components.Schemas.RegisterUserResponse
+    func requestMyUserInfo() async throws -> UserInfo
 }
 
 //MARK: - Service
@@ -92,30 +94,32 @@ extension AuthService: AuthServiceProtocol {
         )
         return try response.created.body.json
     }
+    
+    public func requestMyUserInfo() async throws -> UserInfo {
+        let response = try await client.getMyUserInfo()
+        return try UserInfo(from: response.ok.body.json)
+    }
 }
 
 //MARK: - AccessToken Refresh
 extension AuthService {
-    public func refreshAccessToken() async throws -> RefreshTokenResponse {
+    public func refreshAccessToken() async throws -> Operations.refreshToken.Output {
         guard let refreshToken = TokenManager.refreshToken else {
             throw AuthEndpointError.emptyToken
         }
 
-        let response = try await client.refreshToken(
+        return try await ServiceClient.refreshClient.refreshToken(
             body: .json(.init(refreshToken: refreshToken))
         )
         
-        let result = try response.ok.body.json
-        
-        TokenManager.accessToken = result.accessToken
-        TokenManager.refreshToken = result.refreshToken
-        
-//        let response = try await client.getMyUserInfo()
-//        response.ok.body.json.profile.
-//
-        return RefreshTokenResponse(
-            refreshToken: result.refreshToken,
-            accessToken: result.accessToken
-        )
+//        let result = try response.ok.body.json
+//        
+//        TokenManager.accessToken = result.accessToken
+//        TokenManager.refreshToken = result.refreshToken
+//        
+//        return RefreshTokenResponse(
+//            refreshToken: result.refreshToken,
+//            accessToken: result.accessToken
+//        )
     }
 }

@@ -10,16 +10,20 @@ import Foundation
 import Model
 
 public enum PathType: Hashable {
+    // App
     case designPreview
     case authDebug
-    case main
+    case intro
+    
+    // Features
+    case home
     case signUp(SignUpSubViewType)
     
     #if STAGING || DEBUG
     public static var debugPreviewTypes: [PathType] = [
         .designPreview,
         .authDebug,
-        .main,
+        .intro,
         .signUp(.authPhoneInput),
         .signUp(
             .authPhoneVerify(
@@ -48,7 +52,9 @@ public enum PathType: Hashable {
         switch self {
         case .designPreview: return "Design Preview"
         case .authDebug: return "Auth Debug"
-        case .main: return "메인"
+        case .intro: return "메인"
+            
+        case .home: return "홈"
         case .signUp(let subType):
             switch subType {
             case .authPhoneInput: return "전화번호 입력"

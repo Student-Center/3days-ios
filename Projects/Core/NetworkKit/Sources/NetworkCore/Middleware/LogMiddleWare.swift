@@ -14,20 +14,9 @@
 import OpenAPIRuntime
 import Foundation
 import HTTPTypes
-import OSLog
 
 actor LoggingMiddleware {
-    private let logger: Logger
-    package let bodyLoggingPolicy: BodyLoggingPolicy
-
-    package init(logger: Logger = defaultLogger, bodyLoggingConfiguration: BodyLoggingPolicy = .upTo(maxBytes: 10000)) {
-        self.logger = logger
-        self.bodyLoggingPolicy = bodyLoggingConfiguration
-    }
-
-    fileprivate static var defaultLogger: Logger {
-        Logger(subsystem: "com.apple.swift-openapi", category: "logging-middleware")
-    }
+    package init() {}
 }
 
 extension LoggingMiddleware: ClientMiddleware {
@@ -38,100 +27,94 @@ extension LoggingMiddleware: ClientMiddleware {
         operationID: String,
         next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
-        let (requestBodyToLog, requestBodyForNext) = try await bodyLoggingPolicy.process(body)
-        log(request, requestBodyToLog)
+        // Copy body data for logging
+        let (bodyForLogging, bodyForRequest) = try await copyBody(body)
+        logRequest(request, bodyForLogging)
+        
         do {
-            let (response, responseBody) = try await next(request, requestBodyForNext, baseURL)
-            let (responseBodyToLog, responseBodyForNext) = try await bodyLoggingPolicy.process(responseBody)
-            log(request, response, responseBodyToLog)
-            return (response, responseBodyForNext)
+            let (response, responseBody) = try await next(request, bodyForRequest, baseURL)
+            // Copy response body data for logging
+            let (responseBodyForLogging, responseBodyForReturn) = try await copyBody(responseBody)
+            logResponse(request, response, responseBodyForLogging)
+            return (response, responseBodyForReturn)
         } catch {
-            log(request, failedWith: error)
+            logError(request, error: error)
             throw error
         }
     }
-}
-
-extension LoggingMiddleware: ServerMiddleware {
-    func intercept(
-        _ request: HTTPTypes.HTTPRequest,
-        body: OpenAPIRuntime.HTTPBody?,
-        metadata: OpenAPIRuntime.ServerRequestMetadata,
-        operationID: String,
-        next: @Sendable (HTTPTypes.HTTPRequest, OpenAPIRuntime.HTTPBody?, OpenAPIRuntime.ServerRequestMetadata)
-            async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?)
-    ) async throws -> (HTTPTypes.HTTPResponse, OpenAPIRuntime.HTTPBody?) {
-        let (requestBodyToLog, requestBodyForNext) = try await bodyLoggingPolicy.process(body)
-        log(request, requestBodyToLog)
-        do {
-            let (response, responseBody) = try await next(request, requestBodyForNext, metadata)
-            let (responseBodyToLog, responseBodyForNext) = try await bodyLoggingPolicy.process(responseBody)
-            log(request, response, responseBodyToLog)
-            return (response, responseBodyForNext)
-        } catch {
-            log(request, failedWith: error)
-            throw error
+    
+    private func copyBody(_ body: HTTPBody?) async throws -> (Data?, HTTPBody?) {
+        guard let body = body else { return (nil, nil) }
+        
+        if case .known(let length) = body.length {
+            let data = try await Data(collecting: body, upTo: Int(length))
+            return (data, HTTPBody(data))
         }
+        return (nil, body)
     }
 }
 
 extension LoggingMiddleware {
-    func log(_ request: HTTPRequest, _ requestBody: BodyLoggingPolicy.BodyLog) {
-        let decodedPath = request.path?.removingPercentEncoding ?? "<nil>"
-        print("Request: \(request.method) \(decodedPath) body: \(requestBody)")
+    private func logRequest(_ request: HTTPRequest, _ bodyData: Data?) {
+        print("")
+        print("======================== 👉 Network Request Log 👈 ==========================")
+        debugPrint("✅ [URL] : \(request.path?.removingPercentEncoding ?? "<nil>")")
+        debugPrint("✅ [Method] : \(request.method)")
+        debugPrint("✅ [Headers] : \(request.headerFields)")
+        
+        if let bodyData = bodyData,
+           let bodyString = String(data: bodyData, encoding: .utf8)?.toPrettyPrintedString {
+            debugPrint("✅ [Body] : \(bodyString)")
+        } else {
+            debugPrint("✅ [Body] : body 없음")
+        }
+        print("==============================================================================")
+        print("")
     }
-
-    func log(_ request: HTTPRequest, _ response: HTTPResponse, _ responseBody: BodyLoggingPolicy.BodyLog) {
-        let decodedPath = request.path?.removingPercentEncoding ?? "<nil>"
-        print("Response: \(request.method) \(decodedPath) \(response.status) body: \(responseBody)")
+    
+    private func logResponse(_ request: HTTPRequest, _ response: HTTPResponse, _ bodyData: Data?) {
+        print("")
+        print("======================== 👉 Network Response Log 👈 ========================")
+        debugPrint("✅ [StatusCode] : \(response.status.code)")
+        
+        let statusCode = response.status.code
+        switch statusCode {
+        case 400..<500:
+            debugPrint("🚨 클라이언트 오류")
+        case 500..<600:
+            debugPrint("🚨 서버 오류")
+        default:
+            break
+        }
+        
+        if let bodyData = bodyData,
+           let responseString = String(data: bodyData, encoding: .utf8)?.toPrettyPrintedString {
+            debugPrint("✅ [Response] : \(responseString)")
+        } else {
+            debugPrint("✅ [Response] : 응답 없음")
+        }
+        print("============================================================================")
+        print("")
     }
-
-    func log(_ request: HTTPRequest, failedWith error: any Error) {
-        print("Request failed. Error: \(error.localizedDescription)")
+    
+    private func logError(_ request: HTTPRequest, error: Error) {
+        print("")
+        print("======================== 👉 Network Response Log 👈 ========================")
+        debugPrint("🚨 요청 실패")
+        debugPrint("✅ [Error] : \(error.localizedDescription)")
+        print("============================================================================")
+        print("")
     }
 }
 
-enum BodyLoggingPolicy {
-    /// Never log request or response bodies.
-    case never
-    /// Log request and response bodies that have a known length less than or equal to `maxBytes`.
-    case upTo(maxBytes: Int)
-
-    enum BodyLog: Equatable, CustomStringConvertible {
-        /// There is no body to log.
-        case none
-        /// The policy forbids logging the body.
-        case redacted
-        /// The body was of unknown length.
-        case unknownLength
-        /// The body exceeds the maximum size for logging allowed by the policy.
-        case tooManyBytesToLog(Int64)
-        /// The body can be logged.
-        case complete(Data)
-
-        var description: String {
-            switch self {
-            case .none: return "<none>"
-            case .redacted: return "<redacted>"
-            case .unknownLength: return "<unknown length>"
-            case .tooManyBytesToLog(let byteCount): return "<\(byteCount) bytes>"
-            case .complete(let data):
-                if let string = String(data: data, encoding: .utf8) { return string }
-                return String(describing: data)
-            }
+extension String {
+    var toPrettyPrintedString: String {
+        guard let data = self.data(using: .utf8),
+              let jsonObject = try? JSONSerialization.jsonObject(with: data),
+              let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted),
+              let prettyString = String(data: prettyData, encoding: .utf8) else {
+            return self
         }
-    }
-
-    func process(_ body: HTTPBody?) async throws -> (bodyToLog: BodyLog, bodyForNext: HTTPBody?) {
-        switch (body?.length, self) {
-        case (.none, _): return (.none, body)
-        case (_, .never): return (.redacted, body)
-        case (.unknown, _): return (.unknownLength, body)
-        case (.known(let length), .upTo(let maxBytesToLog)) where length > maxBytesToLog:
-            return (.tooManyBytesToLog(length), body)
-        case (.known, .upTo(let maxBytesToLog)):
-            let bodyData = try await Data(collecting: body!, upTo: maxBytesToLog)
-            return (.complete(bodyData), HTTPBody(bodyData))
-        }
+        return prettyString
     }
 }

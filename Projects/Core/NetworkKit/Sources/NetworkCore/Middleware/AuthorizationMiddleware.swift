@@ -19,10 +19,10 @@ import CoreKit
 /// A client middleware that injects a value into the `Authorization` header field of the request.
 struct AuthenticationMiddleware {
     /// The value for the `Authorization` header field.
-    private var accessToken: String {
+    private var accessToken: String? {
         guard let accessToken = TokenManager.accessToken else {
             print("🪙 토큰이 비어있음.")
-            return ""
+            return nil
         }
         return "Bearer \(accessToken)"
     }
@@ -37,8 +37,9 @@ extension AuthenticationMiddleware: ClientMiddleware {
         next: (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
         var request = request
-        // Adds the `Authorization` header field with the provided value.
-        request.headerFields[.authorization] = accessToken
+        if let accessToken {
+            request.headerFields[.authorization] = accessToken
+        }
         return try await next(request, body, baseURL)
     }
 }

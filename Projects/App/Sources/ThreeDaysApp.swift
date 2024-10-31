@@ -2,7 +2,7 @@ import SwiftUI
 import DesignCore
 import DesignPreview
 import CommonKit
-import Main
+import Home
 
 @main
 struct ThreeDaysApp: App {

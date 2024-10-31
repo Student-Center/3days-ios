@@ -21,7 +21,7 @@ class AuthRegionTest: XCTestCase {
         state = AuthRegionModel()
         intent = AuthRegionIntent(
             model: state,
-            input: .init(),
+            input: .init(input: .mock),
             regionService: RegionServiceMock()
         )
     }

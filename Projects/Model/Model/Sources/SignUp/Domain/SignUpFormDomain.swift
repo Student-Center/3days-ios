@@ -22,10 +22,6 @@ public struct SignUpFormDomain {
               let profile = profile?.toDto,
               let dreamPartner = dreamPartner?.toDto else {
             print("⚠️ SignUpFormDomain dto 변환 실패!")
-            print("⚠️ name: \(name)")
-            print("⚠️ phone: \(phone)")
-            print("⚠️ profile: \(profile)")
-            print("⚠️ dreamPartner: \(dreamPartner)")
             return nil
         }
         return .init(

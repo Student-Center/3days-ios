@@ -135,6 +135,18 @@ struct SplashAnimatedView: View {
     private func runSingleCycle() async {
         for step in SplashAnimationStep.allCases.dropFirst() {
             guard !cycleCompleted else { break }
+            if step == .fifth {
+                // auth 상태 체크
+                let isAuthorized = await configureAuthView()
+                /// 로그인 -> 메인 뷰로 이동
+                /// 로그아웃 -> 애니메이션 계속진행
+                if isAuthorized {
+                    try? await Task.sleep(for: .seconds(1))
+                    await pushToHomeView()
+                    break
+                }
+            }
+            
             try? await Task.sleep(for: .seconds(step.interval))
             withAnimation(.interactiveSpring(duration: 0.75)) {
                 updateIconStates(for: step)
@@ -145,6 +157,23 @@ struct SplashAnimatedView: View {
         withAnimation {
             showLetterAnimation = true
         }
+    }
+    
+    private func configureAuthView() async -> Bool {
+        switch AppCoordinator.shared.authState {
+        case .none:
+            try? await Task.sleep(for: .microseconds(500))
+            return await configureAuthView()
+        case .login:
+            return true
+        case .loggedOut:
+            return false
+        }
+    }
+    
+    @MainActor
+    private func pushToHomeView() {
+        AppCoordinator.shared.push(.authDebug)
     }
     
     private func updateIconStates(for step: SplashAnimationStep) {

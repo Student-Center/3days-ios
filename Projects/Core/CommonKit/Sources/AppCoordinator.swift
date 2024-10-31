@@ -7,23 +7,40 @@
 //
 
 import SwiftUI
+import NetworkKit
+import Model
+import CoreKit
 
 public final class AppCoordinator: ObservableObject {
     //MARK: - Lifecycle
     public static var shared = AppCoordinator()
-    private init() {}
+    private init() {
+        setup()
+        validateToken()
+    }
     
     //MARK: - Properties
-    @Published public var navigationStack: [PathType] = [.main]
+    @Published public var authState: AuthState = .none
+    @Published public var userInfo: UserInfo?
+    @Published public var navigationStack: [PathType] = [.intro]
+    let authService = AuthService.shared
     
     //MARK: - Methods
+    private func setup() {
+        AuthState.changeHandler = { [weak self] state in
+            DispatchQueue.main.async {
+                self?.authState = state
+                if state == .loggedOut {
+                    self?.navigationStack = [.intro]
+                    self?.userInfo = nil
+                }
+            }
+        }
+    }
+    
     @MainActor
     public func changeRootView(_ path: PathType) {
         navigationStack = [path]
-//        push(path)
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-//            self.navigationStack.removeSubrange(0 ..< self.navigationStack.count - 1)
-//        }
     }
     
     @MainActor
@@ -35,5 +52,39 @@ public final class AppCoordinator: ObservableObject {
     public func pop() {
         guard navigationStack.count > 1 else { return }
         navigationStack.removeLast()
+    }
+    
+    public func validateToken(
+        accessToken: String? = nil,
+        refreshToken: String? = nil
+    ) {
+        Task {
+            do {
+                var accessToken = accessToken
+                var refreshToken = refreshToken
+                
+                if accessToken == nil {
+                    accessToken = TokenManager.accessToken
+                }
+                if refreshToken == nil {
+                    refreshToken = TokenManager.refreshToken
+                }
+                guard accessToken != nil && accessToken != "" else {
+                    await MainActor.run {
+                        AuthState.change(.loggedOut)
+                    }
+                    return
+                }
+                let userInfo = try await authService.requestMyUserInfo()
+                await MainActor.run {
+                    self.userInfo = userInfo
+                    AuthState.change(.login)
+                }
+            } catch {
+                await MainActor.run {
+                    AuthState.change(.loggedOut)
+                }
+            }
+        }
     }
 }

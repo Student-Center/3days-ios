@@ -73,6 +73,7 @@ extension DreamPartnerDistanceIntent: DreamPartnerDistanceIntent.Intentable {
             let response = try await authService.requestSignUp(
                 domain: payload
             )
+            TokenManager.registerToken = ""
             TokenManager.accessToken = response.accessToken
             TokenManager.refreshToken = response.refreshToken
             await pushNextView()
