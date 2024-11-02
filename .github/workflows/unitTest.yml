@@ -25,5 +25,19 @@ jobs:
       
     - name: Run unit tests
       run: |
-        xcodebuild test -scheme three-days-UnitTest -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' | tee result.log
-      continue-on-error: true
+        set -o pipefail && xcodebuild test \
+          -scheme three-days-UnitTest \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          | tee result.log
+        if grep -q "** TEST FAILED **" result.log; then
+          exit 1
+        fi
+      continue-on-error: false
+
+    - name: Failure notification to Discord
+      if: failure()
+      run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{\"content\": null, \"embeds\": [{\"title\": \"iOS 유닛 테스트 실패..?\", \"description\": \"Actor: ${{ github.actor }}\nBranch: ${{ github.head_ref }}\nCommit: ${{ github.event.pull_request.head.sha }}\n\n💥 잉?!\", \"color\": 16711741}]}" \
+          ${{ secrets.DISCORD_WEBHOOK_URL }}

@@ -20,10 +20,15 @@ public final class AppCoordinator: ObservableObject {
     }
     
     //MARK: - Properties
-    @Published public var authState: AuthState = .none
-    @Published public var userInfo: UserInfo?
+    public var authState: AuthState = .none
+    public var userInfo: UserInfo?
+    public var needFadeTransition: Bool = false
     @Published public var navigationStack: [PathType] = [.intro]
     let authService = AuthService.shared
+    
+    public var isRootView: Bool {
+        navigationStack.count == 1
+    }
     
     //MARK: - Methods
     private func setup() {
@@ -31,7 +36,9 @@ public final class AppCoordinator: ObservableObject {
             DispatchQueue.main.async {
                 self?.authState = state
                 if state == .loggedOut {
-                    self?.navigationStack = [.intro]
+                    if self?.navigationStack != [.intro] {
+                        self?.navigationStack = [.intro]
+                    }
                     self?.userInfo = nil
                 }
             }
@@ -40,11 +47,13 @@ public final class AppCoordinator: ObservableObject {
     
     @MainActor
     public func changeRootView(_ path: PathType) {
+        needFadeTransition = true
         navigationStack = [path]
     }
     
     @MainActor
     public func push(_ path: PathType) {
+        needFadeTransition = false
         navigationStack.append(path)
     }
     
@@ -69,6 +78,10 @@ public final class AppCoordinator: ObservableObject {
                 if refreshToken == nil {
                     refreshToken = TokenManager.refreshToken
                 }
+                
+                print("👉 accessToken: \(TokenManager.accessToken ?? "null")")
+                print("👉 refreshToken: \(TokenManager.refreshToken ?? "null")")
+                
                 guard accessToken != nil && accessToken != "" else {
                     await MainActor.run {
                         AuthState.change(.loggedOut)

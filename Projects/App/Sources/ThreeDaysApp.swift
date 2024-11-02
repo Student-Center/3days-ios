@@ -3,6 +3,7 @@ import DesignCore
 import DesignPreview
 import CommonKit
 import Home
+import NavigationTransitions
 
 @main
 struct ThreeDaysApp: App {
@@ -33,6 +34,10 @@ struct ThreeDaysApp: App {
                     feature.view
                 }
         }
+        .navigationTransition(
+            AppCoordinator.shared.needFadeTransition ? .fade(.cross) : .slide,
+            interactivity: AppCoordinator.shared.isRootView ? .disabled : .pan
+        )
     }
 
     #if STAGING || DEBUG
