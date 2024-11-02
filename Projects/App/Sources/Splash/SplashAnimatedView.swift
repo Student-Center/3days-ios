@@ -116,9 +116,7 @@ struct SplashAnimatedView: View {
                 isActive: true,
                 isShowLetter: $showLetterAnimation
             ) {
-                AppCoordinator.shared.navigationStack.append(
-                    .signUp(.authPhoneInput)
-                )
+                AppCoordinator.shared.changeRootView(.signUp(.authPhoneInput))
             }
             .frame(height: 70)
             .padding(.horizontal, 50)
@@ -179,7 +177,7 @@ struct SplashAnimatedView: View {
     
     @MainActor
     private func pushToHomeView() {
-        AppCoordinator.shared.push(.authDebug)
+        AppCoordinator.shared.changeRootView(.authDebug)
     }
     
     private func updateIconStates(for step: SplashAnimationStep) {

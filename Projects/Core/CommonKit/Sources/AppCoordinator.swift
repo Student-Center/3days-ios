@@ -22,8 +22,13 @@ public final class AppCoordinator: ObservableObject {
     //MARK: - Properties
     public var authState: AuthState = .none
     public var userInfo: UserInfo?
+    public var needFadeTransition: Bool = false
     @Published public var navigationStack: [PathType] = [.intro]
     let authService = AuthService.shared
+    
+    public var isRootView: Bool {
+        navigationStack.count == 1
+    }
     
     //MARK: - Methods
     private func setup() {
@@ -42,11 +47,13 @@ public final class AppCoordinator: ObservableObject {
     
     @MainActor
     public func changeRootView(_ path: PathType) {
+        needFadeTransition = true
         navigationStack = [path]
     }
     
     @MainActor
     public func push(_ path: PathType) {
+        needFadeTransition = false
         navigationStack.append(path)
     }
     
