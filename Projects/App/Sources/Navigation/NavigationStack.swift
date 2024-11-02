@@ -29,7 +29,7 @@ extension PathType {
             
         // features
         case .home:
-            HomeView()
+            HomeMainView()
             
         case .signUp(let subView):
             switch subView {
