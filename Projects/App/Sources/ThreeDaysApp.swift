@@ -32,7 +32,6 @@ struct ThreeDaysApp: App {
                     for: PathType.self
                 ) { feature in
                     feature.view
-                        .transition(.opacity)
                 }
         }
         .navigationTransition(
