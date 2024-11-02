@@ -25,5 +25,11 @@ jobs:
       
     - name: Run unit tests
       run: |
-        xcodebuild test -scheme three-days-UnitTest -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' | tee result.log
+        set -o pipefail && xcodebuild test \
+          -scheme three-days-UnitTest \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          | tee result.log
+        if grep -q "** TEST FAILED **" result.log; then
+          exit 1
+        fi
       continue-on-error: false
