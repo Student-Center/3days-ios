@@ -16,7 +16,7 @@ import Foundation
 import HTTPTypes
 
 actor LoggingMiddleware {
-    package init() {}
+    init() {}
 }
 
 extension LoggingMiddleware: ClientMiddleware {
@@ -45,12 +45,8 @@ extension LoggingMiddleware: ClientMiddleware {
     
     private func copyBody(_ body: HTTPBody?) async throws -> (Data?, HTTPBody?) {
         guard let body = body else { return (nil, nil) }
-        
-        if case .known(let length) = body.length {
-            let data = try await Data(collecting: body, upTo: Int(length))
-            return (data, HTTPBody(data))
-        }
-        return (nil, body)
+        let data = try await Data(collecting: body, upTo: 10 * 1024 * 1024)
+        return (data, HTTPBody(data))
     }
 }
 

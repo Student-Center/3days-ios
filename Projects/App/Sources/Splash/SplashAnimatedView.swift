@@ -44,6 +44,7 @@ struct SplashAnimatedView: View {
     @State private var cycleCompleted = false
     @State private var otherViewOpacity: CGFloat = 0.0
     @State private var showLetterAnimation = false
+    @State private var viewDisappeared: Bool = false
     @State private var iconStates: [IconState] = [
         IconState(
             id: 0,
@@ -130,10 +131,15 @@ struct SplashAnimatedView: View {
         .task {
             await runSingleCycle()
         }
+        .onDisappear {
+            viewDisappeared = true
+        }
     }
     
     private func runSingleCycle() async {
+        guard !cycleCompleted else { return }
         for step in SplashAnimationStep.allCases.dropFirst() {
+            if viewDisappeared { return }
             guard !cycleCompleted else { break }
             if step == .fifth {
                 // auth 상태 체크
@@ -142,7 +148,7 @@ struct SplashAnimatedView: View {
                 /// 로그아웃 -> 애니메이션 계속진행
                 if isAuthorized {
                     try? await Task.sleep(for: .seconds(1))
-                    await pushToHomeView()
+                    pushToHomeView()
                     break
                 }
             }

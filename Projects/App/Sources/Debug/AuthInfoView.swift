@@ -9,6 +9,7 @@
 import SwiftUI
 import DesignCore
 import CoreKit
+import CommonKit
 
 #if DEBUG || STAGING
 struct TableInfoModel: Identifiable {
@@ -26,9 +27,9 @@ enum Sections: CaseIterable {
     var sectionTitle: String {
         switch self {
         case .authInfo: "토큰 정보"
-        case .userInfo: "유저 정보(TEMP)"
-        case .userProfile: "프로필 정보(TEMP)"
-        case .dreamPartnerInfo: "이상형 정보(TEMP)"
+        case .userInfo: "유저 정보"
+        case .userProfile: "프로필 정보"
+        case .dreamPartnerInfo: "이상형 정보"
         }
     }
     
@@ -57,40 +58,59 @@ enum Sections: CaseIterable {
                 ),
                 TableInfoModel(
                     title: "이름",
-                    value: "홍길동"
+                    value: AppCoordinator.shared.userInfo?.name ?? "null"
                 ),
                 TableInfoModel(
                     title: "휴대폰 번호",
-                    value: "010-1234-1234"
+                    value: AppCoordinator.shared.userInfo?.phone ?? "null"
                 )
             ]
         case .userProfile:
             [
                 TableInfoModel(
                     title: "출생년도",
-                    value: "1996"
+                    value: AppCoordinator.shared.userInfo?.profile.birthYear == nil ? "null" : String((AppCoordinator.shared.userInfo?.profile.birthYear)!)
                 ),
                 TableInfoModel(
                     title: "회사 ID",
-                    value: UUID().uuidString
+                    value: AppCoordinator.shared.userInfo?.profile.companyId ?? "null"
                 ),
                 TableInfoModel(
                     title: "성별",
-                    value: "MALE"
+                    value: AppCoordinator.shared.userInfo?.profile.gender.rawValue ?? "null"
                 ),
                 TableInfoModel(
                     title: "직군정보",
-                    value: UUID().uuidString
+                    value: AppCoordinator.shared.userInfo?.profile.jobOccupation ?? "null"
                 ),
                 TableInfoModel(
                     title: "활동지역 ID",
-                    value: [UUID(), UUID(), UUID()]
-                        .map { $0.uuidString }
-                        .joined(separator: "\n")
+                    value: AppCoordinator.shared.userInfo?.profile.locations != nil ? AppCoordinator.shared.userInfo!.profile.locations
+                        .compactMap { $0 }
+                        .joined(separator: "\n") : "null"
                 )
             ]
         case .dreamPartnerInfo:
-            []
+            [
+                TableInfoModel(
+                    title: "출생년도 범위",
+                    value: "\(AppCoordinator.shared.userInfo?.dreamPartner.lowerBirthYear ?? 0) ~ \(AppCoordinator.shared.userInfo?.dreamPartner.upperBirthYear ?? 0)"
+                ),
+                TableInfoModel(
+                    title: "같은 회사 소개 여부",
+                    value: AppCoordinator.shared.userInfo?.dreamPartner.allowSameCompany == nil ? "null" : String((AppCoordinator.shared.userInfo?.dreamPartner.allowSameCompany)!)
+                ),
+                TableInfoModel(
+                    title: "거리",
+                    value: AppCoordinator.shared.userInfo?.dreamPartner.distanceType.description ?? "null"
+                ),
+                TableInfoModel(
+                    title: "직군정보",
+                    value: AppCoordinator.shared.userInfo?.dreamPartner.jobOccupations != nil ? AppCoordinator.shared.userInfo!.dreamPartner.jobOccupations
+                        .compactMap { $0 }
+                        .joined(separator: "\n") : "null"
+                )
+            ]
         }
     }
 }

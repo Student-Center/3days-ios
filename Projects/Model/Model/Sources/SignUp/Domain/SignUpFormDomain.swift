@@ -149,7 +149,7 @@ public enum DreamPartnerDistanceType: CaseIterable {
     }
 }
 
-public enum GenderType: CaseIterable {
+public enum GenderType: String, CaseIterable {
     case male
     case female
     
