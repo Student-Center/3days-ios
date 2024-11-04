@@ -1,8 +1,8 @@
 //
-//  HomeMainIntent.swift
+//  ProfileIntent.swift
 //  DesignPreview
 //
-//  Created by 김지수 on 11/2/24.
+//  Created by 김지수 on 11/3/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
@@ -12,13 +12,13 @@ import CoreKit
 import Model
 
 //MARK: - Intent
-class HomeMainIntent {
-    private weak var model: HomeMainModelActionable?
+class ProfileIntent {
+    private weak var model: ProfileModelActionable?
     private let input: DataModel
 
     // MARK: Life cycle
     init(
-        model: HomeMainModelActionable,
+        model: ProfileModelActionable,
         input: DataModel
     ) {
         self.input = input
@@ -27,10 +27,9 @@ class HomeMainIntent {
 }
 
 //MARK: - Intentable
-extension HomeMainIntent {
+extension ProfileIntent {
     protocol Intentable {
         // content
-        func onTapTab(_ tab: HomeMainTab)
         func onTapNextButton()
         
         // default
@@ -44,13 +43,11 @@ extension HomeMainIntent {
 }
 
 //MARK: - Intentable
-extension HomeMainIntent: HomeMainIntent.Intentable {
+extension ProfileIntent: ProfileIntent.Intentable {
     // default
-    func onTapTab(_ tab: HomeMainTab) {
-        model?.setSelectedTab(tab: tab)
-        model?.setUserInfo(userInfo: input.userInfo)
+    func onAppear() {
+        model?.setUserInfo(input.userInfo)
     }
-    func onAppear() {}
     
     func task() async {}
     

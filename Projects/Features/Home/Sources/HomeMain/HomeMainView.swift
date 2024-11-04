@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct HomeMainView: View {
     
@@ -18,11 +19,11 @@ public struct HomeMainView: View {
     private var intent: HomeMainIntent.Intentable { container.intent }
     private var state: HomeMainModel.Stateful { container.model }
     
-    public init() {
+    public init(userInfo: UserInfo) {
         let model = HomeMainModel()
         let intent = HomeMainIntent(
             model: model,
-            input: .init()
+            input: .init(userInfo: userInfo)
         )
         let container = MVIContainer(
             intent: intent as HomeMainIntent.Intentable,
@@ -66,10 +67,8 @@ public struct HomeMainView: View {
                 .tag(HomeMainTab.home)
                 
                 // 두 번째 탭 내용
-                VStack {
-                    Text("두 번째 탭")
-                }
-                .tag(HomeMainTab.profile)
+                ProfileView(userInfo: state.userInfo)
+                    .tag(HomeMainTab.profile)
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
@@ -90,6 +89,6 @@ public struct HomeMainView: View {
 
 #Preview {
     NavigationView {
-        HomeMainView()
+        HomeMainView(userInfo: .)
     }
 }

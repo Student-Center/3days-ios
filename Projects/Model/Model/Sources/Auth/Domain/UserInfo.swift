@@ -67,6 +67,16 @@ public struct UserInfoProfile {
         self.jobOccupation = dto.jobOccupation.rawValue
         self.locations = dto.locationIds
     }
+    
+    public static var mock: UserInfoProfile {
+        .init(
+            gender: .male,
+            birthYear: 1980,
+            companyId: nil,
+            jobOccupation: "IT_INFORMATION",
+            locations: ["용인", "성남", "강남구", "중구"]
+        )
+    }
 }
 
 public struct DreamPartnerInfo {

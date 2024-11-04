@@ -1,8 +1,8 @@
 //
-//  HomeMainModel.swift
+//  ProfileModel.swift
 //  DesignPreview
 //
-//  Created by 김지수 on 11/2/24.
+//  Created by 김지수 on 11/3/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
@@ -11,13 +11,12 @@ import CommonKit
 import CoreKit
 import Model
 
-final class HomeMainModel: ObservableObject {
+final class ProfileModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
-        var userInfo: UserInfo? { get }
-        var selectedTab: HomeMainTab { get set }
+        var userInfoModel: UserInfo? { get }
         var isValidated: Bool { get }
         
         // default
@@ -30,8 +29,7 @@ final class HomeMainModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    @Published var userInfo: UserInfo?
-    @Published var selectedTab: HomeMainTab = .profile
+    @Published var userInfoModel: UserInfo?
     @Published var isValidated: Bool = false
     
     // default
@@ -42,13 +40,12 @@ final class HomeMainModel: ObservableObject {
     @Published var showErrorAlert: ErrorModel?
 }
 
-extension HomeMainModel: HomeMainModel.Stateful {}
+extension ProfileModel: ProfileModel.Stateful {}
 
 //MARK: - Actionable
-protocol HomeMainModelActionable: AnyObject {
+protocol ProfileModelActionable: AnyObject {
     // content
-    func setUserInfo(userInfo: UserInfo)
-    func setSelectedTab(tab: HomeMainTab)
+    func setUserInfo(_ userInfo: UserInfo)
     func setValidation(value: Bool)
 
     // default
@@ -60,13 +57,10 @@ protocol HomeMainModelActionable: AnyObject {
     func resetError()
 }
 
-extension HomeMainModel: HomeMainModelActionable {
+extension ProfileModel: ProfileModelActionable {
     // content
-    func setUserInfo(userInfo: UserInfo) {
-        self.userInfo = userInfo
-    }
-    func setSelectedTab(tab: HomeMainTab) {
-        self.selectedTab = tab
+    func setUserInfo(_ userInfo: UserInfo) {
+        userInfoModel = userInfo
     }
     func setValidation(value: Bool) {
         isValidated = value
