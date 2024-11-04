@@ -73,6 +73,6 @@ public struct ProfileView: View {
 
 #Preview {
     NavigationView {
-        HomeMainView()
+        HomeMainView(userInfo: .mock)
     }
 }

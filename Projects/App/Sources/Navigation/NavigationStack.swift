@@ -28,8 +28,8 @@ extension PathType {
             SplashAnimatedView()
             
         // features
-        case .home:
-            HomeMainView()
+        case .home(let userInfo):
+            HomeMainView(userInfo: userInfo)
             
         case .signUp(let subView):
             switch subView {

@@ -10,13 +10,21 @@ import Foundation
 import Model
 
 public enum PathType: Hashable {
+    public static func == (lhs: PathType, rhs: PathType) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.name)
+    }
+    
     // App
     case designPreview
     case authDebug
     case intro
     
     // Features
-    case home
+    case home(UserInfo?)
     case signUp(SignUpSubViewType)
     
     #if STAGING || DEBUG

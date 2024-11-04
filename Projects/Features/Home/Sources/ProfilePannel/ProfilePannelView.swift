@@ -117,7 +117,7 @@ public struct ProfilePannelView: View {
                         .frame(
                             height: TagListCollectionView.calculateHeight(
                                 tags: tagModels,
-                                deviceWidth: Device.width - 76
+                                deviceWidth: Device.width - (76 + 36)
                             )
                         )
                     }

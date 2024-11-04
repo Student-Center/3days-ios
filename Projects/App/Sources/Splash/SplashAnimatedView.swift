@@ -146,7 +146,7 @@ struct SplashAnimatedView: View {
                 /// 로그아웃 -> 애니메이션 계속진행
                 if isAuthorized {
                     try? await Task.sleep(for: .seconds(1))
-                    pushToHomeView()
+                    await pushToHomeView()
                     break
                 }
             }
@@ -177,7 +177,9 @@ struct SplashAnimatedView: View {
     
     @MainActor
     private func pushToHomeView() {
-        AppCoordinator.shared.changeRootView(.authDebug)
+        if let userInfo = AppCoordinator.shared.userInfo {
+            AppCoordinator.shared.changeRootView(.home(userInfo))
+        }
     }
     
     private func updateIconStates(for step: SplashAnimationStep) {

@@ -131,7 +131,7 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
                     input: payload
                 )
         )
-        case .EXISTING: return .authDebug
+        case .EXISTING: return .home(AppCoordinator.shared.userInfo)
         }
     }
     
