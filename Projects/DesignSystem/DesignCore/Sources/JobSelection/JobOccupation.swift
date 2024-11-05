@@ -8,43 +8,43 @@
 
 import SwiftUI
 
-public enum JobOccupation: CaseIterable {
+public enum JobOccupation: String, CaseIterable {
     /// 경영관리
-    case business
+    case business = "BUSINESS_ADMIN"
     /// 영업 마케팅
-    case marketing
+    case marketing = "SALES_MARKETING"
     /// 연구개발
-    case research
+    case research = "RESEARCH_DEVELOPMENT"
     /// IT 정보통신
-    case IT
+    case IT = "IT_INFORMATION"
     /// 금융 회계
-    case financial
+    case financial = "FINANCE_ACCOUNTING"
     /// 생산 제조
-    case manufacture
+    case manufacture = "MANUFACTURING_PRODUCTION"
     /// 교육 학술
-    case education
+    case education = "EDUCATION_ACADEMIA"
     /// 법률 행정
-    case law
+    case law = "LAW_ADMINISTRATION"
     /// 경찰 소방 군인
-    case policeFirefighterMilitary
+    case policeFirefighterMilitary = "MILITARY_SECURITY"
     /// 의료 보건
-    case medical
+    case medical = "HEALTHCARE_MEDICAL"
     /// 미디어 언론
-    case mediaPress
+    case mediaPress = "MEDIA_ENTERTAINMENT"
     /// 예술 문화
-    case artCulture
+    case artCulture = "ARTS_DESIGN"
     /// 스포츠
-    case sports
+    case sports = "SPORTS"
     /// 건설 토목
-    case construction
+    case construction = "CONSTRUCTION_ENGINEERING"
     /// 운송 물류
-    case transport
+    case transport = "TRANSPORTATION_LOGISTICS"
     /// 농림 어업
-    case farming
+    case farming = "AGRICULTURE_FARMING"
     /// 서비스
-    case service
+    case service = "SERVICE_INDUSTRY"
     /// 기타
-    case etc
+    case etc = "OTHER"
 }
 
 extension JobOccupation {
@@ -97,25 +97,6 @@ extension JobOccupation {
 
 extension JobOccupation {
     public var requestValue: String {
-        switch self {
-        case .business: return "BUSINESS_ADMIN"
-        case .marketing: return "SALES_MARKETING"
-        case .research: return "RESEARCH_DEVELOPMENT"
-        case .IT: return "IT_INFORMATION"
-        case .financial: return "FINANCE_ACCOUNTING"
-        case .manufacture: return "MANUFACTURING_PRODUCTION"
-        case .education: return "EDUCATION_ACADEMIA"
-        case .law: return "LAW_ADMINISTRATION"
-        case .policeFirefighterMilitary: return "MILITARY_SECURITY"
-        case .medical: return "HEALTHCARE_MEDICAL"
-        case .mediaPress: return "MEDIA_ENTERTAINMENT"
-        case .artCulture: return "ARTS_DESIGN"
-        case .sports: return "SPORTS"
-        case .construction: return "CONSTRUCTION_ENGINEERING"
-        case .transport: return "TRANSPORTATION_LOGISTICS"
-        case .farming: return "AGRICULTURE_FARMING"
-        case .service: return "SERVICE_INDUSTRY"
-        case .etc: return "OTHER"
-        }
+        return self.rawValue
     }
 }

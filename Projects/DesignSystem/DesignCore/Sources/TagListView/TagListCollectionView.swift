@@ -120,4 +120,37 @@ extension TagListCollectionView: UICollectionViewDataSource, UICollectionViewDel
             height: 40
         )
     }
+    
+    //MARK: - Constants
+    private static let rowHeight: CGFloat = 40 + 8
+    private static let horizontalSpacing: CGFloat = 8
+    private static let horizontalInsets: CGFloat = 0
+    private static let verticalInsets: CGFloat = 20
+    
+    //MARK: - 동적 높이 계산
+    public static func calculateHeight(tags: [TagModel], deviceWidth: CGFloat) -> CGFloat {
+        var currentLineWidth: CGFloat = 0
+        var totalHeight: CGFloat = verticalInsets
+        var currentLineCount: Int = 1
+        
+        for tag in tags {
+            let label = UILabel()
+            label.font = UIFont.pretendard(._500, size: 14)
+            label.text = tag.name
+            label.sizeToFit()
+            
+            let cellWidth = label.frame.size.width + 24
+            
+            if currentLineWidth + cellWidth + horizontalSpacing <= deviceWidth - horizontalInsets {
+                currentLineWidth += cellWidth + horizontalSpacing
+            } else {
+                currentLineCount += 1
+                currentLineWidth = cellWidth + horizontalSpacing
+            }
+        }
+        
+        totalHeight += CGFloat(currentLineCount) * rowHeight - 8
+        
+        return totalHeight
+    }
 }

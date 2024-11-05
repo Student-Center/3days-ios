@@ -76,6 +76,10 @@ extension DreamPartnerDistanceIntent: DreamPartnerDistanceIntent.Intentable {
             TokenManager.registerToken = ""
             TokenManager.accessToken = response.accessToken
             TokenManager.refreshToken = response.refreshToken
+            AppCoordinator.shared.validateToken(
+                accessToken: response.accessToken,
+                refreshToken: response.refreshToken
+            )
             await pushNextView()
         } catch {
             print(error)
@@ -84,6 +88,6 @@ extension DreamPartnerDistanceIntent: DreamPartnerDistanceIntent.Intentable {
     
     @MainActor
     func pushNextView() {
-        AppCoordinator.shared.push(.authDebug)
+        AppCoordinator.shared.changeRootView(.home(AppCoordinator.shared.userInfo))
     }
 }
