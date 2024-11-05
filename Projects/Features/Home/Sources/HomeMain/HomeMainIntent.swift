@@ -9,19 +9,24 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
+import NetworkKit
 
 //MARK: - Intent
 class HomeMainIntent {
     private weak var model: HomeMainModelActionable?
     private let input: DataModel
+    private let authService: AuthServiceProtocol
 
     // MARK: Life cycle
     init(
         model: HomeMainModelActionable,
-        input: DataModel
+        input: DataModel,
+        service: AuthServiceProtocol = AuthService.shared
     ) {
         self.input = input
         self.model = model
+        self.authService = service
     }
 }
 
@@ -37,7 +42,9 @@ extension HomeMainIntent {
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let userInfo: UserInfo?
+    }
 }
 
 //MARK: - Intentable
@@ -46,7 +53,17 @@ extension HomeMainIntent: HomeMainIntent.Intentable {
     func onTapTab(_ tab: HomeMainTab) {
         model?.setSelectedTab(tab: tab)
     }
-    func onAppear() {}
+    func onAppear() {
+        Task {
+            if let userInfo = input.userInfo {
+                model?.setUserInfo(userInfo: userInfo)
+            } else {
+                let userInfo = try await authService.requestMyUserInfo()
+                AppCoordinator.shared.userInfo = userInfo
+                model?.setUserInfo(userInfo: userInfo)
+            }
+        }
+    }
     
     func task() async {}
     

@@ -131,13 +131,17 @@ extension AuthPhoneVerifyIntent: AuthPhoneVerifyIntent.Intentable {
                     input: payload
                 )
         )
-        case .EXISTING: return .authDebug
+        case .EXISTING: return .home(AppCoordinator.shared.userInfo)
         }
     }
     
     @MainActor
     func pushNextView(to targetPath: PathType) {
-        AppCoordinator.shared.push(targetPath)
+        if targetPath == .home(nil) {
+            AppCoordinator.shared.changeRootView(targetPath)
+        } else {
+            AppCoordinator.shared.push(targetPath)
+        }
     }
     
     func task() async {}

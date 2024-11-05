@@ -37,6 +37,16 @@ public struct UserInfo {
         self.profile = .init(from: dto.profile)
         self.dreamPartner = .init(from: dto.desiredPartner)
     }
+    
+    public static var mock: UserInfo {
+        .init(
+            id: UUID().uuidString,
+            name: "김지수",
+            phone: "01012341234",
+            profile: .mock,
+            dreamPartner: .mock
+        )
+    }
 }
 
 public struct UserInfoProfile {
@@ -66,6 +76,16 @@ public struct UserInfoProfile {
         self.companyId = dto.companyId
         self.jobOccupation = dto.jobOccupation.rawValue
         self.locations = dto.locationIds
+    }
+    
+    public static var mock: UserInfoProfile {
+        .init(
+            gender: .male,
+            birthYear: 1980,
+            companyId: nil,
+            jobOccupation: "IT_INFORMATION",
+            locations: ["용인", "성남", "강남구", "중구"]
+        )
     }
 }
 
@@ -104,5 +124,15 @@ public struct DreamPartnerInfo {
         case .ANYWHERE:
             self.distanceType = .anywhere
         }
+    }
+    
+    public static var mock: DreamPartnerInfo {
+        .init(
+            upperBirthYear: 4,
+            lowerBirthYear: 4,
+            jobOccupations: [],
+            distanceType: .myArea,
+            allowSameCompany: true
+        )
     }
 }
