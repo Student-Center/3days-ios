@@ -44,7 +44,7 @@ public struct HomeMainView: View {
                                 intent.onTapTab(tab)
                             }
                         }) {
-                            VStack {
+                            VStack(spacing: 0) {
                                 let isSelected = tab == state.selectedTab
                                 Circle()
                                     .frame(width: 6, height: 6)

@@ -19,6 +19,10 @@ public struct ProfileView: View {
     private var intent: ProfileIntent.Intentable { container.intent }
     private var state: ProfileModel.Stateful { container.model }
     
+    private var widgetSize: CGFloat {
+        (Device.width - 36 - 12) / 2
+    }
+    
     public init(userInfo: UserInfo) {
         let model = ProfileModel()
         let intent = ProfileIntent(
@@ -47,7 +51,52 @@ public struct ProfileView: View {
                             name: userInfo.name,
                             profile: userInfo.profile
                         )
-                        Spacer()
+                        
+                        LeftAlignText("Introductions")
+                            .typography(.en_medium_16)
+                            .padding(.bottom, 14)
+                        
+                        ZStack {
+                            Capsule()
+                                .inset(by: 1)
+                                .stroke(DesignCore.Colors.blue300, lineWidth: 1)
+                                .fill(Color(hex: 0xF2F9FF))
+                            LeftAlignText("프로필 위젯을 추가해 나를 더 소개해보세요!🙌")
+                                .padding(.leading, 26)
+                                .typography(.semibold_14)
+                                .foregroundStyle(DesignCore.Colors.blue300)
+                        }
+                        .frame(height: 57)
+                        .shadow(.default)
+                        .padding(.bottom, 14)
+                        
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(.white)
+                            
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(DesignCore.Colors.grey50)
+                                .strokeBorder(
+                                    style: StrokeStyle(
+                                        lineWidth: 3,
+                                        dash: [8, 8]
+                                    )
+                                )
+                                .foregroundStyle(Color(hex: 0xE0DEDD))
+                                .padding(.all, 8)
+                            
+                            VStack {
+                                Image(systemName: "plus")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                Text("프로필 위젯 추가하기")
+                                    .typography(.semibold_14)
+                            }
+                            .foregroundStyle(DesignCore.Colors.grey200)
+                        }
+                        .frame(height: widgetSize)
+                        .shadow(.default)
+                        .padding(.bottom, 36)
                     }
                     .padding(.horizontal, 18)
                     .padding(.top, 36)
