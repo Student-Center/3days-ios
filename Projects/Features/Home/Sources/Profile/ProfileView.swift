@@ -15,7 +15,7 @@ import Model
 public struct ProfileView: View {
     
     @StateObject var container: MVIContainer<ProfileIntent.Intentable, ProfileModel.Stateful>
-    @State var isShowWidgetSelectionView = false
+    @State var isPresentWidgetSelectionView = false
     
     private var intent: ProfileIntent.Intentable { container.intent }
     private var state: ProfileModel.Stateful { container.model }
@@ -99,7 +99,7 @@ public struct ProfileView: View {
                         .shadow(.default)
                         .padding(.bottom, 36)
                         .onTapGesture {
-                            isShowWidgetSelectionView = true
+                            isPresentWidgetSelectionView = true
                         }
                     }
                     .padding(.horizontal, 18)
@@ -109,8 +109,14 @@ public struct ProfileView: View {
                 ProgressView()
             }
         }
-        .sheet(isPresented: $isShowWidgetSelectionView, content: {
-            Rectangle()
+        .sheet(
+            isPresented: $isPresentWidgetSelectionView,
+            content: {
+                NavigationView {
+                    WidgetSelectionView(
+                        isPresented: $isPresentWidgetSelectionView
+                    )
+                }
         })
         .task {
             await intent.task()

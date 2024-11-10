@@ -7,67 +7,57 @@
 //
 
 import SwiftUI
+import CoreKit
 
-struct ProfileWidgetView: View {
-    var body: some View {
+public struct ProfileWidgetView: View {
+    
+    public let title: String
+    public let bodyText: String
+    public let titleColor: Color
+    public let bodyColor: Color
+    public let gradientColors: [Color]
+    
+    public init(
+        title: String,
+        bodyText: String,
+        titleColor: Color,
+        bodyColor: Color,
+        gradientColors: [Color]
+    ) {
+        self.title = title
+        self.bodyText = bodyText
+        self.titleColor = titleColor
+        self.bodyColor = bodyColor
+        self.gradientColors = gradientColors
+    }
+    
+    public var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 24)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            .init(hex: 0xEDF7FF),
-                            .init(hex: 0xCDE8FF),
-                        ],
+                        colors: gradientColors,
                         startPoint: .top,
                         endPoint: .bottom
                     )
                 )
-                VStack {
-                    HStack {
-                        Text("취미")
-                        Spacer()
-                        Image(systemName: "plus.circle")
-                    }
+            VStack {
+                HStack {
+                    Text(title)
+                        .pretendard(weight: ._600, size: 22)
+                        .foregroundStyle(titleColor)
                     Spacer()
-                    ScrollView {
-                    LeftAlignText(
-                    """
-                    ex.
-                    공백 포함해서 최소 5글자 이상부터 최대 40자까지 입력
-                    우어어어엉
-                    """
-                    )
-                    .typography(.regular_14)
+                    Image(systemName: "plus.circle")
+                }
+                Spacer()
+                ScrollView {
+                    LeftAlignText(bodyText)
+                        .typography(.regular_14)
+                        .foregroundStyle(bodyColor)
                 }
             }
             .scrollIndicators(.hidden)
             .padding(.all, 20)
         }
     }
-}
-
-#Preview {
-    ScrollView {
-        VStack {
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-            ProfileWidgetView()
-                .frame(width: 162, height: 150)
-        }
-    }
-
 }
