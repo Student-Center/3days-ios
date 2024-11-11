@@ -14,7 +14,10 @@ import Model
 
 public struct WidgetSelectionView: View {
     
-    @Binding var isShowSelectionView: Bool
+    @State private var isPushedWriteView: Bool = false
+    @State private var selectedWidget: WidgetType?
+    
+    @Binding var isPresentedSelectionView: Bool
     @StateObject var container: MVIContainer<WidgetSelectionIntent.Intentable, WidgetSelectionModel.Stateful>
     
     private var intent: WidgetSelectionIntent.Intentable { container.intent }
@@ -37,7 +40,7 @@ public struct WidgetSelectionView: View {
             modelChangePublisher: model.objectWillChange
         )
         self._container = StateObject(wrappedValue: container)
-        self._isShowSelectionView = isPresented
+        self._isPresentedSelectionView = isPresented
     }
     
     public var body: some View {
@@ -55,11 +58,25 @@ public struct WidgetSelectionView: View {
                             bodyColor: widget.bodyColor,
                             gradientColors: widget.gradationColors
                         )
+                        .onTapGesture {
+                            selectedWidget = widget
+                            isPushedWriteView = true
+                        }
                     }
                 }
                 .padding()
             }
         }
+        .navigationDestination(
+            isPresented: $isPushedWriteView,
+            destination: {
+                WidgetWritingView(
+                    widgetType: selectedWidget ?? .book,
+                    isModalPresented: $isPresentedSelectionView,
+                    isPushed: $isPushedWriteView
+                )
+            }
+        )
         .task {
             await intent.task()
         }
@@ -72,7 +89,7 @@ public struct WidgetSelectionView: View {
         .toolbar {
             ToolbarItem {
                 Button("닫기") {
-                    isShowSelectionView = false
+                    isPresentedSelectionView = false
                 }
                 .typography(.medium_16)
             }
@@ -82,7 +99,7 @@ public struct WidgetSelectionView: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         WidgetSelectionView(isPresented: .constant(true))
     }
 }
