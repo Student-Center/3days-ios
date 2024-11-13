@@ -10,19 +10,23 @@ import Foundation
 import CommonKit
 import CoreKit
 import Model
+import NetworkKit
 
 //MARK: - Intent
 class WidgetWritingIntent {
     private weak var model: WidgetWritingModelActionable?
     private let input: DataModel
+    private let service: ProfileServiceProtocol
 
     // MARK: Life cycle
     init(
         model: WidgetWritingModelActionable,
-        input: DataModel
+        input: DataModel,
+        service: ProfileServiceProtocol = ProfileService.shared
     ) {
         self.input = input
         self.model = model
+        self.service = service
         model.setWidgetType(input.widgetType)
     }
 }
@@ -61,9 +65,26 @@ extension WidgetWritingIntent: WidgetWritingIntent.Intentable {
     func onTapNextButton(state: any WidgetWritingModel.Stateful) {
         guard let selectedWidget = state.selectedWidgetType else { return }
         // 창닫기
-        model?.modalDismiss()
-        
+        Task {
+            model?.setLoading(status: true)
+            do {
+                try await requestPutProfileWidget(
+                    widget: selectedWidget,
+                    content: state.widgetBodyText
+                )
+                try await AppCoordinator.shared.refreshMyUserInfo()
+                model?.setLoading(status: false)
+                model?.modalDismiss()
+            } catch {
+                print(error)
+            }
+        }
     }
     
-    
+    func requestPutProfileWidget(widget: WidgetType, content: String) async throws {
+        try await service.requestPutProfileWidget(
+            widgetType: widget.toDto,
+            content: content
+        )
+    }
 }

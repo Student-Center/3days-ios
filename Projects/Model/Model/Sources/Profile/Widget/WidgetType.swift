@@ -8,6 +8,7 @@
 
 import SwiftUI
 import CoreKit
+import OpenapiGenerated
 
 public enum WidgetType: CaseIterable {
     case hobby
@@ -185,5 +186,45 @@ extension WidgetType {
     
     public var gradationColors: [Color] {
         colorSet.gradientColors
+    }
+}
+
+extension WidgetType {
+    public var toDto: Components.Schemas.ProfileWidgetType {
+        switch self {
+        case .hobby: .HOBBY
+        case .style: .STYLE
+        case .mbti: .MBTI
+        case .music: .MUSIC
+        case .body: .BODY_TYPE
+        case .food: .FOOD
+        case .movie: .MOVIE
+        case .drama: .DRAMA
+        case .book: .BOOK
+        case .travel: .TRAVEL
+        case .alcohol: .DRINKING
+        case .marriage: .MARRIAGE
+        case .religion: .RELIGION
+        case .smoking: .SMOKING
+        }
+    }
+    
+    init(from dto: Components.Schemas.ProfileWidgetType) {
+        switch dto {
+        case .HOBBY: self = .hobby
+        case .STYLE: self = .style
+        case .MBTI: self = .mbti
+        case .MUSIC: self = .music
+        case .BODY_TYPE: self = .body
+        case .FOOD: self = .food
+        case .MOVIE: self = .movie
+        case .DRAMA: self = .drama
+        case .BOOK: self = .book
+        case .TRAVEL: self = .travel
+        case .DRINKING: self = .alcohol
+        case .MARRIAGE: self = .marriage
+        case .RELIGION: self = .religion
+        case .SMOKING: self = .smoking
+        }
     }
 }

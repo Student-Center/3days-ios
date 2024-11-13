@@ -24,6 +24,11 @@ public struct ProfileView: View {
         (Device.width - 36 - 12) / 2
     }
     
+    private let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+    
     public init(userInfo: UserInfo) {
         let model = ProfileModel()
         let intent = ProfileIntent(
@@ -56,50 +61,105 @@ public struct ProfileView: View {
                         LeftAlignText("Introductions")
                             .typography(.en_medium_16)
                             .padding(.bottom, 14)
+                            .padding(.bottom, 16)
+                            .foregroundStyle(Color(hex: 0x5E5E5E))
                         
-                        ZStack {
-                            Capsule()
-                                .inset(by: 1)
-                                .stroke(DesignCore.Colors.blue300, lineWidth: 1)
-                                .fill(Color(hex: 0xF2F9FF))
-                            LeftAlignText("프로필 위젯을 추가해 나를 더 소개해보세요!🙌")
-                                .padding(.leading, 26)
-                                .typography(.semibold_14)
-                                .foregroundStyle(DesignCore.Colors.blue300)
-                        }
-                        .frame(height: 57)
-                        .shadow(.default)
-                        .padding(.bottom, 14)
-                        
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 24)
-                                .fill(.white)
-                            
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(DesignCore.Colors.grey50)
-                                .strokeBorder(
-                                    style: StrokeStyle(
-                                        lineWidth: 3,
-                                        dash: [8, 8]
-                                    )
-                                )
-                                .foregroundStyle(Color(hex: 0xE0DEDD))
-                                .padding(.all, 8)
-                            
-                            VStack {
-                                Image(systemName: "plus")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                Text("프로필 위젯 추가하기")
+                        // 비어있을 때의 뷰
+                        if userInfo.profileWidgets.isEmpty {
+                            ZStack {
+                                Capsule()
+                                    .inset(by: 1)
+                                    .stroke(DesignCore.Colors.blue300, lineWidth: 1)
+                                    .fill(Color(hex: 0xF2F9FF))
+                                LeftAlignText("프로필 위젯을 추가해 나를 더 소개해보세요!🙌")
+                                    .padding(.leading, 26)
                                     .typography(.semibold_14)
+                                    .foregroundStyle(DesignCore.Colors.blue300)
                             }
-                            .foregroundStyle(DesignCore.Colors.grey200)
-                        }
-                        .frame(height: widgetSize)
-                        .shadow(.default)
-                        .padding(.bottom, 36)
-                        .onTapGesture {
-                            isPresentWidgetSelectionView = true
+                            .frame(height: 57)
+                            .shadow(.default)
+                            .padding(.bottom, 14)
+                            
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 24)
+                                    .fill(.white)
+                                
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(DesignCore.Colors.grey50)
+                                    .strokeBorder(
+                                        style: StrokeStyle(
+                                            lineWidth: 3,
+                                            dash: [8, 8]
+                                        )
+                                    )
+                                    .foregroundStyle(Color(hex: 0xE0DEDD))
+                                    .padding(.all, 8)
+                                
+                                VStack {
+                                    Image(systemName: "plus")
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                    Text("프로필 위젯 추가하기")
+                                        .typography(.semibold_14)
+                                }
+                                .foregroundStyle(DesignCore.Colors.grey200)
+                            }
+                            .frame(height: widgetSize)
+                            .shadow(.default)
+                            .padding(.bottom, 36)
+                            .onTapGesture {
+                                isPresentWidgetSelectionView = true
+                            }
+                        } else {
+                            LazyVGrid(columns: columns, spacing: 16) {
+                                ForEach(userInfo.profileWidgets, id: \.self) { widget in
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 24)
+                                            .fill(.white)
+                                        ProfileWidgetView(
+                                            title: widget.widgetType.title,
+                                            bodyText: widget.content,
+                                            titleColor: widget.widgetType.titleColor,
+                                            bodyColor: widget.widgetType.bodyColor,
+                                            gradientColors: widget.widgetType.gradationColors
+                                        )
+                                        .padding(.all, 4)
+                                    }
+                                    .shadow(.default)
+                                    .onTapGesture {
+
+                                    }
+                                }
+                                
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 24)
+                                        .fill(.white)
+                                    
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(DesignCore.Colors.grey50)
+                                        .strokeBorder(
+                                            style: StrokeStyle(
+                                                lineWidth: 3,
+                                                dash: [8, 8]
+                                            )
+                                        )
+                                        .foregroundStyle(Color(hex: 0xE0DEDD))
+                                        .padding(.all, 8)
+                                    
+                                    VStack {
+                                        Image(systemName: "plus")
+                                            .resizable()
+                                            .frame(width: 24, height: 24)
+                                        Text("프로필 위젯 추가하기")
+                                            .typography(.semibold_14)
+                                    }
+                                    .foregroundStyle(DesignCore.Colors.grey200)
+                                }
+                                .shadow(.default)
+                                .onTapGesture {
+                                    isPresentWidgetSelectionView = true
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal, 18)

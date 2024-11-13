@@ -100,4 +100,12 @@ public final class AppCoordinator: ObservableObject {
             }
         }
     }
+    
+    public func refreshMyUserInfo() async throws {
+        let userInfo = try await authService.requestMyUserInfo()
+        await MainActor.run {
+            self.userInfo = userInfo
+            AuthState.change(.login)
+        }
+    }
 }
