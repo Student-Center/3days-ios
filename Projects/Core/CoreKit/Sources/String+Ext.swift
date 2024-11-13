@@ -34,4 +34,13 @@ extension String {
             return "\(firstPart)-\(secondPart)-\(thirdPart)"
         }
     }
+    
+    public func clipMaxCount(_ maxCount: Int) -> String {
+        if self.count > maxCount {
+            let index = self.index(self.startIndex, offsetBy: maxCount)
+            let formattedText = String(self[..<index])
+            return formattedText
+        }
+        return self
+    }
 }

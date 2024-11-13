@@ -16,6 +16,7 @@ public struct WidgetWritingView: View {
     
     @Binding var isPushed: Bool
     @Binding var isModalPresented: Bool
+    @FocusState var isFocused: Bool
     
     @StateObject var container: MVIContainer<WidgetWritingIntent.Intentable, WidgetWritingModel.Stateful>
     
@@ -23,7 +24,7 @@ public struct WidgetWritingView: View {
     private var state: WidgetWritingModel.Stateful { container.model }
 
     private var size: CGFloat {
-        Device.height * 0.3
+        Device.height * 0.25
     }
     
     public init(
@@ -54,19 +55,23 @@ public struct WidgetWritingView: View {
                     .padding(.vertical, 20)
                 
                 WritableProfileWidgetView(
-                    title: widget.title,
+                    title: widget.title + widget.emoji,
                     placeholder: widget.exampleText,
                     bodyText: $container.model.widgetBodyText,
                     titleColor: widget.titleColor,
                     bodyColor: widget.bodyColor,
-                    gradientColors: widget.gradationColors
+                    gradientColors: widget.gradationColors,
+                    focusState: _isFocused
                 )
                 .frame(width: size, height: size)
                 .onChange(of: state.widgetBodyText) {
                     intent.onChangedBodyText(
-                        bodyText,
+                        state.widgetBodyText,
                         maxCount: state.textMaxCount
                     )
+                }
+                .onChange(of: state.isFocused) {
+                    self.isFocused = state.isFocused
                 }
             }
             
@@ -78,6 +83,13 @@ public struct WidgetWritingView: View {
             }
             .typography(.regular_15)
             Spacer()
+            
+            CTABottomButton(
+                title: "다 썻어요",
+                isActive: state.isCTAButtonEnabled
+            ) {
+                intent.onTapNextButton(state: state)
+            }
         }
         .onChange(of: state.isModalPresented) {
             isModalPresented = state.isModalPresented

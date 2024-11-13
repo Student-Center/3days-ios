@@ -32,7 +32,7 @@ extension WidgetWritingIntent {
     protocol Intentable {
         // content
         func onChangedBodyText(_ text: String, maxCount: Int)
-        func onTapNextButton()
+        func onTapNextButton(state: WidgetWritingModel.Stateful)
         
         // default
         func onAppear()
@@ -48,15 +48,22 @@ extension WidgetWritingIntent {
 extension WidgetWritingIntent: WidgetWritingIntent.Intentable {
     // default
     func onChangedBodyText(_ text: String, maxCount: Int) {
-        if text.count > maxCount {
-            return
-        }
-        model?.setBodyText(text)
+        let formattedText = text.clipMaxCount(maxCount)
+        model?.setBodyText(formattedText)
     }
-    func onAppear() {}
+    func onAppear() {
+        model?.setFocusState(true)
+    }
     
     func task() async {}
     
     // content
-    func onTapNextButton() {}
+    func onTapNextButton(state: any WidgetWritingModel.Stateful) {
+        guard let selectedWidget = state.selectedWidgetType else { return }
+        // 창닫기
+        model?.modalDismiss()
+        
+    }
+    
+    
 }

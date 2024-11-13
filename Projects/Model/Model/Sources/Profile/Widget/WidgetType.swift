@@ -46,6 +46,25 @@ extension WidgetType {
         }
     }
     
+    public var emoji: String {
+        switch self {
+        case .hobby: return "🏃"
+        case .style: return "👖"
+        case .mbti: return "💭"
+        case .music: return "🎧"
+        case .body: return "💪"
+        case .food: return "🍔"
+        case .movie: return "🎬"
+        case .drama: return "📺"
+        case .book: return "📚"
+        case .travel: return "✈️"
+        case .alcohol: return "🍷"
+        case .marriage: return "💍"
+        case .religion: return "⛪"
+        case .smoking: return "🚬"
+        }
+    }
+    
     public var exampleText: String {
         switch self {
         case .hobby:

@@ -66,12 +66,7 @@ public struct AuthNameInputView: View {
                     "김위브",
                     text: $inputText
                 )
-                .keyboardType(.namePhonePad)
-                .interactiveDismissDisabled()
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-                .speechAnnouncementsQueued(false)
-                .speechSpellsOutCharacters(false)
+                .flatTextFieldOption(keyboardType: .namePhonePad)
                 .multilineTextAlignment(.center)
                 .pretendard(weight: ._400, size: 28)
                 .foregroundStyle(DesignCore.Colors.grey500)

@@ -112,7 +112,7 @@ public struct ProfileView: View {
         .sheet(
             isPresented: $isPresentWidgetSelectionView,
             content: {
-                NavigationView {
+                NavigationStack {
                     WidgetSelectionView(
                         isPresented: $isPresentWidgetSelectionView
                     )
