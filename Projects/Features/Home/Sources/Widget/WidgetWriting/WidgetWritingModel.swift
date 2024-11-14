@@ -64,6 +64,7 @@ protocol WidgetWritingModelActionable: AnyObject {
     func setBodyText(_ text: String)
     func setValidation(value: Bool)
     func setWidgetType(_ widget: WidgetType)
+    func setContentString(_ content: String)
     func modalDismiss()
 
     // default
@@ -91,6 +92,9 @@ extension WidgetWritingModel: WidgetWritingModelActionable {
     }
     func modalDismiss() {
         isModalPresented = false
+    }
+    func setContentString(_ content: String) {
+        widgetBodyText = content
     }
     
     // default

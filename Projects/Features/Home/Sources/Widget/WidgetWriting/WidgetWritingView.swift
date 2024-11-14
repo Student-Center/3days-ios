@@ -17,6 +17,8 @@ public struct WidgetWritingView: View {
     @Binding var isPushed: Bool
     @Binding var isModalPresented: Bool
     @FocusState var isFocused: Bool
+    let isEditingMode: Bool
+    let contentString: String?
     
     @StateObject var container: MVIContainer<WidgetWritingIntent.Intentable, WidgetWritingModel.Stateful>
     
@@ -27,15 +29,24 @@ public struct WidgetWritingView: View {
         Device.height * 0.25
     }
     
+    private var navigationTitle: String {
+        if isEditingMode {
+            return "프로필 위젯 수정"
+        }
+        return state.selectedWidgetType?.title ?? ""
+    }
+    
     public init(
         widgetType: WidgetType,
         isModalPresented: Binding<Bool>,
-        isPushed: Binding<Bool>
+        isPushed: Binding<Bool>,
+        isEditing: Bool = false,
+        contentString: String? = nil
     ) {
         let model = WidgetWritingModel()
         let intent = WidgetWritingIntent(
             model: model,
-            input: .init(widgetType: widgetType)
+            input: .init(widgetType: widgetType, content: contentString)
         )
         let container = MVIContainer(
             intent: intent as WidgetWritingIntent.Intentable,
@@ -45,6 +56,8 @@ public struct WidgetWritingView: View {
         self._container = StateObject(wrappedValue: container)
         self._isModalPresented = isModalPresented
         self._isPushed = isPushed
+        self.isEditingMode = isEditing
+        self.contentString = contentString
     }
     
     public var body: some View {
@@ -101,13 +114,23 @@ public struct WidgetWritingView: View {
             intent.onAppear()
         }
         .ignoresSafeArea(.keyboard)
-        .navigationTitle(state.selectedWidgetType?.title ?? "")
+        .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .setNavigation(
-            showLeftBackButton: true,
+            showLeftBackButton: isEditingMode ? false : true,
             handler: {
                 isPushed = false
         })
+        .toolbar {
+            if isEditingMode {
+                ToolbarItem {
+                    Button("닫기") {
+                        isModalPresented = false
+                    }
+                    .typography(.medium_16)
+                }
+            }
+        }
         .setLoading(state.isLoading)
     }
 }

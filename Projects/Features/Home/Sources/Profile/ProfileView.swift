@@ -126,41 +126,55 @@ public struct ProfileView: View {
                                         )
                                         .padding(.all, 4)
                                     }
+                                    .frame(minHeight: widgetSize)
+                                    .shadow(.default)
+                                    .contextMenu {
+                                        Button(action: {
+                                            intent.onTapModifyWidget(widget)
+                                        }) {
+                                            Text("수정하기")
+                                        }
+                                        
+                                        Button(
+                                            role: .destructive,
+                                            action: {
+                                                intent.onTapDeleteWidget(widget)
+                                        }) {
+                                            Text("삭제하기")
+                                        }
+                                    }
+                                }
+                                let isEveryWidgetAdded = WidgetType.allCases.count == userInfo.profileWidgets.count
+                                if !isEveryWidgetAdded {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 24)
+                                            .fill(.white)
+                                        
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(DesignCore.Colors.grey50)
+                                            .strokeBorder(
+                                                style: StrokeStyle(
+                                                    lineWidth: 3,
+                                                    dash: [8, 8]
+                                                )
+                                            )
+                                            .foregroundStyle(Color(hex: 0xE0DEDD))
+                                            .padding(.all, 8)
+                                        
+                                        VStack {
+                                            Image(systemName: "plus")
+                                                .resizable()
+                                                .frame(width: 24, height: 24)
+                                            Text("프로필 위젯\n추가하기")
+                                                .typography(.semibold_14)
+                                        }
+                                        .foregroundStyle(DesignCore.Colors.grey200)
+                                        .frame(minHeight: widgetSize)
+                                    }
                                     .shadow(.default)
                                     .onTapGesture {
-
+                                        isPresentWidgetSelectionView = true
                                     }
-                                    .frame(minHeight: widgetSize)
-                                }
-                                
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 24)
-                                        .fill(.white)
-                                    
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(DesignCore.Colors.grey50)
-                                        .strokeBorder(
-                                            style: StrokeStyle(
-                                                lineWidth: 3,
-                                                dash: [8, 8]
-                                            )
-                                        )
-                                        .foregroundStyle(Color(hex: 0xE0DEDD))
-                                        .padding(.all, 8)
-                                    
-                                    VStack {
-                                        Image(systemName: "plus")
-                                            .resizable()
-                                            .frame(width: 24, height: 24)
-                                        Text("프로필 위젯\n추가하기")
-                                            .typography(.semibold_14)
-                                    }
-                                    .foregroundStyle(DesignCore.Colors.grey200)
-                                    .frame(minHeight: widgetSize)
-                                }
-                                .shadow(.default)
-                                .onTapGesture {
-                                    isPresentWidgetSelectionView = true
                                 }
                             }
                         }
@@ -180,6 +194,20 @@ public struct ProfileView: View {
                 }
             }
         }
+        .onChange(of: state.isPresentedModifyWidgetView) {
+            if !state.isPresentedModifyWidgetView {
+                if let userInfo = AppCoordinator.shared.userInfo {
+                    intent.fetchUserInfo(userInfo)
+                }
+            }
+        }
+        .onChange(of: state.isPresentedDeleteConfirmSheet) {
+            if !state.isPresentedDeleteConfirmSheet {
+                if let userInfo = AppCoordinator.shared.userInfo {
+                    intent.fetchUserInfo(userInfo)
+                }
+            }
+        }
         .sheet(
             isPresented: $isPresentWidgetSelectionView,
             content: {
@@ -189,6 +217,41 @@ public struct ProfileView: View {
                     )
                 }
         })
+        .sheet(
+            isPresented: $container.model.isPresentedModifyWidgetView,
+            content: {
+                if let widget = state.selectedWidgetType {
+                    NavigationStack {
+                        WidgetWritingView(
+                            widgetType: widget.widgetType,
+                            isModalPresented: $container.model.isPresentedModifyWidgetView,
+                            isPushed: .constant(false),
+                            isEditing: true,
+                            contentString: widget.content
+                        )
+                    }
+                }
+            }
+        )
+        .sheet(
+            isPresented: $container.model.isPresentedDeleteConfirmSheet,
+            content: {
+                if let widget = state.selectedWidgetType {
+                    DeleteWidgetConfirmView {
+                        Task {
+                            await intent.deleteWidget(widget)
+                            await MainActor.run {
+                                container.model.isPresentedDeleteConfirmSheet = false
+                            }
+                        }
+                    } cancelHandler: {
+                        container.model.isPresentedDeleteConfirmSheet = false
+                    }
+                    .presentationDetents([.height(280)])
+                    .presentationCornerRadius(20)
+                }
+            }
+        )
         .task {
             await intent.task()
         }
@@ -201,8 +264,53 @@ public struct ProfileView: View {
     }
 }
 
-#Preview {
-    NavigationView {
-        HomeMainView(userInfo: .mock)
+fileprivate struct DeleteWidgetConfirmView: View {
+    let confirmHandler: () -> Void
+    let cancelHandler: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            VStack(spacing: 0) {
+                LeftAlignText("위젯을 삭제하시겠어요?")
+                    .typography(.semibold_20)
+                    .foregroundStyle(Color(hex: 0x454545))
+                LeftAlignText("삭제된 위젯은 복구할 수 없어요.")
+                    .typography(.regular_14)
+                    .foregroundStyle(DesignCore.Colors.grey200)
+            }
+            
+            Spacer()
+            
+            VStack(spacing: 8) {
+                CTAButton(
+                    title: "네, 삭제할게요",
+                    titleColor: .white,
+                    backgroundStyle: DesignCore.Colors.red300
+                ) {
+                    confirmHandler()
+                }
+                CTAButton(
+                    title: "아니요",
+                    titleColor: DesignCore.Colors.grey400,
+                    backgroundStyle: Color(hex: 0xF2F1F1)
+                ) {
+                    cancelHandler()
+                }
+            }
+        }
+        .padding(.horizontal, 28)
+        .padding(.vertical, 30)
     }
+}
+
+#Preview {
+    DeleteWidgetConfirmView {
+        
+    } cancelHandler: {
+        
+    }
+
+//    NavigationView {
+//        HomeMainView(userInfo: .mock)
+//    }
 }

@@ -28,6 +28,9 @@ class WidgetWritingIntent {
         self.model = model
         self.service = service
         model.setWidgetType(input.widgetType)
+        if let contentString = input.content {
+            model.setContentString(contentString)
+        }
     }
 }
 
@@ -45,6 +48,7 @@ extension WidgetWritingIntent {
     
     struct DataModel {
         let widgetType: WidgetType
+        let content: String?
     }
 }
 

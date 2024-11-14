@@ -16,6 +16,10 @@ public protocol ProfileServiceProtocol {
         widgetType: Components.Schemas.ProfileWidgetType,
         content: String
     ) async throws
+    
+    func requestDeleteProfileWidget(
+        widgetType: Components.Schemas.ProfileWidgetType
+    ) async throws
 }
 
 public final class ProfileService {
@@ -37,5 +41,16 @@ extension ProfileService: ProfileServiceProtocol {
             )
         )
         let _ = try result.ok
+    }
+    
+    public func requestDeleteProfileWidget(
+        widgetType: Components.Schemas.ProfileWidgetType
+    ) async throws {
+        let response = try await client.deleteProfileWidget(
+            .init(
+                path: .init(_type: widgetType)
+            )
+        )
+        _ = try response.noContent
     }
 }

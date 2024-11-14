@@ -114,8 +114,8 @@ public final class AppCoordinator: ObservableObject {
     private func startRefreshMyUserInfo() {
         Task {
             while true {
-                try await Task.sleep(for: .seconds(20))
-                try await refreshMyUserInfo()
+                try? await Task.sleep(for: .seconds(20))
+                try? await refreshMyUserInfo()
             }
         }
     }

@@ -16,6 +16,10 @@ final class ProfileModel: ObservableObject {
     //MARK: Stateful
     protocol Stateful {
         // content
+        var isPresentedModifyWidgetView: Bool { get set }
+        var isPresentedDeleteConfirmSheet: Bool { get set }
+        var selectedWidgetType: ProfileWidget? { get }
+        
         var userInfoModel: UserInfo? { get }
         var isValidated: Bool { get }
         
@@ -30,6 +34,10 @@ final class ProfileModel: ObservableObject {
     //MARK: State Properties
     // content
     @Published var userInfoModel: UserInfo?
+    @Published var isPresentedModifyWidgetView: Bool = false
+    @Published var isPresentedDeleteConfirmSheet: Bool = false
+    var selectedWidgetType: ProfileWidget?
+    
     @Published var isValidated: Bool = false
     
     // default
@@ -45,8 +53,11 @@ extension ProfileModel: ProfileModel.Stateful {}
 //MARK: - Actionable
 protocol ProfileModelActionable: AnyObject {
     // content
+    func setModifyWidgetViewPresented(_ isPresented: Bool)
+    func setDeleteConfirmSheetPresented(_ isPresented: Bool)
     func setUserInfo(_ userInfo: UserInfo)
     func setValidation(value: Bool)
+    func setSelectedWidget(_ widget: ProfileWidget)
 
     // default
     func setLoading(status: Bool)
@@ -59,11 +70,20 @@ protocol ProfileModelActionable: AnyObject {
 
 extension ProfileModel: ProfileModelActionable {
     // content
+    func setModifyWidgetViewPresented(_ isPresented: Bool) {
+        isPresentedModifyWidgetView = isPresented
+    }
+    func setDeleteConfirmSheetPresented(_ isPresented: Bool) {
+        isPresentedDeleteConfirmSheet = isPresented
+    }
     func setUserInfo(_ userInfo: UserInfo) {
         userInfoModel = userInfo
     }
     func setValidation(value: Bool) {
         isValidated = value
+    }
+    func setSelectedWidget(_ widget: ProfileWidget) {
+        selectedWidgetType = widget
     }
     
     // default

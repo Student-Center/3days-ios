@@ -10,19 +10,23 @@ import Foundation
 import CommonKit
 import CoreKit
 import Model
+import NetworkKit
 
 //MARK: - Intent
 class ProfileIntent {
     private weak var model: ProfileModelActionable?
     private let input: DataModel
+    private let profileService: ProfileServiceProtocol
 
     // MARK: Life cycle
     init(
         model: ProfileModelActionable,
-        input: DataModel
+        input: DataModel,
+        service: ProfileServiceProtocol = ProfileService.shared
     ) {
         self.input = input
         self.model = model
+        self.profileService = service
     }
 }
 
@@ -30,6 +34,11 @@ class ProfileIntent {
 extension ProfileIntent {
     protocol Intentable {
         // content
+        func onTapModifyWidget(_ widget: ProfileWidget)
+        func onTapDeleteWidget(_ widget: ProfileWidget)
+        func onTapAddWidget()
+        func deleteWidget(_ widget: ProfileWidget) async
+        
         func onTapNextButton()
         func fetchUserInfo(_ userInfo: UserInfo)
         
@@ -46,6 +55,32 @@ extension ProfileIntent {
 //MARK: - Intentable
 extension ProfileIntent: ProfileIntent.Intentable {
     // default
+    func onTapAddWidget() {
+        
+    }
+    
+    func onTapDeleteWidget(_ widget: ProfileWidget) {
+        model?.setSelectedWidget(widget)
+        model?.setDeleteConfirmSheetPresented(true)
+    }
+    
+    func onTapModifyWidget(_ widget: ProfileWidget) {
+        model?.setSelectedWidget(widget)
+        model?.setModifyWidgetViewPresented(true)
+    }
+    
+    func deleteWidget(_ widget: ProfileWidget) async {
+        do {
+            model?.setLoading(status: true)
+            try await requestDeleteWidget(widget)
+            try await AppCoordinator.shared.refreshMyUserInfo()
+            model?.setLoading(status: false)
+        } catch {
+            print(error)
+            model?.setLoading(status: false)
+        }
+    }
+    
     func onAppear() {
         fetchUserInfo(input.userInfo)
     }
@@ -58,4 +93,8 @@ extension ProfileIntent: ProfileIntent.Intentable {
     
     // content
     func onTapNextButton() {}
+    
+    func requestDeleteWidget(_ widget: ProfileWidget) async throws {
+        try await profileService.requestDeleteProfileWidget(widgetType: widget.widgetType.toDto)
+    }
 }
