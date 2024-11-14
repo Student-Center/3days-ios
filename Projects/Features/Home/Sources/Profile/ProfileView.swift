@@ -117,11 +117,12 @@ public struct ProfileView: View {
                                         RoundedRectangle(cornerRadius: 24)
                                             .fill(.white)
                                         ProfileWidgetView(
-                                            title: widget.widgetType.title,
+                                            title: widget.widgetType.title + widget.widgetType.emoji,
                                             bodyText: widget.content,
                                             titleColor: widget.widgetType.titleColor,
                                             bodyColor: widget.widgetType.bodyColor,
-                                            gradientColors: widget.widgetType.gradationColors
+                                            gradientColors: widget.widgetType.gradationColors,
+                                            iconType: .edit
                                         )
                                         .padding(.all, 4)
                                     }
@@ -129,6 +130,7 @@ public struct ProfileView: View {
                                     .onTapGesture {
 
                                     }
+                                    .frame(minHeight: widgetSize)
                                 }
                                 
                                 ZStack {
@@ -150,10 +152,11 @@ public struct ProfileView: View {
                                         Image(systemName: "plus")
                                             .resizable()
                                             .frame(width: 24, height: 24)
-                                        Text("프로필 위젯 추가하기")
+                                        Text("프로필 위젯\n추가하기")
                                             .typography(.semibold_14)
                                     }
                                     .foregroundStyle(DesignCore.Colors.grey200)
+                                    .frame(minHeight: widgetSize)
                                 }
                                 .shadow(.default)
                                 .onTapGesture {
@@ -164,9 +167,17 @@ public struct ProfileView: View {
                     }
                     .padding(.horizontal, 18)
                     .padding(.top, 36)
+                    .padding(.bottom, 20)
                 }
             } else {
                 ProgressView()
+            }
+        }
+        .onChange(of: isPresentWidgetSelectionView) {
+            if !isPresentWidgetSelectionView {
+                if let userInfo = AppCoordinator.shared.userInfo {
+                    intent.fetchUserInfo(userInfo)
+                }
             }
         }
         .sheet(
@@ -186,9 +197,6 @@ public struct ProfileView: View {
         }
         .ignoresSafeArea(.all)
         .textureBackground()
-        .setPopNavigation {
-            AppCoordinator.shared.pop()
-        }
         .setLoading(state.isLoading)
     }
 }

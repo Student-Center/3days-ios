@@ -31,6 +31,7 @@ extension ProfileIntent {
     protocol Intentable {
         // content
         func onTapNextButton()
+        func fetchUserInfo(_ userInfo: UserInfo)
         
         // default
         func onAppear()
@@ -46,7 +47,11 @@ extension ProfileIntent {
 extension ProfileIntent: ProfileIntent.Intentable {
     // default
     func onAppear() {
-        model?.setUserInfo(input.userInfo)
+        fetchUserInfo(input.userInfo)
+    }
+    
+    func fetchUserInfo(_ userInfo: UserInfo) {
+        model?.setUserInfo(userInfo)
     }
     
     func task() async {}

@@ -9,6 +9,18 @@
 import SwiftUI
 import CoreKit
 
+public enum ProfileWidgetIconType {
+    case add
+    case edit
+    
+    var image: Image {
+        switch self {
+        case .add: DesignCore.Images.plusCircleFilled.image
+        case .edit: DesignCore.Images.pencil1.image
+        }
+    }
+}
+
 public struct ProfileWidgetView: View {
     
     public let title: String
@@ -16,19 +28,22 @@ public struct ProfileWidgetView: View {
     public let titleColor: Color
     public let bodyColor: Color
     public let gradientColors: [Color]
+    public var iconType: ProfileWidgetIconType?
     
     public init(
         title: String,
         bodyText: String,
         titleColor: Color,
         bodyColor: Color,
-        gradientColors: [Color]
+        gradientColors: [Color],
+        iconType: ProfileWidgetIconType? = nil
     ) {
         self.title = title
         self.bodyText = bodyText
         self.titleColor = titleColor
         self.bodyColor = bodyColor
         self.gradientColors = gradientColors
+        self.iconType = iconType
     }
     
     public var body: some View {
@@ -47,7 +62,11 @@ public struct ProfileWidgetView: View {
                         .pretendard(weight: ._600, size: 22)
                         .foregroundStyle(titleColor)
                     Spacer()
-                    Image(systemName: "plus.circle")
+                    if let iconType {
+                        iconType.image
+                            .resizable()
+                            .frame(width: 22, height: 22)
+                    }
                 }
                 Spacer()
                 ScrollView {

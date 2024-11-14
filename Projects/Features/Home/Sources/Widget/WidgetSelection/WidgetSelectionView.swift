@@ -50,13 +50,20 @@ public struct WidgetSelectionView: View {
                 .padding(.top, 20)
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(WidgetType.allCases, id: \.self) { widget in
+                    let totalWidgets = WidgetType.allCases
+                    let userWidgets = AppCoordinator.shared.userInfo?.profileWidgets
+                        .map { $0.widgetType } ?? []
+                    let availableWidgets = totalWidgets
+                        .filter { !userWidgets.contains($0) }
+                    
+                    ForEach(availableWidgets, id: \.self) { widget in
                         ProfileWidgetView(
-                            title: widget.title,
+                            title: widget.title + widget.emoji,
                             bodyText: widget.exampleText,
                             titleColor: widget.titleColor,
                             bodyColor: widget.bodyColor,
-                            gradientColors: widget.gradationColors
+                            gradientColors: widget.gradationColors,
+                            iconType: .add
                         )
                         .onTapGesture {
                             selectedWidget = widget

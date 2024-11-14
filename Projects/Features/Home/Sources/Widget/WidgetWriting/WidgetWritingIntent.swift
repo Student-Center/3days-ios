@@ -76,7 +76,8 @@ extension WidgetWritingIntent: WidgetWritingIntent.Intentable {
                 model?.setLoading(status: false)
                 model?.modalDismiss()
             } catch {
-                print(error)
+                // TODO: 에러처리
+                model?.setLoading(status: false)
             }
         }
     }

@@ -52,9 +52,9 @@ public struct HomeMainView: View {
                                 Text(tab.title)
                                     .typography(.en_medium_20)
                                     .padding(.vertical, 12)
-                                
                                     .foregroundColor(isSelected ? DesignCore.Colors.grey500 : DesignCore.Colors.grey500.opacity(0.2))
                             }
+                            .padding(.top, 8)
                         }
                     }
                 }
@@ -82,7 +82,7 @@ public struct HomeMainView: View {
         }
         .ignoresSafeArea(.keyboard)
         .textureBackground()
-        .setNavigation(showLeftBackButton: false) {}
+        .toolbar(.hidden, for: .navigationBar)
         .setLoading(state.isLoading)
     }
 }
