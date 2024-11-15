@@ -46,6 +46,27 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `GET /users/my`.
     /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)`.
     func getMyUserInfo(_ input: Operations.getMyUserInfo.Input) async throws -> Operations.getMyUserInfo.Output
+    /// 내 프로필 수정
+    ///
+    /// 현재 로그인한 사용자의 프로필 정보를 수정합니다. (이름, 직군, 직장, 활동 지역)
+    ///
+    /// - Remark: HTTP `PATCH /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)`.
+    func updateMyUserInfo(_ input: Operations.updateMyUserInfo.Input) async throws -> Operations.updateMyUserInfo.Output
+    /// 프로필 위젯 추가 및 수정
+    ///
+    /// 현재 사용자의 프로필 위젯을 추가 및 수정합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/profileWidgets`.
+    /// - Remark: Generated from `#/paths//users/profileWidgets/put(putProfileWidget)`.
+    func putProfileWidget(_ input: Operations.putProfileWidget.Input) async throws -> Operations.putProfileWidget.Output
+    /// 프로필 위젯 삭제
+    ///
+    /// 현재 사용자의 프로필 위젯을 삭제합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/profileWidgets/{type}`.
+    /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)`.
+    func deleteProfileWidget(_ input: Operations.deleteProfileWidget.Input) async throws -> Operations.deleteProfileWidget.Output
     /// 액세스 토큰 갱신
     ///
     /// 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
@@ -157,6 +178,51 @@ extension APIProtocol {
     /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)`.
     public func getMyUserInfo(headers: Operations.getMyUserInfo.Input.Headers = .init()) async throws -> Operations.getMyUserInfo.Output {
         try await getMyUserInfo(Operations.getMyUserInfo.Input(headers: headers))
+    }
+    /// 내 프로필 수정
+    ///
+    /// 현재 로그인한 사용자의 프로필 정보를 수정합니다. (이름, 직군, 직장, 활동 지역)
+    ///
+    /// - Remark: HTTP `PATCH /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)`.
+    public func updateMyUserInfo(
+        headers: Operations.updateMyUserInfo.Input.Headers = .init(),
+        body: Operations.updateMyUserInfo.Input.Body
+    ) async throws -> Operations.updateMyUserInfo.Output {
+        try await updateMyUserInfo(Operations.updateMyUserInfo.Input(
+            headers: headers,
+            body: body
+        ))
+    }
+    /// 프로필 위젯 추가 및 수정
+    ///
+    /// 현재 사용자의 프로필 위젯을 추가 및 수정합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/profileWidgets`.
+    /// - Remark: Generated from `#/paths//users/profileWidgets/put(putProfileWidget)`.
+    public func putProfileWidget(
+        headers: Operations.putProfileWidget.Input.Headers = .init(),
+        body: Operations.putProfileWidget.Input.Body
+    ) async throws -> Operations.putProfileWidget.Output {
+        try await putProfileWidget(Operations.putProfileWidget.Input(
+            headers: headers,
+            body: body
+        ))
+    }
+    /// 프로필 위젯 삭제
+    ///
+    /// 현재 사용자의 프로필 위젯을 삭제합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/profileWidgets/{type}`.
+    /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)`.
+    public func deleteProfileWidget(
+        path: Operations.deleteProfileWidget.Input.Path,
+        headers: Operations.deleteProfileWidget.Input.Headers = .init()
+    ) async throws -> Operations.deleteProfileWidget.Output {
+        try await deleteProfileWidget(Operations.deleteProfileWidget.Input(
+            path: path,
+            headers: headers
+        ))
     }
     /// 액세스 토큰 갱신
     ///
@@ -305,7 +371,7 @@ public enum Components {
             /// 사용자 상태 (신규 사용자 또는 기존 사용자)
             ///
             /// - Remark: Generated from `#/components/schemas/SendAuthCodeResponse/userStatus`.
-            @frozen public enum userStatusPayload: String, Codable, Hashable, Sendable {
+            @frozen public enum userStatusPayload: String, Codable, Hashable, Sendable, CaseIterable {
                 case NEW = "NEW"
                 case EXISTING = "EXISTING"
             }
@@ -480,7 +546,103 @@ public enum Components {
             public var profile: Components.Schemas.UserProfile
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/desiredPartner`.
             public var desiredPartner: Components.Schemas.UserDesiredPartner
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/profileWidgets`.
+            public var profileWidgets: [Components.Schemas.ProfileWidget]
             /// Creates a new `GetMyUserInfoResponse`.
+            ///
+            /// - Parameters:
+            ///   - id: 사용자 식별자
+            ///   - name: 사용자 이름
+            ///   - phoneNumber: 사용자의 전화번호 (한국 휴대폰 번호 형식)
+            ///   - profile:
+            ///   - desiredPartner:
+            ///   - profileWidgets:
+            public init(
+                id: Swift.String? = nil,
+                name: Swift.String,
+                phoneNumber: Swift.String,
+                profile: Components.Schemas.UserProfile,
+                desiredPartner: Components.Schemas.UserDesiredPartner,
+                profileWidgets: [Components.Schemas.ProfileWidget]
+            ) {
+                self.id = id
+                self.name = name
+                self.phoneNumber = phoneNumber
+                self.profile = profile
+                self.desiredPartner = desiredPartner
+                self.profileWidgets = profileWidgets
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case name
+                case phoneNumber
+                case profile
+                case desiredPartner
+                case profileWidgets
+            }
+        }
+        /// 현재 사용자 프로필 수정 요청 (이름, 직군, 직장, 활동 지역)
+        ///
+        /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest`.
+        public struct UpdateMyUserInfoRequest: Codable, Hashable, Sendable {
+            /// 사용자 이름
+            ///
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/name`.
+            public var name: Swift.String?
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/jobOccupation`.
+            public var jobOccupation: Components.Schemas.JobOccupation?
+            /// 사용자의 회사 ID
+            ///
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/companyId`.
+            public var companyId: Swift.String?
+            /// 사용자의 활동 지역 목록 ID 리스트
+            ///
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/locationIds`.
+            public var locationIds: [Swift.String]?
+            /// Creates a new `UpdateMyUserInfoRequest`.
+            ///
+            /// - Parameters:
+            ///   - name: 사용자 이름
+            ///   - jobOccupation:
+            ///   - companyId: 사용자의 회사 ID
+            ///   - locationIds: 사용자의 활동 지역 목록 ID 리스트
+            public init(
+                name: Swift.String? = nil,
+                jobOccupation: Components.Schemas.JobOccupation? = nil,
+                companyId: Swift.String? = nil,
+                locationIds: [Swift.String]? = nil
+            ) {
+                self.name = name
+                self.jobOccupation = jobOccupation
+                self.companyId = companyId
+                self.locationIds = locationIds
+            }
+            public enum CodingKeys: String, CodingKey {
+                case name
+                case jobOccupation
+                case companyId
+                case locationIds
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoResponse`.
+        public struct UpdateMyUserInfoResponse: Codable, Hashable, Sendable {
+            /// 사용자 식별자
+            ///
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoResponse/id`.
+            public var id: Swift.String?
+            /// 사용자 이름
+            ///
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoResponse/name`.
+            public var name: Swift.String
+            /// 사용자의 전화번호 (한국 휴대폰 번호 형식)
+            ///
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoResponse/phoneNumber`.
+            public var phoneNumber: Swift.String
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoResponse/profile`.
+            public var profile: Components.Schemas.UserProfile
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoResponse/desiredPartner`.
+            public var desiredPartner: Components.Schemas.UserDesiredPartner
+            /// Creates a new `UpdateMyUserInfoResponse`.
             ///
             /// - Parameters:
             ///   - id: 사용자 식별자
@@ -783,21 +945,21 @@ public enum Components {
         /// 사용자의 운영 체제 유형
         ///
         /// - Remark: Generated from `#/components/schemas/OSType`.
-        @frozen public enum OSType: String, Codable, Hashable, Sendable {
+        @frozen public enum OSType: String, Codable, Hashable, Sendable, CaseIterable {
             case IOS = "IOS"
             case AOS = "AOS"
         }
         /// 사용자의 성별
         ///
         /// - Remark: Generated from `#/components/schemas/Gender`.
-        @frozen public enum Gender: String, Codable, Hashable, Sendable {
+        @frozen public enum Gender: String, Codable, Hashable, Sendable, CaseIterable {
             case MALE = "MALE"
             case FEMALE = "FEMALE"
         }
         /// 직업군 분류
         ///
         /// - Remark: Generated from `#/components/schemas/JobOccupation`.
-        @frozen public enum JobOccupation: String, Codable, Hashable, Sendable {
+        @frozen public enum JobOccupation: String, Codable, Hashable, Sendable, CaseIterable {
             case BUSINESS_ADMIN = "BUSINESS_ADMIN"
             case SALES_MARKETING = "SALES_MARKETING"
             case RESEARCH_DEVELOPMENT = "RESEARCH_DEVELOPMENT"
@@ -822,10 +984,58 @@ public enum Components {
         /// 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
         ///
         /// - Remark: Generated from `#/components/schemas/PreferDistance`.
-        @frozen public enum PreferDistance: String, Codable, Hashable, Sendable {
+        @frozen public enum PreferDistance: String, Codable, Hashable, Sendable, CaseIterable {
             case ONLY_MY_AREA = "ONLY_MY_AREA"
             case INCLUDE_SURROUNDING_REGIONS = "INCLUDE_SURROUNDING_REGIONS"
             case ANYWHERE = "ANYWHERE"
+        }
+        /// - Remark: Generated from `#/components/schemas/PutProfileWidgetRequest`.
+        public typealias PutProfileWidgetRequest = Components.Schemas.ProfileWidget
+        /// - Remark: Generated from `#/components/schemas/PutProfileWidgetResponse`.
+        public typealias PutProfileWidgetResponse = Components.Schemas.ProfileWidget
+        /// - Remark: Generated from `#/components/schemas/ProfileWidget`.
+        public struct ProfileWidget: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/ProfileWidget/type`.
+            public var _type: Components.Schemas.ProfileWidgetType
+            /// 위젯 내용
+            ///
+            /// - Remark: Generated from `#/components/schemas/ProfileWidget/content`.
+            public var content: Swift.String
+            /// Creates a new `ProfileWidget`.
+            ///
+            /// - Parameters:
+            ///   - _type:
+            ///   - content: 위젯 내용
+            public init(
+                _type: Components.Schemas.ProfileWidgetType,
+                content: Swift.String
+            ) {
+                self._type = _type
+                self.content = content
+            }
+            public enum CodingKeys: String, CodingKey {
+                case _type = "type"
+                case content
+            }
+        }
+        /// 프로필 위젯 타입
+        ///
+        /// - Remark: Generated from `#/components/schemas/ProfileWidgetType`.
+        @frozen public enum ProfileWidgetType: String, Codable, Hashable, Sendable, CaseIterable {
+            case HOBBY = "HOBBY"
+            case STYLE = "STYLE"
+            case MBTI = "MBTI"
+            case MUSIC = "MUSIC"
+            case BODY_TYPE = "BODY_TYPE"
+            case FOOD = "FOOD"
+            case MOVIE = "MOVIE"
+            case DRAMA = "DRAMA"
+            case BOOK = "BOOK"
+            case TRAVEL = "TRAVEL"
+            case DRINKING = "DRINKING"
+            case MARRIAGE = "MARRIAGE"
+            case RELIGION = "RELIGION"
+            case SMOKING = "SMOKING"
         }
     }
     /// Types generated from the `#/components/parameters` section of the OpenAPI document.
@@ -1970,6 +2180,567 @@ public enum Operations {
             /// 서버 오류
             ///
             /// - Remark: Generated from `#/paths//users/my/get(getMyUserInfo)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 내 프로필 수정
+    ///
+    /// 현재 로그인한 사용자의 프로필 정보를 수정합니다. (이름, 직군, 직장, 활동 지역)
+    ///
+    /// - Remark: HTTP `PATCH /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)`.
+    public enum updateMyUserInfo {
+        public static let id: Swift.String = "updateMyUserInfo"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/my/PATCH/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.updateMyUserInfo.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.updateMyUserInfo.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.updateMyUserInfo.Input.Headers
+            /// - Remark: Generated from `#/paths/users/my/PATCH/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/my/PATCH/requestBody/content/application\/json`.
+                case json(Components.Schemas.UpdateMyUserInfoRequest)
+            }
+            public var body: Operations.updateMyUserInfo.Input.Body
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            ///   - body:
+            public init(
+                headers: Operations.updateMyUserInfo.Input.Headers = .init(),
+                body: Operations.updateMyUserInfo.Input.Body
+            ) {
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/my/PATCH/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/my/PATCH/responses/200/content/application\/json`.
+                    case json(Components.Schemas.UpdateMyUserInfoResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.UpdateMyUserInfoResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.updateMyUserInfo.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.updateMyUserInfo.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 수정 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.updateMyUserInfo.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.updateMyUserInfo.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 프로필 위젯 추가 및 수정
+    ///
+    /// 현재 사용자의 프로필 위젯을 추가 및 수정합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/profileWidgets`.
+    /// - Remark: Generated from `#/paths//users/profileWidgets/put(putProfileWidget)`.
+    public enum putProfileWidget {
+        public static let id: Swift.String = "putProfileWidget"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/profileWidgets/PUT/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.putProfileWidget.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.putProfileWidget.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.putProfileWidget.Input.Headers
+            /// - Remark: Generated from `#/paths/users/profileWidgets/PUT/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/profileWidgets/PUT/requestBody/content/application\/json`.
+                case json(Components.Schemas.PutProfileWidgetRequest)
+            }
+            public var body: Operations.putProfileWidget.Input.Body
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            ///   - body:
+            public init(
+                headers: Operations.putProfileWidget.Input.Headers = .init(),
+                body: Operations.putProfileWidget.Input.Body
+            ) {
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/profileWidgets/PUT/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/profileWidgets/PUT/responses/200/content/application\/json`.
+                    case json(Components.Schemas.PutProfileWidgetResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.PutProfileWidgetResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.putProfileWidget.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.putProfileWidget.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 프로필 위젯 추가/수정 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/put(putProfileWidget)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.putProfileWidget.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.putProfileWidget.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/put(putProfileWidget)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/put(putProfileWidget)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/put(putProfileWidget)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 프로필 위젯 삭제
+    ///
+    /// 현재 사용자의 프로필 위젯을 삭제합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/profileWidgets/{type}`.
+    /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)`.
+    public enum deleteProfileWidget {
+        public static let id: Swift.String = "deleteProfileWidget"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/profileWidgets/{type}/DELETE/path`.
+            public struct Path: Sendable, Hashable {
+                /// 삭제할 프로필 위젯 타입
+                ///
+                /// - Remark: Generated from `#/paths/users/profileWidgets/{type}/DELETE/path/type`.
+                public var _type: Components.Schemas.ProfileWidgetType
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - _type: 삭제할 프로필 위젯 타입
+                public init(_type: Components.Schemas.ProfileWidgetType) {
+                    self._type = _type
+                }
+            }
+            public var path: Operations.deleteProfileWidget.Input.Path
+            /// - Remark: Generated from `#/paths/users/profileWidgets/{type}/DELETE/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteProfileWidget.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteProfileWidget.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.deleteProfileWidget.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            public init(
+                path: Operations.deleteProfileWidget.Input.Path,
+                headers: Operations.deleteProfileWidget.Input.Headers = .init()
+            ) {
+                self.path = path
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct NoContent: Sendable, Hashable {
+                /// Creates a new `NoContent`.
+                public init() {}
+            }
+            /// 프로필 위젯 삭제 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)/responses/204`.
+            ///
+            /// HTTP response code: `204 noContent`.
+            case noContent(Operations.deleteProfileWidget.Output.NoContent)
+            /// The associated value of the enum case if `self` is `.noContent`.
+            ///
+            /// - Throws: An error if `self` is not `.noContent`.
+            /// - SeeAlso: `.noContent`.
+            public var noContent: Operations.deleteProfileWidget.Output.NoContent {
+                get throws {
+                    switch self {
+                    case let .noContent(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "noContent",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)/responses/500`.
             ///
             /// HTTP response code: `500 internalServerError`.
             case internalServerError(Components.Responses.InternalServerError)

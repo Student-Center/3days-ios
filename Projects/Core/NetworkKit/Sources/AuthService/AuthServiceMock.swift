@@ -63,7 +63,8 @@ public class AuthServiceMock: AuthServiceProtocol {
                 jobOccupations: [],
                 distanceType: .anywhere,
                 allowSameCompany: nil
-            )
+            ),
+            profileWidgets: []
         )
     }
 }

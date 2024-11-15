@@ -15,19 +15,22 @@ public struct UserInfo {
     public let phone: String
     public let profile: UserInfoProfile
     public let dreamPartner: DreamPartnerInfo
+    public let profileWidgets: [ProfileWidget]
     
     public init(
         id: String,
         name: String,
         phone: String,
         profile: UserInfoProfile,
-        dreamPartner: DreamPartnerInfo
+        dreamPartner: DreamPartnerInfo,
+        profileWidgets: [ProfileWidget]
     ) {
         self.id = id
         self.name = name
         self.phone = phone
         self.profile = profile
         self.dreamPartner = dreamPartner
+        self.profileWidgets = profileWidgets
     }
     
     public init(from dto: Components.Schemas.GetMyUserInfoResponse) {
@@ -36,6 +39,7 @@ public struct UserInfo {
         self.phone = dto.phoneNumber
         self.profile = .init(from: dto.profile)
         self.dreamPartner = .init(from: dto.desiredPartner)
+        self.profileWidgets = dto.profileWidgets.map { .init(from: $0) }
     }
     
     public static var mock: UserInfo {
@@ -44,7 +48,8 @@ public struct UserInfo {
             name: "김지수",
             phone: "01012341234",
             profile: .mock,
-            dreamPartner: .mock
+            dreamPartner: .mock,
+            profileWidgets: ProfileWidget.mock
         )
     }
 }
@@ -134,5 +139,30 @@ public struct DreamPartnerInfo {
             distanceType: .myArea,
             allowSameCompany: true
         )
+    }
+}
+
+public struct ProfileWidget: Hashable {
+    public let widgetType: WidgetType
+    public let content: String
+    
+    static var mock: [ProfileWidget] {
+        [
+            .init(widgetType: .body, content: "GOOD BODY"),
+            .init(widgetType: .smoking, content: "Heavy Smoker !!")
+        ]
+    }
+    
+    public init(
+        widgetType: WidgetType,
+        content: String
+    ) {
+        self.widgetType = widgetType
+        self.content = content
+    }
+    
+    public init(from dto: Components.Schemas.ProfileWidget) {
+        self.widgetType = WidgetType(from: dto._type)
+        self.content = dto.content
     }
 }

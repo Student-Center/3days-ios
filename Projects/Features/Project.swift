@@ -30,6 +30,12 @@ let project: Project = .make(
                 .project(target: .commonKit),
                 .project(target: .designCore)
             ]
+        ),
+        .makeUnitTest(
+            target: .home,
+            dependencies: [
+                .project(target: .home)
+            ]
         )
     ]
 )

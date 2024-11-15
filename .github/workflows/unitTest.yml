@@ -6,7 +6,7 @@ on:
 jobs:
   run-unitTest:
 
-    runs-on: macos-latest
+    runs-on: macos-15
 
     steps:
     - uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
       run: |
         set -o pipefail && xcodebuild test \
           -scheme three-days-UnitTest \
-          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
           | tee result.log
         if grep -q "** TEST FAILED **" result.log; then
           exit 1

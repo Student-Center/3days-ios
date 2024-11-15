@@ -1,9 +1,9 @@
 //
 //  Color+Ext.swift
-//  DesignCore
+//  CoreKit
 //
-//  Created by 김지수 on 9/14/24.
-//  Copyright © 2024 com.studentcenter. All rights reserved.
+//  Created by 김지수 on 11/11/24.
+//  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import SwiftUI

@@ -43,6 +43,7 @@ public final class AppCoordinator: ObservableObject {
                 }
             }
         }
+        startRefreshMyUserInfo()
     }
     
     @MainActor
@@ -97,6 +98,27 @@ public final class AppCoordinator: ObservableObject {
                 await MainActor.run {
                     AuthState.change(.loggedOut)
                 }
+            }
+        }
+    }
+    
+    public func refreshMyUserInfo() async throws {
+        if TokenManager.accessToken == nil || TokenManager.accessToken == "" {
+            return
+        }
+        let userInfo = try await authService.requestMyUserInfo()
+        await MainActor.run {
+            self.userInfo = userInfo
+            AuthState.change(.login)
+        }
+    }
+    
+    // 20초마다 한번씩 refreshMyUserInfo() 를 호출
+    private func startRefreshMyUserInfo() {
+        Task {
+            while true {
+                try? await Task.sleep(for: .seconds(20))
+                try? await refreshMyUserInfo()
             }
         }
     }
