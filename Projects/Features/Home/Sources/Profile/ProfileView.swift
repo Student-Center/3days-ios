@@ -15,7 +15,7 @@ import Model
 public struct ProfileView: View {
     
     @StateObject var container: MVIContainer<ProfileIntent.Intentable, ProfileModel.Stateful>
-    @State var isPresentWidgetSelectionView = false
+//    @State var isPresentWidgetSelectionView = false
     
     private var intent: ProfileIntent.Intentable { container.intent }
     private var state: ProfileModel.Stateful { container.model }
@@ -108,7 +108,7 @@ public struct ProfileView: View {
                             .shadow(.default)
                             .padding(.bottom, 36)
                             .onTapGesture {
-                                isPresentWidgetSelectionView = true
+                                intent.onTapAddWidget()
                             }
                         } else {
                             LazyVGrid(columns: columns, spacing: 16) {
@@ -173,7 +173,7 @@ public struct ProfileView: View {
                                     }
                                     .shadow(.default)
                                     .onTapGesture {
-                                        isPresentWidgetSelectionView = true
+                                        intent.onTapAddWidget()
                                     }
                                 }
                             }
@@ -187,8 +187,8 @@ public struct ProfileView: View {
                 ProgressView()
             }
         }
-        .onChange(of: isPresentWidgetSelectionView) {
-            if !isPresentWidgetSelectionView {
+        .onChange(of: state.isPresentedAddWidgetModal) {
+            if !state.isPresentedAddWidgetModal {
                 if let userInfo = AppCoordinator.shared.userInfo {
                     intent.fetchUserInfo(userInfo)
                 }
@@ -209,11 +209,11 @@ public struct ProfileView: View {
             }
         }
         .sheet(
-            isPresented: $isPresentWidgetSelectionView,
+            isPresented: $container.model.isPresentedAddWidgetModal,
             content: {
                 NavigationStack {
                     WidgetSelectionView(
-                        isPresented: $isPresentWidgetSelectionView
+                        isPresented: $container.model.isPresentedAddWidgetModal
                     )
                 }
         })

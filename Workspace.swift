@@ -46,7 +46,8 @@ let workspace = Workspace(
                 [
                     .target(.coreKit),
                     .target(.designCore),
-                    .target(.signUp)
+                    .target(.signUp),
+                    .target(.home)
                 ]
             )
         ),

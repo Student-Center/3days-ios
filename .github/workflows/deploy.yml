@@ -10,7 +10,7 @@ on:
 jobs:
   build:
 
-    runs-on: macos-latest
+    runs-on: macos-15
 
     env:
       # app archive 및 export 에 쓰일 환경 변수 설정

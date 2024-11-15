@@ -16,6 +16,7 @@ final class ProfileModel: ObservableObject {
     //MARK: Stateful
     protocol Stateful {
         // content
+        var isPresentedAddWidgetModal: Bool { get set }
         var isPresentedModifyWidgetView: Bool { get set }
         var isPresentedDeleteConfirmSheet: Bool { get set }
         var selectedWidgetType: ProfileWidget? { get }
@@ -34,6 +35,7 @@ final class ProfileModel: ObservableObject {
     //MARK: State Properties
     // content
     @Published var userInfoModel: UserInfo?
+    @Published var isPresentedAddWidgetModal: Bool = false
     @Published var isPresentedModifyWidgetView: Bool = false
     @Published var isPresentedDeleteConfirmSheet: Bool = false
     var selectedWidgetType: ProfileWidget?
@@ -53,6 +55,7 @@ extension ProfileModel: ProfileModel.Stateful {}
 //MARK: - Actionable
 protocol ProfileModelActionable: AnyObject {
     // content
+    func setAddWidgetModalPresented(_ isPresented: Bool)
     func setModifyWidgetViewPresented(_ isPresented: Bool)
     func setDeleteConfirmSheetPresented(_ isPresented: Bool)
     func setUserInfo(_ userInfo: UserInfo)
@@ -70,6 +73,9 @@ protocol ProfileModelActionable: AnyObject {
 
 extension ProfileModel: ProfileModelActionable {
     // content
+    func setAddWidgetModalPresented(_ isPresented: Bool) {
+        isPresentedAddWidgetModal = isPresented
+    }
     func setModifyWidgetViewPresented(_ isPresented: Bool) {
         isPresentedModifyWidgetView = isPresented
     }

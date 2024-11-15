@@ -103,6 +103,9 @@ public final class AppCoordinator: ObservableObject {
     }
     
     public func refreshMyUserInfo() async throws {
+        if TokenManager.accessToken == nil || TokenManager.accessToken == "" {
+            return
+        }
         let userInfo = try await authService.requestMyUserInfo()
         await MainActor.run {
             self.userInfo = userInfo

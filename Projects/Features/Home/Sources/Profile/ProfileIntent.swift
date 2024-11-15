@@ -56,7 +56,7 @@ extension ProfileIntent {
 extension ProfileIntent: ProfileIntent.Intentable {
     // default
     func onTapAddWidget() {
-        
+        model?.setAddWidgetModalPresented(true)
     }
     
     func onTapDeleteWidget(_ widget: ProfileWidget) {
