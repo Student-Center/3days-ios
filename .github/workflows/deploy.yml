@@ -9,9 +9,8 @@ on:
 
 jobs:
   build:
-
     runs-on: macos-15
-
+    environment: develop
     env:
       # app archive 및 export 에 쓰일 환경 변수 설정
       XC_WORKSPACE: ${{ 'three-days-iOS.xcworkspace' }}
