@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 //MARK: - Intent
 class WidgetSelectionIntent {
@@ -29,6 +30,7 @@ class WidgetSelectionIntent {
 extension WidgetSelectionIntent {
     protocol Intentable {
         // content
+        func onTapWidget(_ widget: WidgetType)
         func onTapNextButton()
         
         // default
@@ -42,6 +44,10 @@ extension WidgetSelectionIntent {
 //MARK: - Intentable
 extension WidgetSelectionIntent: WidgetSelectionIntent.Intentable {
     // default
+    func onTapWidget(_ widget: WidgetType) {
+        model?.setSelectedWidget(widget: widget)
+        model?.setPushWriteContentView(status: true)
+    }
     func onAppear() {}
     
     func task() async {}

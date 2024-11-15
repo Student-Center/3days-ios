@@ -9,13 +9,17 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 final class WidgetSelectionModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
+        var isModalPresented: Bool { get set }
+        var isPushWriteContentView: Bool { get set }
         var isValidated: Bool { get }
+        var selectedWidget: WidgetType? { get }
         
         // default
         var isLoading: Bool { get }
@@ -27,7 +31,10 @@ final class WidgetSelectionModel: ObservableObject {
     
     //MARK: State Properties
     // content
+    @Published var isModalPresented: Bool = false
+    @Published var isPushWriteContentView: Bool = false
     @Published var isValidated: Bool = false
+    @Published var selectedWidget: WidgetType?
     
     // default
     @Published var isLoading: Bool = false
@@ -42,7 +49,10 @@ extension WidgetSelectionModel: WidgetSelectionModel.Stateful {}
 //MARK: - Actionable
 protocol WidgetSelectionModelActionable: AnyObject {
     // content
+    func setModalPresented(status: Bool)
+    func setPushWriteContentView(status: Bool)
     func setValidation(value: Bool)
+    func setSelectedWidget(widget: WidgetType)
 
     // default
     func setLoading(status: Bool)
@@ -55,6 +65,15 @@ protocol WidgetSelectionModelActionable: AnyObject {
 
 extension WidgetSelectionModel: WidgetSelectionModelActionable {
     // content
+    func setModalPresented(status: Bool) {
+        isModalPresented = status
+    }
+    func setPushWriteContentView(status: Bool) {
+        isPushWriteContentView = status
+    }
+    func setSelectedWidget(widget: WidgetType) {
+        selectedWidget = widget
+    }
     func setValidation(value: Bool) {
         isValidated = value
     }

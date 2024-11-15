@@ -70,7 +70,7 @@ public struct WritableProfileWidgetView: View {
                         PlainTextEditorStyle()
                     )
                     .focused($isfocused)
-                    .flatTextFieldOption()
+                    .flatTextFieldOption(keyboardType: .namePhonePad)
                     .typography(.regular_14)
                     .foregroundStyle(bodyColor)
                 }

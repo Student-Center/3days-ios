@@ -21,6 +21,7 @@ final class WidgetWritingModel: ObservableObject {
         var isValidated: Bool { get }
         var textMaxCount: Int { get }
         
+        var isPushedWriteContentView: Bool { get set }
         var isModalPresented: Bool { get }
         var isFocused: Bool { get }
         var isCTAButtonEnabled: Bool { get }
@@ -37,6 +38,7 @@ final class WidgetWritingModel: ObservableObject {
     // content
     @Published var selectedWidgetType: WidgetType?
     @Published var widgetBodyText = String()
+    @Published var isPushedWriteContentView: Bool = true
     @Published var isModalPresented: Bool = true
     @Published var isFocused: Bool = false
     var textMaxCount: Int = 40
@@ -65,6 +67,7 @@ protocol WidgetWritingModelActionable: AnyObject {
     func setValidation(value: Bool)
     func setWidgetType(_ widget: WidgetType)
     func setContentString(_ content: String)
+    func navigationPop()
     func modalDismiss()
 
     // default
@@ -89,6 +92,9 @@ extension WidgetWritingModel: WidgetWritingModelActionable {
     }
     func setWidgetType(_ widget: WidgetType) {
         selectedWidgetType = widget
+    }
+    func navigationPop() {
+        isPushedWriteContentView = false
     }
     func modalDismiss() {
         isModalPresented = false

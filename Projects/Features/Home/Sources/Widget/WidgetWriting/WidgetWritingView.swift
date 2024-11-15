@@ -16,6 +16,7 @@ public struct WidgetWritingView: View {
     
     @Binding var isPushed: Bool
     @Binding var isModalPresented: Bool
+    
     @FocusState var isFocused: Bool
     let isEditingMode: Bool
     let contentString: String?
@@ -107,6 +108,9 @@ public struct WidgetWritingView: View {
         .onChange(of: state.isModalPresented) {
             isModalPresented = state.isModalPresented
         }
+        .onChange(of: state.isPushedWriteContentView) {
+            isPushed = state.isPushedWriteContentView
+        }
         .task {
             await intent.task()
         }
@@ -119,13 +123,13 @@ public struct WidgetWritingView: View {
         .setNavigation(
             showLeftBackButton: isEditingMode ? false : true,
             handler: {
-                isPushed = false
+                intent.onTapBackButton()
         })
         .toolbar {
             if isEditingMode {
                 ToolbarItem {
                     Button("닫기") {
-                        isModalPresented = false
+                        intent.onTapDismissButton()
                     }
                     .typography(.medium_16)
                 }

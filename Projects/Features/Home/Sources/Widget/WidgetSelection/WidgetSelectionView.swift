@@ -14,8 +14,7 @@ import Model
 
 public struct WidgetSelectionView: View {
     
-    @State private var isPushedWriteView: Bool = false
-    @State private var selectedWidget: WidgetType?
+//    @State private var isPushedWriteView: Bool = false
     
     @Binding var isPresentedSelectionView: Bool
     @StateObject var container: MVIContainer<WidgetSelectionIntent.Intentable, WidgetSelectionModel.Stateful>
@@ -41,6 +40,7 @@ public struct WidgetSelectionView: View {
         )
         self._container = StateObject(wrappedValue: container)
         self._isPresentedSelectionView = isPresented
+        model.setModalPresented(status: isPresented.wrappedValue)
     }
     
     public var body: some View {
@@ -66,8 +66,7 @@ public struct WidgetSelectionView: View {
                             iconType: .add
                         )
                         .onTapGesture {
-                            selectedWidget = widget
-                            isPushedWriteView = true
+                            intent.onTapWidget(widget)
                         }
                     }
                 }
@@ -75,15 +74,20 @@ public struct WidgetSelectionView: View {
             }
         }
         .navigationDestination(
-            isPresented: $isPushedWriteView,
+            isPresented: $container.model.isPushWriteContentView,
             destination: {
-                WidgetWritingView(
-                    widgetType: selectedWidget ?? .book,
-                    isModalPresented: $isPresentedSelectionView,
-                    isPushed: $isPushedWriteView
-                )
+                if let widget = state.selectedWidget {
+                    WidgetWritingView(
+                        widgetType: widget,
+                        isModalPresented: $container.model.isModalPresented,
+                        isPushed: $container.model.isPushWriteContentView
+                    )
+                }
             }
         )
+        .onChange(of: state.isModalPresented) {
+            isPresentedSelectionView = state.isModalPresented
+        }
         .task {
             await intent.task()
         }

@@ -40,6 +40,8 @@ extension WidgetWritingIntent {
         // content
         func onChangedBodyText(_ text: String, maxCount: Int)
         func onTapNextButton(state: WidgetWritingModel.Stateful)
+        func onTapBackButton()
+        func onTapDismissButton()
         
         // default
         func onAppear()
@@ -58,6 +60,12 @@ extension WidgetWritingIntent: WidgetWritingIntent.Intentable {
     func onChangedBodyText(_ text: String, maxCount: Int) {
         let formattedText = text.clipMaxCount(maxCount)
         model?.setBodyText(formattedText)
+    }
+    func onTapBackButton() {
+        model?.navigationPop()
+    }
+    func onTapDismissButton() {
+        model?.modalDismiss()
     }
     func onAppear() {
         model?.setFocusState(true)
