@@ -42,12 +42,17 @@ public struct WidgetWritingView: View {
         isModalPresented: Binding<Bool>,
         isPushed: Binding<Bool>,
         isEditing: Bool = false,
-        contentString: String? = nil
+        contentString: String? = nil,
+        successHandler: (() -> Void)?
     ) {
         let model = WidgetWritingModel()
         let intent = WidgetWritingIntent(
             model: model,
-            input: .init(widgetType: widgetType, content: contentString)
+            input: .init(
+                widgetType: widgetType,
+                content: contentString,
+                successHandler: successHandler
+            )
         )
         let container = MVIContainer(
             intent: intent as WidgetWritingIntent.Intentable,
@@ -145,6 +150,8 @@ public struct WidgetWritingView: View {
             widgetType: .body,
             isModalPresented: .constant(false),
             isPushed: .constant(false)
-        )
+        ) {
+            
+        }
     }
 }

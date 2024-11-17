@@ -187,33 +187,38 @@ public struct ProfileView: View {
                 ProgressView()
             }
         }
-        .onChange(of: state.isPresentedAddWidgetModal) {
-            if !state.isPresentedAddWidgetModal {
-                if let userInfo = AppCoordinator.shared.userInfo {
-                    intent.fetchUserInfo(userInfo)
-                }
-            }
-        }
-        .onChange(of: state.isPresentedModifyWidgetView) {
-            if !state.isPresentedModifyWidgetView {
-                if let userInfo = AppCoordinator.shared.userInfo {
-                    intent.fetchUserInfo(userInfo)
-                }
-            }
-        }
-        .onChange(of: state.isPresentedDeleteConfirmSheet) {
-            if !state.isPresentedDeleteConfirmSheet {
-                if let userInfo = AppCoordinator.shared.userInfo {
-                    intent.fetchUserInfo(userInfo)
-                }
-            }
-        }
+//        .onChange(of: state.isPresentedAddWidgetModal) {
+//            if !state.isPresentedAddWidgetModal {
+//                if let userInfo = AppCoordinator.shared.userInfo {
+//                    intent.fetchUserInfo(userInfo)
+//                }
+//            }
+//        }
+//        .onChange(of: state.isPresentedModifyWidgetView) {
+//            if !state.isPresentedModifyWidgetView {
+//                if let userInfo = AppCoordinator.shared.userInfo {
+//                    intent.fetchUserInfo(userInfo)
+//                }
+//            }
+//        }
+//        .onChange(of: state.isPresentedDeleteConfirmSheet) {
+//            if !state.isPresentedDeleteConfirmSheet {
+//                if let userInfo = AppCoordinator.shared.userInfo {
+//                    intent.fetchUserInfo(userInfo)
+//                }
+//            }
+//        }
         .sheet(
             isPresented: $container.model.isPresentedAddWidgetModal,
             content: {
                 NavigationStack {
                     WidgetSelectionView(
-                        isPresented: $container.model.isPresentedAddWidgetModal
+                        isPresented: $container.model.isPresentedAddWidgetModal,
+                        successHandler: {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                ToastHelper.show(message: "위젯이 추가되었어요")
+                            }
+                        }
                     )
                 }
         })
@@ -227,7 +232,12 @@ public struct ProfileView: View {
                             isModalPresented: $container.model.isPresentedModifyWidgetView,
                             isPushed: .constant(false),
                             isEditing: true,
-                            contentString: widget.content
+                            contentString: widget.content,
+                            successHandler: {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    ToastHelper.show(message: "위젯이 추가되었어요")
+                                }
+                            }
                         )
                     }
                 }

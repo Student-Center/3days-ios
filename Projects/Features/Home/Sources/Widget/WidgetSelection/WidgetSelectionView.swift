@@ -13,9 +13,6 @@ import CommonKit
 import Model
 
 public struct WidgetSelectionView: View {
-    
-//    @State private var isPushedWriteView: Bool = false
-    
     @Binding var isPresentedSelectionView: Bool
     @StateObject var container: MVIContainer<WidgetSelectionIntent.Intentable, WidgetSelectionModel.Stateful>
     
@@ -27,11 +24,14 @@ public struct WidgetSelectionView: View {
         GridItem(.flexible(), spacing: 16)
     ]
     
-    public init(isPresented: Binding<Bool>) {
+    public init(
+        isPresented: Binding<Bool>,
+        successHandler: (() -> Void)?
+    ) {
         let model = WidgetSelectionModel()
         let intent = WidgetSelectionIntent(
             model: model,
-            input: .init()
+            input: .init(successHandler: successHandler)
         )
         let container = MVIContainer(
             intent: intent as WidgetSelectionIntent.Intentable,
@@ -80,7 +80,8 @@ public struct WidgetSelectionView: View {
                     WidgetWritingView(
                         widgetType: widget,
                         isModalPresented: $container.model.isModalPresented,
-                        isPushed: $container.model.isPushWriteContentView
+                        isPushed: $container.model.isPushWriteContentView,
+                        successHandler: state.successHandler
                     )
                 }
             }
@@ -111,6 +112,8 @@ public struct WidgetSelectionView: View {
 
 #Preview {
     NavigationStack {
-        WidgetSelectionView(isPresented: .constant(true))
+        WidgetSelectionView(isPresented: .constant(true)) {
+            
+        }
     }
 }

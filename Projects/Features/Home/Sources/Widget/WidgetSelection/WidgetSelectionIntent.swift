@@ -23,6 +23,7 @@ class WidgetSelectionIntent {
     ) {
         self.input = input
         self.model = model
+        self.model?.setSuccessHandler(handler: input.successHandler)
     }
 }
 
@@ -38,7 +39,9 @@ extension WidgetSelectionIntent {
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let successHandler: (() -> Void)?
+    }
 }
 
 //MARK: - Intentable

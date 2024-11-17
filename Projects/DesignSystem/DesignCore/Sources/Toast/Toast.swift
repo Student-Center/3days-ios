@@ -68,7 +68,7 @@ final class ToastManager {
         guard toastWindow == nil else { return }
         
         let toastWindow = UIWindow(frame: UIScreen.main.bounds)
-        toastWindow.windowLevel = .alert + 1
+        toastWindow.windowLevel = .statusBar + 1
         toastWindow.backgroundColor = .clear
         
         let containerVC = UIViewController()

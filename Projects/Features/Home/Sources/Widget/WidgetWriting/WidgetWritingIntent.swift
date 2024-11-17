@@ -11,6 +11,7 @@ import CommonKit
 import CoreKit
 import Model
 import NetworkKit
+import DesignCore
 
 //MARK: - Intent
 class WidgetWritingIntent {
@@ -28,6 +29,7 @@ class WidgetWritingIntent {
         self.model = model
         self.service = service
         model.setWidgetType(input.widgetType)
+        model.setSuccessHandler(handler: input.successHandler)
         if let contentString = input.content {
             model.setContentString(contentString)
         }
@@ -51,6 +53,7 @@ extension WidgetWritingIntent {
     struct DataModel {
         let widgetType: WidgetType
         let content: String?
+        let successHandler: (() -> Void)?
     }
 }
 
@@ -80,13 +83,13 @@ extension WidgetWritingIntent: WidgetWritingIntent.Intentable {
         Task {
             model?.setLoading(status: true)
             do {
-                try await requestPutProfileWidget(
-                    widget: selectedWidget,
-                    content: state.widgetBodyText
-                )
-                try await AppCoordinator.shared.refreshMyUserInfo()
+//                try await requestPutProfileWidget(
+//                    widget: selectedWidget,
+//                    content: state.widgetBodyText
+//                )
                 model?.setLoading(status: false)
                 model?.modalDismiss()
+                model?.doSuccessAction()
             } catch {
                 // TODO: 에러처리
                 model?.setLoading(status: false)

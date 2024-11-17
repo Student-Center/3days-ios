@@ -21,7 +21,7 @@ public final class AppCoordinator: ObservableObject {
     
     //MARK: - Properties
     public var authState: AuthState = .none
-    public var userInfo: UserInfo?
+    @Published public var userInfo: UserInfo?
     public var needFadeTransition: Bool = false
     @Published public var navigationStack: [PathType] = [.intro]
     let authService = AuthService.shared
