@@ -14,7 +14,8 @@ let project: Project = .make(
             product: .framework,
             useResource: true,
             dependencies: [
-                .external(.nuke)
+                .external(.nuke),
+                .external(.toast)
             ]
         ),
         .makeUnitTest(

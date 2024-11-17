@@ -19,7 +19,7 @@ struct ToastViewModifier: ViewModifier {
                 ZStack {
                     VStack {
                         Spacer()
-                        Toast(
+                        ToastView(
                             message: message,
                             isPresent: $isPresented
                         )
@@ -46,7 +46,7 @@ extension View {
     }
 }
 
-struct Toast: View {
+struct ToastView: View {
     let message: String
     @Binding var isPresent: Bool
     
