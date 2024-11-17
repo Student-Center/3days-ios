@@ -86,7 +86,7 @@ enum Sections: CaseIterable {
                 TableInfoModel(
                     title: "활동지역 ID",
                     value: AppCoordinator.shared.userInfo?.profile.locations != nil ? AppCoordinator.shared.userInfo!.profile.locations
-                        .compactMap { $0 }
+                        .compactMap { "\($0.name) / \($0.id)" }
                         .joined(separator: "\n") : "null"
                 )
             ]

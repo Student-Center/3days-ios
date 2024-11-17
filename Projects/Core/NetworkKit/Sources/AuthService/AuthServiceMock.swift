@@ -54,7 +54,9 @@ public class AuthServiceMock: AuthServiceProtocol {
                 gender: .female,
                 birthYear: 0,
                 companyId: nil,
+                companyName: nil,
                 jobOccupation: "",
+                jobOccupationRawValue: "",
                 locations: []
             ),
             dreamPartner: .init(

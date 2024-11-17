@@ -127,10 +127,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -266,10 +263,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -405,10 +399,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -555,10 +546,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -661,10 +649,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -798,10 +783,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -935,10 +917,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -1045,10 +1024,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -1182,10 +1158,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -1266,10 +1239,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -1374,10 +1344,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -1479,10 +1446,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }
@@ -1587,10 +1551,7 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init(
-                            headerFields: response.headerFields,
-                            body: responseBody
-                        )
+                        .init()
                     )
                 }
             }

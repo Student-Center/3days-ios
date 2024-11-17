@@ -371,7 +371,7 @@ public enum Components {
             /// 사용자 상태 (신규 사용자 또는 기존 사용자)
             ///
             /// - Remark: Generated from `#/components/schemas/SendAuthCodeResponse/userStatus`.
-            @frozen public enum userStatusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+            @frozen public enum userStatusPayload: String, Codable, Hashable, Sendable {
                 case NEW = "NEW"
                 case EXISTING = "EXISTING"
             }
@@ -543,7 +543,7 @@ public enum Components {
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/phoneNumber`.
             public var phoneNumber: Swift.String
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/profile`.
-            public var profile: Components.Schemas.UserProfile
+            public var profile: Components.Schemas.UserProfileDisplayInfo
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/desiredPartner`.
             public var desiredPartner: Components.Schemas.UserDesiredPartner
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/profileWidgets`.
@@ -561,7 +561,7 @@ public enum Components {
                 id: Swift.String? = nil,
                 name: Swift.String,
                 phoneNumber: Swift.String,
-                profile: Components.Schemas.UserProfile,
+                profile: Components.Schemas.UserProfileDisplayInfo,
                 desiredPartner: Components.Schemas.UserDesiredPartner,
                 profileWidgets: [Components.Schemas.ProfileWidget]
             ) {
@@ -718,6 +718,138 @@ public enum Components {
                 case companyId
                 case jobOccupation
                 case locationIds
+            }
+        }
+        /// 사용자 프로필 표시 정보
+        ///
+        /// - Remark: Generated from `#/components/schemas/UserProfileDisplayInfo`.
+        public struct UserProfileDisplayInfo: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/UserProfileDisplayInfo/gender`.
+            public var gender: Components.Schemas.Gender
+            /// 사용자의 출생년도
+            ///
+            /// - Remark: Generated from `#/components/schemas/UserProfileDisplayInfo/birthYear`.
+            public var birthYear: Swift.Int
+            /// - Remark: Generated from `#/components/schemas/UserProfileDisplayInfo/jobOccupation`.
+            public var jobOccupation: Components.Schemas.JobOccupationDisplayInfo
+            /// - Remark: Generated from `#/components/schemas/UserProfileDisplayInfo/company`.
+            public var company: Components.Schemas.CompanyDisplayInfo?
+            /// 활동 지역 정보 목록
+            ///
+            /// - Remark: Generated from `#/components/schemas/UserProfileDisplayInfo/locations`.
+            public var locations: [Components.Schemas.LocationDisplayInfo]
+            /// Creates a new `UserProfileDisplayInfo`.
+            ///
+            /// - Parameters:
+            ///   - gender:
+            ///   - birthYear: 사용자의 출생년도
+            ///   - jobOccupation:
+            ///   - company:
+            ///   - locations: 활동 지역 정보 목록
+            public init(
+                gender: Components.Schemas.Gender,
+                birthYear: Swift.Int,
+                jobOccupation: Components.Schemas.JobOccupationDisplayInfo,
+                company: Components.Schemas.CompanyDisplayInfo? = nil,
+                locations: [Components.Schemas.LocationDisplayInfo]
+            ) {
+                self.gender = gender
+                self.birthYear = birthYear
+                self.jobOccupation = jobOccupation
+                self.company = company
+                self.locations = locations
+            }
+            public enum CodingKeys: String, CodingKey {
+                case gender
+                case birthYear
+                case jobOccupation
+                case company
+                case locations
+            }
+        }
+        /// 회사 표시 정보
+        ///
+        /// - Remark: Generated from `#/components/schemas/CompanyDisplayInfo`.
+        public struct CompanyDisplayInfo: Codable, Hashable, Sendable {
+            /// 회사 식별자
+            ///
+            /// - Remark: Generated from `#/components/schemas/CompanyDisplayInfo/id`.
+            public var id: Swift.String
+            /// 화면에 표시될 회사명
+            ///
+            /// - Remark: Generated from `#/components/schemas/CompanyDisplayInfo/display`.
+            public var display: Swift.String
+            /// Creates a new `CompanyDisplayInfo`.
+            ///
+            /// - Parameters:
+            ///   - id: 회사 식별자
+            ///   - display: 화면에 표시될 회사명
+            public init(
+                id: Swift.String,
+                display: Swift.String
+            ) {
+                self.id = id
+                self.display = display
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case display
+            }
+        }
+        /// 직군 표시 정보
+        ///
+        /// - Remark: Generated from `#/components/schemas/JobOccupationDisplayInfo`.
+        public struct JobOccupationDisplayInfo: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/JobOccupationDisplayInfo/code`.
+            public var code: Components.Schemas.JobOccupation
+            /// 화면에 표시될 직군명
+            ///
+            /// - Remark: Generated from `#/components/schemas/JobOccupationDisplayInfo/display`.
+            public var display: Swift.String
+            /// Creates a new `JobOccupationDisplayInfo`.
+            ///
+            /// - Parameters:
+            ///   - code:
+            ///   - display: 화면에 표시될 직군명
+            public init(
+                code: Components.Schemas.JobOccupation,
+                display: Swift.String
+            ) {
+                self.code = code
+                self.display = display
+            }
+            public enum CodingKeys: String, CodingKey {
+                case code
+                case display
+            }
+        }
+        /// 지역 표시 정보
+        ///
+        /// - Remark: Generated from `#/components/schemas/LocationDisplayInfo`.
+        public struct LocationDisplayInfo: Codable, Hashable, Sendable {
+            /// 지역 식별자
+            ///
+            /// - Remark: Generated from `#/components/schemas/LocationDisplayInfo/id`.
+            public var id: Swift.String
+            /// 화면에 표시될 지역명
+            ///
+            /// - Remark: Generated from `#/components/schemas/LocationDisplayInfo/display`.
+            public var display: Swift.String
+            /// Creates a new `LocationDisplayInfo`.
+            ///
+            /// - Parameters:
+            ///   - id: 지역 식별자
+            ///   - display: 화면에 표시될 지역명
+            public init(
+                id: Swift.String,
+                display: Swift.String
+            ) {
+                self.id = id
+                self.display = display
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case display
             }
         }
         /// 사용자가 원하는 파트너의 조건
@@ -945,21 +1077,21 @@ public enum Components {
         /// 사용자의 운영 체제 유형
         ///
         /// - Remark: Generated from `#/components/schemas/OSType`.
-        @frozen public enum OSType: String, Codable, Hashable, Sendable, CaseIterable {
+        @frozen public enum OSType: String, Codable, Hashable, Sendable {
             case IOS = "IOS"
             case AOS = "AOS"
         }
         /// 사용자의 성별
         ///
         /// - Remark: Generated from `#/components/schemas/Gender`.
-        @frozen public enum Gender: String, Codable, Hashable, Sendable, CaseIterable {
+        @frozen public enum Gender: String, Codable, Hashable, Sendable {
             case MALE = "MALE"
             case FEMALE = "FEMALE"
         }
         /// 직업군 분류
         ///
         /// - Remark: Generated from `#/components/schemas/JobOccupation`.
-        @frozen public enum JobOccupation: String, Codable, Hashable, Sendable, CaseIterable {
+        @frozen public enum JobOccupation: String, Codable, Hashable, Sendable {
             case BUSINESS_ADMIN = "BUSINESS_ADMIN"
             case SALES_MARKETING = "SALES_MARKETING"
             case RESEARCH_DEVELOPMENT = "RESEARCH_DEVELOPMENT"
@@ -984,7 +1116,7 @@ public enum Components {
         /// 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
         ///
         /// - Remark: Generated from `#/components/schemas/PreferDistance`.
-        @frozen public enum PreferDistance: String, Codable, Hashable, Sendable, CaseIterable {
+        @frozen public enum PreferDistance: String, Codable, Hashable, Sendable {
             case ONLY_MY_AREA = "ONLY_MY_AREA"
             case INCLUDE_SURROUNDING_REGIONS = "INCLUDE_SURROUNDING_REGIONS"
             case ANYWHERE = "ANYWHERE"
@@ -1021,7 +1153,7 @@ public enum Components {
         /// 프로필 위젯 타입
         ///
         /// - Remark: Generated from `#/components/schemas/ProfileWidgetType`.
-        @frozen public enum ProfileWidgetType: String, Codable, Hashable, Sendable, CaseIterable {
+        @frozen public enum ProfileWidgetType: String, Codable, Hashable, Sendable {
             case HOBBY = "HOBBY"
             case STYLE = "STYLE"
             case MBTI = "MBTI"

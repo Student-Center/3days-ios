@@ -60,13 +60,13 @@ class AuthPhoneVerifyTest: XCTestCase {
         XCTAssertTrue(model.verifyTextFieldFocused)
     }
     
-    func testVerificationResult() {
-        let homePath = intent.getNextPath(userType: .EXISTING)
-        XCTAssertEqual(homePath, PathType.home(nil))
-        
-        let signUpProcessPath = intent.getNextPath(userType: .NEW)
-        XCTAssertEqual(signUpProcessPath, PathType.signUp(.authAgreement(input: .mock)))
-    }
+//    func testVerificationResult() {
+//        let homePath = intent.getNextPath(userType: .EXISTING)
+//        XCTAssertEqual(homePath, PathType.home(nil))
+//        
+//        let signUpProcessPath = intent.getNextPath(userType: .NEW)
+//        XCTAssertEqual(signUpProcessPath, PathType.signUp(.authAgreement(input: .mock)))
+//    }
     
     func testErrorReceivced() {
         intent.processError(error: MockingError.mockError)

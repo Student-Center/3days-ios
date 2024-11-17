@@ -76,7 +76,7 @@ public struct ProfilePannelView: View {
                     horizonIconKeyValueView(
                         icon: DesignCore.Images.businessFill.image,
                         key: "직군",
-                        value: "IT 정보통신",
+                        value: state.profile?.jobOccupation ?? "-",
                         textColor: Color(hex: 0x5B6654)
                     )
                 }
@@ -88,38 +88,42 @@ public struct ProfilePannelView: View {
                     horizonIconKeyValueView(
                         icon: DesignCore.Images.buildingFill.image,
                         key: "직장",
-                        value: "현대자동차",
+                        value: state.profile?.companyName ?? "",
                         textColor: Color(hex: 0x846470)
                     )
                 }
                 
-                innerRoundBoxView(
-                    fillColor: DesignCore.Colors.blue50,
-                    strokeColor: Color(hex: 0xDFE8EF)
-                ) {
-                    VStack {
-                        horizonIconKeyValueView(
-                            icon: DesignCore.Images.locationFill.image,
-                            key: "활동 지역",
-                            value: nil,
-                            textColor: Color(hex: 0x606D8F)
-                        )
-                        let tagModels: [TagModel] = [
-                            .init(id: "UUID().uuidString", name: "용인"),
-                            .init(id: UUID().uuidString, name: "성남"),
-                            .init(id: UUID().uuidString, name: "강남구")
-                        ]
-                        
-                        TagListView(
-                            tagModels: tagModels,
-                            selectedTagModels: []
-                        ) { _ in }
-                        .frame(
-                            height: TagListCollectionView.calculateHeight(
-                                tags: tagModels,
-                                deviceWidth: Device.width - (76 + 36)
+                if let profile = state.profile {
+                    innerRoundBoxView(
+                        fillColor: DesignCore.Colors.blue50,
+                        strokeColor: Color(hex: 0xDFE8EF)
+                    ) {
+                        VStack {
+                            horizonIconKeyValueView(
+                                icon: DesignCore.Images.locationFill.image,
+                                key: "활동 지역",
+                                value: nil,
+                                textColor: Color(hex: 0x606D8F)
                             )
-                        )
+                            let tagModels: [TagModel] = profile.locations
+                                .map {
+                                    .init(
+                                        id: $0.id,
+                                        name: $0.name
+                                    )
+                                }
+                            
+                            TagListView(
+                                tagModels: tagModels,
+                                selectedTagModels: []
+                            ) { _ in }
+                                .frame(
+                                    height: TagListCollectionView.calculateHeight(
+                                        tags: tagModels,
+                                        deviceWidth: Device.width - (76 + 36)
+                                    )
+                                )
+                        }
                     }
                 }
             }

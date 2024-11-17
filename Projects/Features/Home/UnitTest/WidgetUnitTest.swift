@@ -22,7 +22,7 @@ struct WidgetUnitTest {
         self.selectionState = WidgetSelectionModel()
         self.selectionIntent = WidgetSelectionIntent(
             model: selectionState,
-            input: .init()
+            input: .init(successHandler: {})
         )
         
         self.writeState = WidgetWritingModel()
@@ -30,7 +30,10 @@ struct WidgetUnitTest {
             model: writeState,
             input: .init(
                 widgetType: .body,
-                content: nil
+                content: nil,
+                successHandler: {
+                    
+                }
             ),
             service: ProfileServiceMock()
         )

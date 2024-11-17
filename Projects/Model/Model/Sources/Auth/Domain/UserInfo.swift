@@ -58,29 +58,42 @@ public struct UserInfoProfile {
     public let gender: GenderType
     public let birthYear: Int
     public let companyId: String?
+    public let companyName: String?
     public let jobOccupation: String
-    public let locations: [String]
+    public let jobOccupationRawValue: String
+    public let locations: [LocationModel]
 
     public init(
         gender: GenderType,
         birthYear: Int,
         companyId: String?,
+        companyName: String?,
         jobOccupation: String,
-        locations: [String]
+        jobOccupationRawValue: String,
+        locations: [LocationModel]
     ) {
         self.gender = gender
         self.birthYear = birthYear
         self.companyId = companyId
+        self.companyName = companyName
         self.jobOccupation = jobOccupation
+        self.jobOccupationRawValue = jobOccupationRawValue
         self.locations = locations
     }
     
-    public init(from dto: Components.Schemas.UserProfile) {
+    public init(from dto: Components.Schemas.UserProfileDisplayInfo) {
         self.gender = dto.gender == .MALE ? .male : .female
         self.birthYear = dto.birthYear
-        self.companyId = dto.companyId
-        self.jobOccupation = dto.jobOccupation.rawValue
-        self.locations = dto.locationIds
+        self.companyId = dto.company?.id
+        self.companyName = dto.company?.display
+        self.jobOccupation = dto.jobOccupation.display
+        self.jobOccupationRawValue = dto.jobOccupation.code.rawValue
+        self.locations = dto.locations.map {
+            LocationModel(
+                id: $0.id,
+                name: $0.display
+            )
+        }
     }
     
     public static var mock: UserInfoProfile {
@@ -88,8 +101,10 @@ public struct UserInfoProfile {
             gender: .male,
             birthYear: 1980,
             companyId: nil,
-            jobOccupation: "IT_INFORMATION",
-            locations: ["용인", "성남", "강남구", "중구"]
+            companyName: "현대자동차",
+            jobOccupation: "IT",
+            jobOccupationRawValue: "IT_INFORMATION",
+            locations: LocationModel.mock
         )
     }
 }
@@ -164,5 +179,19 @@ public struct ProfileWidget: Hashable {
     public init(from dto: Components.Schemas.ProfileWidget) {
         self.widgetType = WidgetType(from: dto._type)
         self.content = dto.content
+    }
+}
+
+public struct LocationModel {
+    public let id: String
+    public let name: String
+    
+    public static var mock: [LocationModel] {
+        [
+            .init(id: "1", name: "용인"),
+            .init(id: "2", name: "성남"),
+            .init(id: "3", name: "강남구"),
+            .init(id: "4", name: "중구")
+        ]
     }
 }
