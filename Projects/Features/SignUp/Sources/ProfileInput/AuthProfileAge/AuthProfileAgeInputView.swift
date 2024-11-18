@@ -103,7 +103,7 @@ public struct AuthProfileAgeInputView: View {
                     
                     Button(action: {
                         withAnimation {
-                            intent.toggleToopTip()
+                            intent.toggleToolTip()
                         }
                     }, label: {
                         HStack(spacing: 4) {
@@ -143,7 +143,7 @@ public struct AuthProfileAgeInputView: View {
         .setLoading(state.isLoading)
         .onTapGesture {
             if state.isShowToolTip {
-                intent.toggleToopTip()
+                intent.toggleToolTip()
             }
         }
     }

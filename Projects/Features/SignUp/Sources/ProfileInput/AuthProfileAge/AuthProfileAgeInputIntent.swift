@@ -34,7 +34,7 @@ extension AuthProfileAgeInputIntent {
         func onFocusChanged(_ value: Bool)
         func onTapNextButton(_ year: String)
         func onYearChanged(_ year: String)
-        func toggleToopTip()
+        func toggleToolTip()
         
         // default
         func onAppear()
@@ -76,7 +76,7 @@ extension AuthProfileAgeInputIntent: AuthProfileAgeInputIntent.Intentable {
             )
         }
     }
-    func toggleToopTip() {
+    func toggleToolTip() {
         model?.toggleToolTip()
     }
 }
