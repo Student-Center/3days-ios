@@ -21,6 +21,7 @@ final class AuthProfileAgeInputModel: ObservableObject {
         var isFocused: Bool { get }
         var isValidated: Bool { get }
         var targetGender: GenderType { get }
+        var isShowToolTip: Bool { get }
         
         // default
         var isLoading: Bool { get }
@@ -37,6 +38,7 @@ final class AuthProfileAgeInputModel: ObservableObject {
     @Published var birthYear = String()
     @Published var isFocused: Bool = false
     @Published var targetGender: GenderType = .female
+    @Published var isShowToolTip: Bool = false
     
     // default
     @Published var isLoading: Bool = false
@@ -55,6 +57,7 @@ protocol AuthProfileAgeInputModelActionable: AnyObject {
     func setFocuse(_ value: Bool)
     func setValidation(value: Bool)
     func setTargetGender(_ gender: GenderType)
+    func toggleToolTip()
 
     // default
     func setLoading(status: Bool)
@@ -78,6 +81,9 @@ extension AuthProfileAgeInputModel: AuthProfileAgeInputModelActionable {
     }
     func setTargetGender(_ gender: GenderType) {
         targetGender = gender
+    }
+    func toggleToolTip() {
+        isShowToolTip.toggle()
     }
     // default
     func setLoading(status: Bool) {
