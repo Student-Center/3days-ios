@@ -70,3 +70,4 @@ Derived/
 Tuist/.build
 Projects/Core/CoreKit/Sources/Secret.swift
 graph.png
+OpenApiGenerator/.build
