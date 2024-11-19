@@ -146,6 +146,7 @@ extension AuthCompanyIntent: AuthCompanyIntent.Intentable {
         Task {
             var payload = input.input
             payload.profile?.companyId = state.selectedCompany?.id
+            payload.dreamPartner?.allowSameCompany = state.sameCompanyMatchingAvailable
             await pushNextView(payload: payload)
         }
     }
