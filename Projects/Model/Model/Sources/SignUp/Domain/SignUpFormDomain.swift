@@ -153,10 +153,17 @@ public enum GenderType: String, CaseIterable {
     case male
     case female
     
-    var toDto: Components.Schemas.Gender {
+    public var toDto: Components.Schemas.Gender {
         switch self {
         case .male: .MALE
         case .female: .FEMALE
+        }
+    }
+    
+    public var name: String {
+        switch self {
+        case .male: "남성"
+        case .female: "여성"
         }
     }
 }
