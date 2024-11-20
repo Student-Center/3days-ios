@@ -36,6 +36,16 @@ public class ToastHelper {
     ) {
         manager.showToast(message: message, style: style)
     }
+    
+    public static func show(_ message: String) {
+        manager.showToast(message: message, style: .normal)
+    }
+    
+    public static func showErrorMessage(
+        _ message: String = "에러가 발생했어요 다시 시도해주세요"
+    ) {
+        manager.showToast(message: message, style: .error)
+    }
 }
 
 final class ToastManager {

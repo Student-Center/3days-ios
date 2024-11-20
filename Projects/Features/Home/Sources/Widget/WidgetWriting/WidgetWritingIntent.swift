@@ -83,10 +83,10 @@ extension WidgetWritingIntent: WidgetWritingIntent.Intentable {
         Task {
             model?.setLoading(status: true)
             do {
-//                try await requestPutProfileWidget(
-//                    widget: selectedWidget,
-//                    content: state.widgetBodyText
-//                )
+                try await requestPutProfileWidget(
+                    widget: selectedWidget,
+                    content: state.widgetBodyText
+                )
                 model?.setLoading(status: false)
                 model?.modalDismiss()
                 model?.doSuccessAction()
