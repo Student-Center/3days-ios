@@ -137,8 +137,8 @@ public struct AuthProfileAgeInputView: View {
         .ignoresSafeArea()
         .padding(.top, 10)
         .textureBackground()
-        .setNavigation(showLeftBackButton: false) {
-            
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
         }
         .setLoading(state.isLoading)
         .onTapGesture {
