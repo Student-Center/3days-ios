@@ -69,6 +69,8 @@ public enum PathType: Hashable {
             case .authPhoneVerify: return "전화번호 인증"
             case .authAgreement: return "이용 약관"
             
+            case .profileIntro: return "프로필 입력 인트로"
+                
             case .authGreeting: return "가입 후 환영"
             case .authProfileGender: return "성별 입력"
             case .authProfileAge: return "나이 입력"
@@ -90,6 +92,7 @@ public enum SignUpSubViewType: Hashable {
     case authPhoneVerify(SMSSendResponse)
     case authAgreement(input: SignUpFormDomain)
     
+    case profileIntro(input: SignUpFormDomain)
     case authGreeting(input: SignUpFormDomain)
     case authProfileGender(input: SignUpFormDomain)
     case authProfileAge(input: SignUpFormDomain)
@@ -108,6 +111,8 @@ public enum SignUpSubViewType: Hashable {
     
     public func hash(into hasher: inout Hasher) {
         switch self {
+        case .profileIntro:
+            hasher.combine(-1)
         case .authPhoneInput:
             hasher.combine(0)
         case .authPhoneVerify:

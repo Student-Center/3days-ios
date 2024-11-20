@@ -40,6 +40,9 @@ extension PathType {
             case .authAgreement(let input):
                 AuthAgreementView(input)
                 
+            case .profileIntro(let input):
+                ProfileIntroView(input)
+                
             case .authGreeting(let input):
                 AuthGreetingView(input)
             case .authProfileGender(let input):
