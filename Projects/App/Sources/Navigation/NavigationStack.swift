@@ -58,6 +58,8 @@ extension PathType {
             case .authName(let input):
                 AuthNameInputView(input)
                 
+            case .dreamPartnerIntro(let input):
+                DreamPartnerIntroView(input)
             case .dreamPartnerAgeRange(let input):
                 DreamPartnerAgeView(input)
             case .dreamPartnerJobOccupation(let input):

@@ -1,8 +1,8 @@
 //
-//  ProfileIntroIntent.swift
+//  DreamPartnerIntroIntent.swift
 //  SignUp
 //
-//  Created by 김지수 on 11/20/24.
+//  Created by 김지수 on 11/21/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
@@ -12,13 +12,13 @@ import CoreKit
 import Model
 
 //MARK: - Intent
-class ProfileIntroIntent {
-    private weak var model: ProfileIntroModelActionable?
+class DreamPartnerIntroIntent {
+    private weak var model: DreamPartnerIntroModelActionable?
     private let input: DataModel
 
     // MARK: Life cycle
     init(
-        model: ProfileIntroModelActionable,
+        model: DreamPartnerIntroModelActionable,
         input: DataModel
     ) {
         self.input = input
@@ -32,7 +32,7 @@ class ProfileIntroIntent {
 }
 
 //MARK: - Intentable
-extension ProfileIntroIntent {
+extension DreamPartnerIntroIntent {
     protocol Intentable {
         // content
         func pushNextView() async
@@ -49,18 +49,18 @@ extension ProfileIntroIntent {
 }
 
 //MARK: - Intentable
-extension ProfileIntroIntent: ProfileIntroIntent.Intentable {
+extension DreamPartnerIntroIntent: DreamPartnerIntroIntent.Intentable {
     // default
-    @MainActor
-    func pushNextView() async {
-        AppCoordinator.shared.changeRootView(
-            .signUp(.authProfileGender(input: input.input))
-        )
-    }
     func onAppear() {}
     
     func task() async {}
     
     // content
+    @MainActor
+    func pushNextView() async {
+        AppCoordinator.shared.changeRootView(
+            .signUp(.dreamPartnerAgeRange(input: input.input))
+        )
+    }
     func onTapNextButton() {}
 }

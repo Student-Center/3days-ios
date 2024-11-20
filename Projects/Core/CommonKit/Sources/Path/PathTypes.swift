@@ -52,6 +52,7 @@ public enum PathType: Hashable {
         .signUp(.authRegion(input: .mock)),
         .signUp(.authPhoneInput),
         
+        .signUp(.dreamPartnerIntro(input: .mock)),
         .signUp(.dreamPartnerAgeRange(input: .mock))
     ]
     #endif
@@ -79,6 +80,7 @@ public enum PathType: Hashable {
             case .authRegion: return "내 지역, 선호 지역 입력"
             case .authName: return "이름 입력"
                 
+            case .dreamPartnerIntro: return "이상형 입력 인트로"
             case .dreamPartnerAgeRange: return "이상형 나이대"
             case .dreamPartnerJobOccupation: return "이상형 직업"
             case .dreamPartnerDistance: return "이상형과의 거리"
@@ -101,6 +103,7 @@ public enum SignUpSubViewType: Hashable {
     case authRegion(input: SignUpFormDomain)
     case authName(input: SignUpFormDomain)
     
+    case dreamPartnerIntro(input: SignUpFormDomain)
     case dreamPartnerAgeRange(input: SignUpFormDomain)
     case dreamPartnerJobOccupation(input: SignUpFormDomain)
     case dreamPartnerDistance(input: SignUpFormDomain)
@@ -134,6 +137,8 @@ public enum SignUpSubViewType: Hashable {
         case .authName:
             hasher.combine(9)
             
+        case .dreamPartnerIntro:
+            hasher.combine(-2)
         case .dreamPartnerAgeRange:
             hasher.combine(10)
         case .dreamPartnerJobOccupation:

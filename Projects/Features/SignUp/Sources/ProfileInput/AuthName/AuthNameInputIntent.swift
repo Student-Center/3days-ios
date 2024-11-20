@@ -67,7 +67,7 @@ extension AuthNameInputIntent: AuthNameInputIntent.Intentable {
     func pushNextView(payload: SignUpFormDomain) {
         AppCoordinator.shared.push(
             .signUp(
-                .dreamPartnerAgeRange(
+                .dreamPartnerIntro(
                     input: payload
                 )
             )
