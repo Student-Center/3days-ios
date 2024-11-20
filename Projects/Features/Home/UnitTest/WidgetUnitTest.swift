@@ -22,7 +22,10 @@ struct WidgetUnitTest {
         self.selectionState = WidgetSelectionModel()
         self.selectionIntent = WidgetSelectionIntent(
             model: selectionState,
-            input: .init(successHandler: {})
+            input: .init(
+                successHandler: {
+                }
+            )
         )
         
         self.writeState = WidgetWritingModel()
