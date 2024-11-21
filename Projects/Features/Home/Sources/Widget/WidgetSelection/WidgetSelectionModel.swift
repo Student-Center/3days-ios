@@ -20,6 +20,7 @@ final class WidgetSelectionModel: ObservableObject {
         var isPushWriteContentView: Bool { get set }
         var isValidated: Bool { get }
         var selectedWidget: WidgetType? { get }
+        var successHandler: (() -> Void)? { get }
         
         // default
         var isLoading: Bool { get }
@@ -35,6 +36,7 @@ final class WidgetSelectionModel: ObservableObject {
     @Published var isPushWriteContentView: Bool = false
     @Published var isValidated: Bool = false
     @Published var selectedWidget: WidgetType?
+    var successHandler: (() -> Void)?
     
     // default
     @Published var isLoading: Bool = false
@@ -53,6 +55,7 @@ protocol WidgetSelectionModelActionable: AnyObject {
     func setPushWriteContentView(status: Bool)
     func setValidation(value: Bool)
     func setSelectedWidget(widget: WidgetType)
+    func setSuccessHandler(handler: (() -> Void)?)
 
     // default
     func setLoading(status: Bool)
@@ -76,6 +79,9 @@ extension WidgetSelectionModel: WidgetSelectionModelActionable {
     }
     func setValidation(value: Bool) {
         isValidated = value
+    }
+    func setSuccessHandler(handler: (() -> Void)?) {
+        successHandler = handler
     }
     
     // default

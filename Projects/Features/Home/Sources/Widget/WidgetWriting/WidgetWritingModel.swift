@@ -26,6 +26,8 @@ final class WidgetWritingModel: ObservableObject {
         var isFocused: Bool { get }
         var isCTAButtonEnabled: Bool { get }
         
+        var successHandler: (() -> Void)? { get }
+        
         // default
         var isLoading: Bool { get }
         
@@ -41,6 +43,7 @@ final class WidgetWritingModel: ObservableObject {
     @Published var isPushedWriteContentView: Bool = true
     @Published var isModalPresented: Bool = true
     @Published var isFocused: Bool = false
+    var successHandler: (() -> Void)?
     var textMaxCount: Int = 40
     
     var isCTAButtonEnabled: Bool {
@@ -67,6 +70,8 @@ protocol WidgetWritingModelActionable: AnyObject {
     func setValidation(value: Bool)
     func setWidgetType(_ widget: WidgetType)
     func setContentString(_ content: String)
+    func setSuccessHandler(handler: (() -> Void)?)
+    func doSuccessAction()
     func navigationPop()
     func modalDismiss()
 
@@ -92,6 +97,12 @@ extension WidgetWritingModel: WidgetWritingModelActionable {
     }
     func setWidgetType(_ widget: WidgetType) {
         selectedWidgetType = widget
+    }
+    func setSuccessHandler(handler: (() -> Void)?) {
+        successHandler = handler
+    }
+    func doSuccessAction() {
+        successHandler?()
     }
     func navigationPop() {
         isPushedWriteContentView = false

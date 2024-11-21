@@ -11,6 +11,7 @@ import CommonKit
 import CoreKit
 import Model
 import NetworkKit
+import DesignCore
 
 //MARK: - Intent
 class ProfileIntent {
@@ -40,6 +41,7 @@ extension ProfileIntent {
         func deleteWidget(_ widget: ProfileWidget) async
         
         func onTapNextButton()
+        func refreshUserInfo() async
         func fetchUserInfo(_ userInfo: UserInfo)
         
         // default
@@ -73,16 +75,27 @@ extension ProfileIntent: ProfileIntent.Intentable {
         do {
             model?.setLoading(status: true)
             try await requestDeleteWidget(widget)
-            try await AppCoordinator.shared.refreshMyUserInfo()
+            await refreshUserInfo()
             model?.setLoading(status: false)
+            try await Task.sleep(for: .milliseconds(500))
+            ToastHelper.show("위젯이 삭제되었어요")
         } catch {
             print(error)
             model?.setLoading(status: false)
+            DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1.0) {
+                ToastHelper.showErrorMessage()
+            }
         }
     }
     
     func onAppear() {
         fetchUserInfo(input.userInfo)
+    }
+    
+    func refreshUserInfo() async {
+        if let userInfo = try? await AppCoordinator.shared.refreshMyUserInfo() {
+            fetchUserInfo(userInfo)
+        }
     }
     
     func fetchUserInfo(_ userInfo: UserInfo) {
@@ -95,6 +108,7 @@ extension ProfileIntent: ProfileIntent.Intentable {
     func onTapNextButton() {}
     
     func requestDeleteWidget(_ widget: ProfileWidget) async throws {
+        throw NSError(domain: "33", code: 33)
         try await profileService.requestDeleteProfileWidget(widgetType: widget.widgetType.toDto)
     }
 }

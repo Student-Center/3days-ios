@@ -64,6 +64,12 @@ public struct HomeMainView: View {
                     // 첫 번째 탭 내용
                     VStack {
                         Text("첫 번째 탭")
+                        Button {
+                            intent.onTapNextButton()
+                        } label: {
+                            Text("토스트!")
+                        }
+
                     }
                     .tag(HomeMainTab.home)
                     

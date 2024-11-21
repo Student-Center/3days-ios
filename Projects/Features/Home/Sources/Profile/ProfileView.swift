@@ -15,7 +15,6 @@ import Model
 public struct ProfileView: View {
     
     @StateObject var container: MVIContainer<ProfileIntent.Intentable, ProfileModel.Stateful>
-//    @State var isPresentWidgetSelectionView = false
     
     private var intent: ProfileIntent.Intentable { container.intent }
     private var state: ProfileModel.Stateful { container.model }
@@ -112,7 +111,7 @@ public struct ProfileView: View {
                             }
                         } else {
                             LazyVGrid(columns: columns, spacing: 16) {
-                                ForEach(userInfo.profileWidgets, id: \.self) { widget in
+                                ForEach(userInfo.profileWidgets, id: \.widgetType.toDto) { widget in
                                     ZStack {
                                         RoundedRectangle(cornerRadius: 24)
                                             .fill(.white)
@@ -187,33 +186,19 @@ public struct ProfileView: View {
                 ProgressView()
             }
         }
-        .onChange(of: state.isPresentedAddWidgetModal) {
-            if !state.isPresentedAddWidgetModal {
-                if let userInfo = AppCoordinator.shared.userInfo {
-                    intent.fetchUserInfo(userInfo)
-                }
-            }
-        }
-        .onChange(of: state.isPresentedModifyWidgetView) {
-            if !state.isPresentedModifyWidgetView {
-                if let userInfo = AppCoordinator.shared.userInfo {
-                    intent.fetchUserInfo(userInfo)
-                }
-            }
-        }
-        .onChange(of: state.isPresentedDeleteConfirmSheet) {
-            if !state.isPresentedDeleteConfirmSheet {
-                if let userInfo = AppCoordinator.shared.userInfo {
-                    intent.fetchUserInfo(userInfo)
-                }
-            }
-        }
         .sheet(
             isPresented: $container.model.isPresentedAddWidgetModal,
             content: {
                 NavigationStack {
                     WidgetSelectionView(
-                        isPresented: $container.model.isPresentedAddWidgetModal
+                        isPresented: $container.model.isPresentedAddWidgetModal,
+                        successHandler: {
+                            Task {
+                                await intent.refreshUserInfo()
+                                try await Task.sleep(for: .seconds(1))
+                                ToastHelper.show("위젯이 추가되었어요")
+                            }
+                        }
                     )
                 }
         })
@@ -227,7 +212,14 @@ public struct ProfileView: View {
                             isModalPresented: $container.model.isPresentedModifyWidgetView,
                             isPushed: .constant(false),
                             isEditing: true,
-                            contentString: widget.content
+                            contentString: widget.content,
+                            successHandler: {
+                                Task {
+                                    await intent.refreshUserInfo()
+                                    try await Task.sleep(for: .seconds(1))
+                                    ToastHelper.show("위젯이 수정되었어요")
+                                }
+                            }
                         )
                     }
                 }
@@ -239,10 +231,10 @@ public struct ProfileView: View {
                 if let widget = state.selectedWidgetType {
                     DeleteWidgetConfirmView {
                         Task {
-                            await intent.deleteWidget(widget)
                             await MainActor.run {
                                 container.model.isPresentedDeleteConfirmSheet = false
                             }
+                            await intent.deleteWidget(widget)
                         }
                     } cancelHandler: {
                         container.model.isPresentedDeleteConfirmSheet = false
@@ -301,16 +293,4 @@ fileprivate struct DeleteWidgetConfirmView: View {
         .padding(.horizontal, 28)
         .padding(.vertical, 30)
     }
-}
-
-#Preview {
-    DeleteWidgetConfirmView {
-        
-    } cancelHandler: {
-        
-    }
-
-//    NavigationView {
-//        HomeMainView(userInfo: .mock)
-//    }
 }

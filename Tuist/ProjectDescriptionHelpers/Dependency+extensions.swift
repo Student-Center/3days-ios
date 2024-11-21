@@ -11,6 +11,7 @@ public enum ExternalDependency: String {
     case nuke = "Nuke"
     case openapiGenerated = "OpenapiGenerated"
     case navigationTransitions = "NavigationTransitions"
+    case toast = "Toast"
     
     var name: String {
         return self.rawValue

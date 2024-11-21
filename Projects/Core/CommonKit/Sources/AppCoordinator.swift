@@ -21,7 +21,7 @@ public final class AppCoordinator: ObservableObject {
     
     //MARK: - Properties
     public var authState: AuthState = .none
-    public var userInfo: UserInfo?
+    @Published public var userInfo: UserInfo?
     public var needFadeTransition: Bool = false
     @Published public var navigationStack: [PathType] = [.intro]
     let authService = AuthService.shared
@@ -43,7 +43,6 @@ public final class AppCoordinator: ObservableObject {
                 }
             }
         }
-        startRefreshMyUserInfo()
     }
     
     @MainActor
@@ -102,25 +101,17 @@ public final class AppCoordinator: ObservableObject {
         }
     }
     
-    public func refreshMyUserInfo() async throws {
+    public func refreshMyUserInfo() async throws -> UserInfo? {
         if TokenManager.accessToken == nil || TokenManager.accessToken == "" {
-            return
+            AuthState.change(.loggedOut)
+            return nil
         }
         let userInfo = try await authService.requestMyUserInfo()
         await MainActor.run {
             self.userInfo = userInfo
             AuthState.change(.login)
         }
-    }
-    
-    // 20초마다 한번씩 refreshMyUserInfo() 를 호출
-    private func startRefreshMyUserInfo() {
-        Task {
-            while true {
-                try? await Task.sleep(for: .seconds(20))
-                try? await refreshMyUserInfo()
-            }
-        }
+        return userInfo
     }
     
     public func logout() {

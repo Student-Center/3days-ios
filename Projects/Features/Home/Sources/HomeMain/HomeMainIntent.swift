@@ -11,6 +11,7 @@ import CommonKit
 import CoreKit
 import Model
 import NetworkKit
+import DesignCore
 
 //MARK: - Intent
 class HomeMainIntent {
@@ -68,5 +69,7 @@ extension HomeMainIntent: HomeMainIntent.Intentable {
     func task() async {}
     
     // content
-    func onTapNextButton() {}
+    func onTapNextButton() {
+        ToastHelper.show(message: "토스트얍")
+    }
 }
