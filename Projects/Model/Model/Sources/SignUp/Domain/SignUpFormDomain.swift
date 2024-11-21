@@ -94,6 +94,7 @@ public struct SignUpDreamPartnerDomain {
     public var lowerBirthYearGap: Int?
     public var upperBirthYearGap: Int?
     public var jobOccupations: [String]
+    public var allowSameCompany: Bool?
     public var distanceType: DreamPartnerDistanceType?
     
     var toDto: Components.Schemas.UserDesiredPartner? {
@@ -110,7 +111,8 @@ public struct SignUpDreamPartnerDomain {
                 end: upperBirthYearGap
             ),
             jobOccupations: jobOccupations,
-            preferDistance: distanceType.toDto
+            preferDistance: distanceType.toDto,
+            allowSameCompany: allowSameCompany
         )
     }
     
@@ -118,12 +120,14 @@ public struct SignUpDreamPartnerDomain {
         lowerBirthYearGap: Int? = nil,
         upperBirthYearGap: Int? = nil,
         jobOccupations: [String],
-        distanceType: DreamPartnerDistanceType? = nil
+        distanceType: DreamPartnerDistanceType? = nil,
+        allowSameCompany: Bool? = nil
     ) {
         self.lowerBirthYearGap = lowerBirthYearGap
         self.upperBirthYearGap = upperBirthYearGap
         self.jobOccupations = jobOccupations
         self.distanceType = distanceType
+        self.allowSameCompany = allowSameCompany
     }
 }
 
