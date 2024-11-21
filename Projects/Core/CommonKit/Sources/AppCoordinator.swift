@@ -122,4 +122,11 @@ public final class AppCoordinator: ObservableObject {
             }
         }
     }
+    
+    public func logout() {
+        TokenManager.accessToken = nil
+        TokenManager.refreshToken = nil
+        TokenManager.registerToken = nil
+        AuthState.change(.loggedOut)
+    }
 }

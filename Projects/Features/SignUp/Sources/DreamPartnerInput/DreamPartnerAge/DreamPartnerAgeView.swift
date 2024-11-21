@@ -137,7 +137,7 @@ public struct DreamPartnerAgeView: View {
         }
         .ignoresSafeArea(.keyboard)
         .textureBackground()
-        .setPopNavigation {
+        .setNavigation(showLeftBackButton: false) {
             AppCoordinator.shared.pop()
         }
         .setLoading(state.isLoading)

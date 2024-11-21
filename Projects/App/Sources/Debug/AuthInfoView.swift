@@ -155,6 +155,14 @@ struct AuthDebugInfoView: View {
                 dismissButton: .default(Text("확인"))
             )
         }
+        .toolbarRole(.navigationStack)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("로그아웃", role: .destructive) {
+                    AppCoordinator.shared.logout()
+                }
+            }
+        }
     }
     
     // 클립보드에 복사하는 함수

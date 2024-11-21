@@ -1,8 +1,8 @@
 //
-//  AuthAgreementIntent.swift
+//  ProfileIntroIntent.swift
 //  SignUp
 //
-//  Created by 김지수 on 10/5/24.
+//  Created by 김지수 on 11/20/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
@@ -12,24 +12,30 @@ import CoreKit
 import Model
 
 //MARK: - Intent
-class AuthAgreementIntent {
-    private weak var model: AuthAgreementModelActionable?
+class ProfileIntroIntent {
+    private weak var model: ProfileIntroModelActionable?
     private let input: DataModel
 
     // MARK: Life cycle
     init(
-        model: AuthAgreementModelActionable,
+        model: ProfileIntroModelActionable,
         input: DataModel
     ) {
         self.input = input
         self.model = model
+        
+        Task {
+            try? await Task.sleep(for: .milliseconds(2500))
+            await pushNextView()
+        }
     }
 }
 
 //MARK: - Intentable
-extension AuthAgreementIntent {
+extension ProfileIntroIntent {
     protocol Intentable {
         // content
+        func pushNextView() async
         func onTapNextButton()
         
         // default
@@ -43,18 +49,18 @@ extension AuthAgreementIntent {
 }
 
 //MARK: - Intentable
-extension AuthAgreementIntent: AuthAgreementIntent.Intentable {
+extension ProfileIntroIntent: ProfileIntroIntent.Intentable {
     // default
+    @MainActor
+    func pushNextView() async {
+        AppCoordinator.shared.changeRootView(
+            .signUp(.authProfileGender(input: input.input))
+        )
+    }
     func onAppear() {}
     
     func task() async {}
     
     // content
-    func onTapNextButton() {
-        Task {
-            await AppCoordinator.shared.changeRootView(
-                .signUp(.profileIntro(input: input.input))
-            )
-        }
-    }
+    func onTapNextButton() {}
 }
