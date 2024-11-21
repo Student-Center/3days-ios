@@ -37,12 +37,32 @@ public struct AuthProfileAgeInputView: View {
         self._container = StateObject(wrappedValue: container)
     }
     
+    private var tooltipMessage: AttributedString {
+        let text = """
+        2024년 기준으로 2004년생(만 20살)부터
+        1989년생(만 35살)까지 가입할 수 있어요
+        """
+
+        var attributedString = AttributedString(text)
+        let boldRanges = [
+            text.range(of: "2004년생(만 20살)부터"),
+            text.range(of: "1989년생(만 35살)")
+        ].compactMap { $0 }
+
+        boldRanges.forEach { range in
+            let attributedRange = attributedString.range(of: text[range])!
+            attributedString[attributedRange].inlinePresentationIntent = .stronglyEmphasized
+        }
+
+        return attributedString
+    }
+    
     public var body: some View {
         VStack {
             ProfileInputTemplatedView(
                 currentPage: 2,
                 maxPage: 5,
-                subMessage: "좋은 \(state.targetGender) 소개시켜 드릴께요!",
+                subMessage: "좋은 \(state.targetGender.name)분 소개시켜 드릴께요!",
                 mainMessage: "당신의 나이는 무엇인가요?"
             ) {
                 VStack {
@@ -82,7 +102,9 @@ public struct AuthProfileAgeInputView: View {
                     .frame(height: 92)
                     
                     Button(action: {
-                        
+                        withAnimation {
+                            intent.toggleToolTip()
+                        }
                     }, label: {
                         HStack(spacing: 4) {
                             DesignCore.Images.iconInformation.image
@@ -94,6 +116,7 @@ public struct AuthProfileAgeInputView: View {
                     .padding(.top, 20)
                 }
                 .padding(.top, 8)
+                .tooltip(message: state.isShowToolTip ? tooltipMessage : nil, offset: 0)
             }
             
             Spacer()
@@ -114,10 +137,15 @@ public struct AuthProfileAgeInputView: View {
         .ignoresSafeArea()
         .padding(.top, 10)
         .textureBackground()
-        .setNavigation(showLeftBackButton: false) {
-            
+        .setPopNavigation {
+            AppCoordinator.shared.pop()
         }
         .setLoading(state.isLoading)
+        .onTapGesture {
+            if state.isShowToolTip {
+                intent.toggleToolTip()
+            }
+        }
     }
 }
 

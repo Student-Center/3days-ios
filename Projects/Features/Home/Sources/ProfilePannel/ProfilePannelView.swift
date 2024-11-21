@@ -52,8 +52,12 @@ public struct ProfilePannelView: View {
             VStack(spacing: 6) {
                 HStack {
                     Spacer()
-                    RoundedRectangle(cornerRadius: 24)
-                        .frame(width: 102, height: 102)
+                    ZStack {
+                        DesignCore.Images.profileDefault.image
+                            .cornerRadius(20, corners: .allCorners)
+                        DesignCore.Images.profileBorder.image
+                    }
+                    .frame(width: 102, height: 102)
                     Spacer()
                 }
                 .shadow(.default)

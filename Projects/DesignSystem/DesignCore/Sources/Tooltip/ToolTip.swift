@@ -9,37 +9,63 @@
 import SwiftUI
 
 extension View {
-    public func tooltip(message: String, offset: CGFloat) -> some View {
+    public func tooltip(message: String?, offset: CGFloat) -> some View {
+        return modifier(ToolTipViewModifier(message: message, offset: offset))
+    }
+    
+    public func tooltip(message: AttributedString?, offset: CGFloat) -> some View {
         return modifier(ToolTipViewModifier(message: message, offset: offset))
     }
 }
 
 struct ToolTipViewModifier: ViewModifier {
-    let message: String
+    let message: AttributedString?
     let offset: CGFloat
+    
+    init(
+        message: AttributedString?,
+        offset: CGFloat
+    ) {
+        self.message = message
+        self.offset = offset
+    }
+    
+    init(
+        message: String?,
+        offset: CGFloat
+    ) {
+        if let message {
+            self.message = .init(stringLiteral: message)
+        } else {
+            self.message = nil
+        }
+        self.offset = offset
+    }
     
     func body(content: Content) -> some View {
         content
             .overlay {
-                Text(message)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .typography(.regular_12)
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.center)
-                    .background {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(DesignCore.Colors.grey400)
-                            VStack {
-                                Spacer()
-                                InvertedTriangle()
+                if let message {
+                    Text(message)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .typography(.regular_12)
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .background {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 6)
+                                    .fill(DesignCore.Colors.grey400)
+                                VStack {
+                                    Spacer()
+                                    InvertedTriangle()
+                                }
+                                .offset(y: 12)
                             }
-                            .offset(y: 12)
                         }
-                    }
-                    .frame(width: 300)
-                    .offset(y: -offset)
+//                        .frame(width: 300)
+                        .offset(y: -offset)
+                }
             }
     }
 }

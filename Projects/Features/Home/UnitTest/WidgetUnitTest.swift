@@ -33,10 +33,7 @@ struct WidgetUnitTest {
             model: writeState,
             input: .init(
                 widgetType: .body,
-                content: nil,
-                successHandler: {
-                    
-                }
+                content: nil
             ),
             service: ProfileServiceMock()
         )
