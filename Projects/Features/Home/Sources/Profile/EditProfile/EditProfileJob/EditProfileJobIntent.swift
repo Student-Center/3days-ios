@@ -11,19 +11,23 @@ import CommonKit
 import CoreKit
 import DesignCore
 import Model
+import NetworkKit
 
 //MARK: - Intent
 class EditProfileJobIntent {
     private weak var model: EditProfileJobModelActionable?
     private let input: DataModel
+    private let profileService: ProfileServiceProtocol
 
     // MARK: Life cycle
     init(
         model: EditProfileJobModelActionable,
-        input: DataModel
+        input: DataModel,
+        service: ProfileServiceProtocol = ProfileService.shared
     ) {
         self.input = input
         self.model = model
+        self.profileService = service
         model.setUserInfo(input.userInfo)
         if let job = JobOccupation(rawValue: input.userInfo.profile.jobOccupationRawValue) {
             model.setSingleSelectedJob(job)

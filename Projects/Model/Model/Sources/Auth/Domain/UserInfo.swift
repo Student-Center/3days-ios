@@ -62,6 +62,10 @@ public struct UserInfoProfile {
     public let jobOccupation: String
     public let jobOccupationRawValue: String
     public let locations: [LocationModel]
+    
+    public var jobOccupationDTO: Components.Schemas.JobOccupation? {
+        return .init(rawValue: jobOccupationRawValue)
+    }
 
     public init(
         gender: GenderType,

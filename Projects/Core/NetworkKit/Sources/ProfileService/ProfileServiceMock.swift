@@ -9,6 +9,7 @@
 import Foundation
 import OpenapiGenerated
 import CoreKit
+import Model
 
 public final class ProfileServiceMock: ProfileServiceProtocol {
     public init() {}
@@ -25,6 +26,11 @@ public final class ProfileServiceMock: ProfileServiceProtocol {
         widgetType: Components.Schemas.ProfileWidgetType
     ) async throws {
         print("✅ [ProfileServiceMock] requestDeleteProfileWidget 성공!")
+        return
+    }
+    
+    public func requestPutUserInfo(userInfo: UserInfo) async throws {
+        print("✅ [ProfileServiceMock] requestPutUserInfo 성공!")
         return
     }
 }
