@@ -67,6 +67,30 @@ extension EditProfileJobIntent: EditProfileJobIntent.Intentable {
     }
     
     func onTapNextButton(state: EditProfileJobModel.Stateful) {
+        Task {
+            do {
+                guard let userInfo = state.userInfo else { return }
+                var newUserInfo = userInfo
+                newUserInfo.profile.jobOccupationRawValue = state.singleSelectedJob!.rawValue
+                model?.setLoading(status: true)
+                try await requestEditProfile(newUserInfo: newUserInfo)
+                await popToRoot()
+            } catch {
+                ToastHelper.showErrorMessage(error.localizedDescription)
+                model?.setLoading(status: false)
+            }
+        }
+    }
+    
+    func requestEditProfile(newUserInfo: UserInfo) async throws {
         
+        try await profileService.requestPutUserInfo(
+            userInfo: newUserInfo
+        )
+    }
+    
+    @MainActor
+    func popToRoot() {
+        AppCoordinator.shared.pop()
     }
 }

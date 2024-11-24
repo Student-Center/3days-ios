@@ -13,8 +13,8 @@ public struct UserInfo {
     public let id: String?
     public let name: String
     public let phone: String
-    public let profile: UserInfoProfile
-    public let dreamPartner: DreamPartnerInfo
+    public var profile: UserInfoProfile
+    public var dreamPartner: DreamPartnerInfo
     public let profileWidgets: [ProfileWidget]
     
     public init(
@@ -58,10 +58,10 @@ public struct UserInfoProfile {
     public let gender: GenderType
     public let birthYear: Int
     public let companyId: String?
-    public let companyName: String?
+    public var companyName: String?
     public let jobOccupation: String
-    public let jobOccupationRawValue: String
-    public let locations: [LocationModel]
+    public var jobOccupationRawValue: String
+    public var locations: [LocationModel]
     
     public var jobOccupationDTO: Components.Schemas.JobOccupation? {
         return .init(rawValue: jobOccupationRawValue)
