@@ -89,7 +89,9 @@ extension ProfileIntent: ProfileIntent.Intentable {
     }
     
     func onAppear() {
-        fetchUserInfo(input.userInfo)
+        Task {
+            await refreshUserInfo()
+        }
     }
     
     func refreshUserInfo() async {

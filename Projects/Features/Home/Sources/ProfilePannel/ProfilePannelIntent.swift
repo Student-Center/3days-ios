@@ -30,6 +30,7 @@ class ProfilePannelIntent {
 extension ProfilePannelIntent {
     protocol Intentable {
         // content
+        func onTapEditJobOccupationIcon()
         func onTapNextButton()
         
         // default
@@ -54,5 +55,20 @@ extension ProfilePannelIntent: ProfilePannelIntent.Intentable {
     func task() async {}
     
     // content
+    func onTapEditJobOccupationIcon() {
+        Task {
+            await MainActor.run {
+                if let userInfo = AppCoordinator.shared.userInfo {
+                    AppCoordinator.shared.push(
+                        .editProfile(
+                            .jobOccupation(
+                                userInfo
+                            )
+                        )
+                    )
+                }
+            }
+        }
+    }
     func onTapNextButton() {}
 }
