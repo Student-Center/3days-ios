@@ -81,8 +81,11 @@ public struct ProfilePannelView: View {
                         icon: DesignCore.Images.businessFill.image,
                         key: "직군",
                         value: state.profile?.jobOccupation ?? "-",
-                        textColor: Color(hex: 0x5B6654)
-                    )
+                        textColor: Color(hex: 0x5B6654),
+                        showEditIcon: true
+                    ) {
+                        intent.onTapEditJobOccupationIcon()
+                    }
                 }
                 
                 innerRoundBoxView(
@@ -93,7 +96,8 @@ public struct ProfilePannelView: View {
                         icon: DesignCore.Images.buildingFill.image,
                         key: "직장",
                         value: state.profile?.companyName ?? "",
-                        textColor: Color(hex: 0x846470)
+                        textColor: Color(hex: 0x846470),
+                        showEditIcon: true
                     )
                 }
                 
@@ -107,7 +111,8 @@ public struct ProfilePannelView: View {
                                 icon: DesignCore.Images.locationFill.image,
                                 key: "활동 지역",
                                 value: nil,
-                                textColor: Color(hex: 0x606D8F)
+                                textColor: Color(hex: 0x606D8F),
+                                showEditIcon: true
                             )
                             let tagModels: [TagModel] = profile.locations
                                 .map {
@@ -176,7 +181,9 @@ public struct ProfilePannelView: View {
         icon: Image,
         key: String,
         value: String?,
-        textColor: Color
+        textColor: Color,
+        showEditIcon: Bool,
+        editHandler: (() -> Void)? = nil
     ) -> some View {
         HStack(spacing: 6) {
             icon
@@ -190,6 +197,15 @@ public struct ProfilePannelView: View {
                 Text(value)
                     .typography(.medium_16)
                     .multilineTextAlignment(.trailing)
+            }
+            if showEditIcon {
+                DesignCore.Images.pencil1.image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 18, height: 18)
+                    .onTapGesture {
+                        editHandler?()
+                    }
             }
         }
         .foregroundStyle(textColor)

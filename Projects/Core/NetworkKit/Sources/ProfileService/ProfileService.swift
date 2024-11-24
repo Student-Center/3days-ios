@@ -20,6 +20,8 @@ public protocol ProfileServiceProtocol {
     func requestDeleteProfileWidget(
         widgetType: Components.Schemas.ProfileWidgetType
     ) async throws
+    
+    func requestPutUserInfo(userInfo: UserInfo) async throws
 }
 
 public final class ProfileService {
@@ -52,5 +54,23 @@ extension ProfileService: ProfileServiceProtocol {
             )
         )
         _ = try response.noContent
+    }
+    
+    public func requestPutUserInfo(userInfo: UserInfo) async throws {
+        guard let jobOccupation = userInfo.profile.jobOccupationDTO else {
+            return
+        }
+        let result = try await client.updateMyUserInfo(
+            .init(
+                body: .json(
+                    .init(
+                        name: userInfo.name,
+                        jobOccupation: jobOccupation,
+                        locationIds: userInfo.profile.locations.map { $0.id }
+                    )
+                )
+            )
+        )
+        _ = try result.ok
     }
 }

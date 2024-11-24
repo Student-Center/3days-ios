@@ -50,8 +50,8 @@ public protocol APIProtocol: Sendable {
     ///
     /// 현재 로그인한 사용자의 프로필 정보를 수정합니다. (이름, 직군, 직장, 활동 지역)
     ///
-    /// - Remark: HTTP `PATCH /users/my`.
-    /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)`.
+    /// - Remark: HTTP `PUT /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)`.
     func updateMyUserInfo(_ input: Operations.updateMyUserInfo.Input) async throws -> Operations.updateMyUserInfo.Output
     /// 프로필 위젯 추가 및 수정
     ///
@@ -183,8 +183,8 @@ extension APIProtocol {
     ///
     /// 현재 로그인한 사용자의 프로필 정보를 수정합니다. (이름, 직군, 직장, 활동 지역)
     ///
-    /// - Remark: HTTP `PATCH /users/my`.
-    /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)`.
+    /// - Remark: HTTP `PUT /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)`.
     public func updateMyUserInfo(
         headers: Operations.updateMyUserInfo.Input.Headers = .init(),
         body: Operations.updateMyUserInfo.Input.Body
@@ -588,39 +588,47 @@ public enum Components {
             /// 사용자 이름
             ///
             /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/name`.
-            public var name: Swift.String?
+            public var name: Swift.String
             /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/jobOccupation`.
-            public var jobOccupation: Components.Schemas.JobOccupation?
+            public var jobOccupation: Components.Schemas.JobOccupation
             /// 사용자의 회사 ID
             ///
             /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/companyId`.
             public var companyId: Swift.String?
+            /// 같은 회사에 근무하는 파트너를 허용하는지 여부 (companyID가 없을 경우 null)
+            ///
+            /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/allowSameCompany`.
+            public var allowSameCompany: Swift.Bool?
             /// 사용자의 활동 지역 목록 ID 리스트
             ///
             /// - Remark: Generated from `#/components/schemas/UpdateMyUserInfoRequest/locationIds`.
-            public var locationIds: [Swift.String]?
+            public var locationIds: [Swift.String]
             /// Creates a new `UpdateMyUserInfoRequest`.
             ///
             /// - Parameters:
             ///   - name: 사용자 이름
             ///   - jobOccupation:
             ///   - companyId: 사용자의 회사 ID
+            ///   - allowSameCompany: 같은 회사에 근무하는 파트너를 허용하는지 여부 (companyID가 없을 경우 null)
             ///   - locationIds: 사용자의 활동 지역 목록 ID 리스트
             public init(
-                name: Swift.String? = nil,
-                jobOccupation: Components.Schemas.JobOccupation? = nil,
+                name: Swift.String,
+                jobOccupation: Components.Schemas.JobOccupation,
                 companyId: Swift.String? = nil,
-                locationIds: [Swift.String]? = nil
+                allowSameCompany: Swift.Bool? = nil,
+                locationIds: [Swift.String]
             ) {
                 self.name = name
                 self.jobOccupation = jobOccupation
                 self.companyId = companyId
+                self.allowSameCompany = allowSameCompany
                 self.locationIds = locationIds
             }
             public enum CodingKeys: String, CodingKey {
                 case name
                 case jobOccupation
                 case companyId
+                case allowSameCompany
                 case locationIds
             }
         }
@@ -2367,12 +2375,12 @@ public enum Operations {
     ///
     /// 현재 로그인한 사용자의 프로필 정보를 수정합니다. (이름, 직군, 직장, 활동 지역)
     ///
-    /// - Remark: HTTP `PATCH /users/my`.
-    /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)`.
+    /// - Remark: HTTP `PUT /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)`.
     public enum updateMyUserInfo {
         public static let id: Swift.String = "updateMyUserInfo"
         public struct Input: Sendable, Hashable {
-            /// - Remark: Generated from `#/paths/users/my/PATCH/header`.
+            /// - Remark: Generated from `#/paths/users/my/PUT/header`.
             public struct Headers: Sendable, Hashable {
                 public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.updateMyUserInfo.AcceptableContentType>]
                 /// Creates a new `Headers`.
@@ -2384,9 +2392,9 @@ public enum Operations {
                 }
             }
             public var headers: Operations.updateMyUserInfo.Input.Headers
-            /// - Remark: Generated from `#/paths/users/my/PATCH/requestBody`.
+            /// - Remark: Generated from `#/paths/users/my/PUT/requestBody`.
             @frozen public enum Body: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/my/PATCH/requestBody/content/application\/json`.
+                /// - Remark: Generated from `#/paths/users/my/PUT/requestBody/content/application\/json`.
                 case json(Components.Schemas.UpdateMyUserInfoRequest)
             }
             public var body: Operations.updateMyUserInfo.Input.Body
@@ -2405,9 +2413,9 @@ public enum Operations {
         }
         @frozen public enum Output: Sendable, Hashable {
             public struct Ok: Sendable, Hashable {
-                /// - Remark: Generated from `#/paths/users/my/PATCH/responses/200/content`.
+                /// - Remark: Generated from `#/paths/users/my/PUT/responses/200/content`.
                 @frozen public enum Body: Sendable, Hashable {
-                    /// - Remark: Generated from `#/paths/users/my/PATCH/responses/200/content/application\/json`.
+                    /// - Remark: Generated from `#/paths/users/my/PUT/responses/200/content/application\/json`.
                     case json(Components.Schemas.UpdateMyUserInfoResponse)
                     /// The associated value of the enum case if `self` is `.json`.
                     ///
@@ -2434,7 +2442,7 @@ public enum Operations {
             }
             /// 수정 성공
             ///
-            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/200`.
+            /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)/responses/200`.
             ///
             /// HTTP response code: `200 ok`.
             case ok(Operations.updateMyUserInfo.Output.Ok)
@@ -2457,7 +2465,7 @@ public enum Operations {
             }
             /// 잘못된 요청
             ///
-            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/400`.
+            /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)/responses/400`.
             ///
             /// HTTP response code: `400 badRequest`.
             case badRequest(Components.Responses.BadRequest)
@@ -2480,7 +2488,7 @@ public enum Operations {
             }
             /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
             ///
-            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/401`.
+            /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)/responses/401`.
             ///
             /// HTTP response code: `401 unauthorized`.
             case unauthorized(Components.Responses.Unauthorized)
@@ -2503,7 +2511,7 @@ public enum Operations {
             }
             /// 서버 오류
             ///
-            /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)/responses/500`.
+            /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)/responses/500`.
             ///
             /// HTTP response code: `500 internalServerError`.
             case internalServerError(Components.Responses.InternalServerError)
