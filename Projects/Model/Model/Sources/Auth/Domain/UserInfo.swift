@@ -196,7 +196,13 @@ public struct DreamPartnerInfo: Equatable, Hashable {
         .init(
             upperBirthYear: 4,
             lowerBirthYear: 4,
-            jobOccupations: [],
+            jobOccupations: [
+                "MEDIA_ENTERTAINMENT",
+                "HEALTHCARE_MEDICAL",
+                "SPORTS",
+                "ARTS_DESIGN",
+                "MANUFACTURING_PRODUCTION"
+            ],
             distanceType: .myArea,
             allowSameCompany: true
         )
