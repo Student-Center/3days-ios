@@ -659,8 +659,8 @@ public struct Client: APIProtocol {
     ///
     /// 현재 로그인한 사용자의 프로필 정보를 수정합니다. (이름, 직군, 직장, 활동 지역)
     ///
-    /// - Remark: HTTP `PATCH /users/my`.
-    /// - Remark: Generated from `#/paths//users/my/patch(updateMyUserInfo)`.
+    /// - Remark: HTTP `PUT /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)`.
     public func updateMyUserInfo(_ input: Operations.updateMyUserInfo.Input) async throws -> Operations.updateMyUserInfo.Output {
         try await client.send(
             input: input,
@@ -672,7 +672,7 @@ public struct Client: APIProtocol {
                 )
                 var request: HTTPTypes.HTTPRequest = .init(
                     soar_path: path,
-                    method: .patch
+                    method: .put
                 )
                 suppressMutabilityWarning(&request)
                 converter.setAcceptHeader(
