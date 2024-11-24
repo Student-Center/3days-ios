@@ -35,7 +35,6 @@ struct WidgetUnitTest {
                 widgetType: .body,
                 content: nil,
                 successHandler: {
-
                 }
             ),
             service: ProfileServiceMock()

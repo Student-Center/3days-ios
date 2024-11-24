@@ -12,10 +12,24 @@ let project: Project = .make(
             ]
         ),
         .make(
-            target: .signUp,
+            target: .searchCompany,
             dependencies: [
                 .project(target: .commonKit),
                 .project(target: .designCore)
+            ]
+        ),
+        .makeUnitTest(
+            target: .searchCompany,
+            dependencies: [
+                .project(target: .searchCompany)
+            ]
+        ),
+        .make(
+            target: .signUp,
+            dependencies: [
+                .project(target: .commonKit),
+                .project(target: .designCore),
+                .project(target: .searchCompany)
             ]
         ),
         .makeUnitTest(
@@ -28,7 +42,8 @@ let project: Project = .make(
             target: .home,
             dependencies: [
                 .project(target: .commonKit),
-                .project(target: .designCore)
+                .project(target: .designCore),
+                .project(target: .searchCompany)
             ]
         ),
         .makeUnitTest(

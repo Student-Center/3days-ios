@@ -21,7 +21,7 @@ final class ProfileModel: ObservableObject {
         var isPresentedDeleteConfirmSheet: Bool { get set }
         var selectedWidgetType: ProfileWidget? { get }
         
-        var userInfoModel: UserInfo? { get }
+        var userInfoModel: UserInfo? { get set }
         var isValidated: Bool { get }
         
         // default

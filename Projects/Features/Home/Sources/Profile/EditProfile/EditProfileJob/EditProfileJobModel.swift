@@ -1,23 +1,24 @@
 //
-//  ProfilePannelModel.swift
-//  Home
+//  EditProfileJobModel.swift
+//  SignUp
 //
-//  Created by 김지수 on 11/3/24.
+//  Created by 김지수 on 11/24/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import Foundation
 import CommonKit
 import CoreKit
+import DesignCore
 import Model
 
-final class ProfilePannelModel: ObservableObject {
+final class EditProfileJobModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
-        var name: String? { get }
-        var profile: UserInfoProfile? { get }
+        var userInfo: UserInfo? { get }
+        var singleSelectedJob: JobOccupation? { get }
         var isValidated: Bool { get }
         
         // default
@@ -30,9 +31,21 @@ final class ProfilePannelModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    @Published var name: String? = nil
-    @Published var profile: UserInfoProfile? = nil
-    @Published var isValidated: Bool = false
+    @Published var userInfo: UserInfo?
+    @Published var singleSelectedJob: JobOccupation?
+    
+    var isValidated: Bool {
+        if let userInfo,
+           let singleSelectedJob {
+            if userInfo.profile.jobOccupationRawValue == singleSelectedJob.rawValue {
+                return false
+            }
+        } else {
+            return false
+        }
+        
+        return true
+    }
     
     // default
     @Published var isLoading: Bool = false
@@ -42,14 +55,13 @@ final class ProfilePannelModel: ObservableObject {
     @Published var showErrorAlert: ErrorModel?
 }
 
-extension ProfilePannelModel: ProfilePannelModel.Stateful {}
+extension EditProfileJobModel: EditProfileJobModel.Stateful {}
 
 //MARK: - Actionable
-protocol ProfilePannelModelActionable: AnyObject {
+protocol EditProfileJobModelActionable: AnyObject {
     // content
-    func setName(name: String)
-    func setProfile(profile: UserInfoProfile)
-    func setValidation(value: Bool)
+    func setSingleSelectedJob(_ job: JobOccupation)
+    func setUserInfo(_ userInfo: UserInfo)
 
     // default
     func setLoading(status: Bool)
@@ -60,16 +72,13 @@ protocol ProfilePannelModelActionable: AnyObject {
     func resetError()
 }
 
-extension ProfilePannelModel: ProfilePannelModelActionable {
+extension EditProfileJobModel: EditProfileJobModelActionable {
     // content
-    func setName(name: String) {
-        self.name = name
+    func setUserInfo(_ userInfo: UserInfo) {
+        self.userInfo = userInfo
     }
-    func setProfile(profile: UserInfoProfile) {
-        self.profile = profile
-    }
-    func setValidation(value: Bool) {
-        isValidated = value
+    func setSingleSelectedJob(_ job: JobOccupation) {
+        singleSelectedJob = job
     }
     
     // default
