@@ -71,10 +71,10 @@ extension EditProfileCompanyIntent: EditProfileCompanyIntent.Intentable {
     ) {
         Task {
             do {
-                guard let company = state.selectedCompany else { return }
+                let company = state.selectedCompany
                 model?.setLoading(status: true)
                 var newUserInfo = input.userInfo
-                newUserInfo.profile.companyId = company.id
+                newUserInfo.profile.companyId = company?.id
                 newUserInfo.dreamPartner.allowSameCompany = state.sameCompanyMatchingAvailable
                 try await requestPutProfile(newUserInfo: newUserInfo)
                 model?.setLoading(status: false)

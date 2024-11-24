@@ -106,7 +106,7 @@ public struct EditProfileCompanyView: View {
             }
             CTABottomButton(
                 title: "다음",
-                isActive: state.searchCompanyState.isValidated
+                isActive: state.isValidated
             ) {
                 /// 회사를 정확하게 파악할 수 있다면 -> 같은 회사 매칭 팝업 보여주기
                 if !state.searchCompanyState.isNoCompanyHere {
@@ -138,59 +138,3 @@ public struct EditProfileCompanyView: View {
         EditProfileCompanyView(userInfo: .mock)
     }
 }
-
-//ZStack {
-//    VStack {
-//        if let userInfo = state.userInfo {
-//            HStack {
-//                Text("💼 내 직군")
-//                    .typography(.regular_12)
-//                Text(userInfo.profile.jobOccupation)
-//                    .pretendard(
-//                        weight: ._600,
-//                        size: 12
-//                    )
-//            }
-//            .foregroundStyle(DesignCore.Colors.grey400)
-//            .padding(.horizontal, 20)
-//            .padding(.vertical, 10)
-//            .background(
-//                Capsule()
-//                    .fill(DesignCore.Colors.yellow50)
-//                    .stroke(
-//                        Color(hex: 0xEDE9C1),
-//                        lineWidth: 1
-//                    )
-//            )
-//            .padding(.vertical, 10)
-//        }
-//        JobSelectionView(
-//            selected: [state.singleSelectedJob].compactMap { $0 }
-//        ) { job in
-//            intent.onTapJobOccupation(
-//                selectedJob: job
-//            )
-//        }
-//        .padding(.bottom, 90)
-//    }
-//
-//    CTABottomButton(
-//        title: "다음",
-//        isActive: state.isValidated
-//    ) {
-//        intent.onTapNextButton(state: state)
-//    }
-//}
-//.task {
-//    await intent.task()
-//}
-//.onAppear {
-//    intent.onAppear()
-//}
-//.ignoresSafeArea(.keyboard)
-//.navigationTitle("직군 수정")
-//.textureBackground()
-//.setPopNavigation {
-//    AppCoordinator.shared.pop()
-//}
-//.setLoading(state.isLoading)

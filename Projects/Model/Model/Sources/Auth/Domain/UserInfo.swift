@@ -71,7 +71,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
         if lhs.gender != rhs.gender { return false }
         if lhs.birthYear != rhs.birthYear { return false }
         if lhs.companyId != rhs.companyId { return false }
-        if lhs.companyName != rhs.companyName { return false }
+        if lhs._companyName != rhs._companyName { return false }
         if lhs.jobOccupation != rhs.jobOccupation { return false }
         if lhs.jobOccupationRawValue != rhs.jobOccupationRawValue { return false }
         if lhs.locations != rhs.locations { return false }
@@ -83,10 +83,19 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
     public let gender: GenderType
     public let birthYear: Int
     public var companyId: String?
-    public var companyName: String?
+    private var _companyName: String?
     public let jobOccupation: String
     public var jobOccupationRawValue: String
     public var locations: [LocationModel]
+    
+    public var companyName: String {
+        set {
+            _companyName = newValue
+        }
+        get {
+            return _companyName ?? "새회사"
+        }
+    }
     
     public var jobOccupationDTO: Components.Schemas.JobOccupation? {
         return .init(rawValue: jobOccupationRawValue)
@@ -104,7 +113,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
         self.gender = gender
         self.birthYear = birthYear
         self.companyId = companyId
-        self.companyName = companyName
+        self._companyName = companyName
         self.jobOccupation = jobOccupation
         self.jobOccupationRawValue = jobOccupationRawValue
         self.locations = locations
@@ -114,7 +123,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
         self.gender = dto.gender == .MALE ? .male : .female
         self.birthYear = dto.birthYear
         self.companyId = dto.company?.id
-        self.companyName = dto.company?.display
+        self._companyName = dto.company?.display
         self.jobOccupation = dto.jobOccupation.display
         self.jobOccupationRawValue = dto.jobOccupation.code.rawValue
         self.locations = dto.locations.map {
