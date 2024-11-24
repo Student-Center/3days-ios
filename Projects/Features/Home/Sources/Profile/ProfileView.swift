@@ -52,6 +52,12 @@ public struct ProfileView: View {
                         LeftAlignText("Date Profile")
                             .typography(.en_medium_20)
                         
+                        DateProfilePanelView(
+                            partnerInfo: userInfo.dreamPartner
+                        ) { tab in
+                            print("\(tab) 수정!")
+                        }
+                        .padding(.vertical, 20)
                         
                         LeftAlignText("My Profile")
                             .typography(.en_medium_20)
