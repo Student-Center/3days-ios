@@ -49,6 +49,10 @@ public struct ProfileView: View {
             if let userInfo = state.userInfoModel {
                 ScrollView {
                     VStack(spacing: 0) {
+                        LeftAlignText("Date Profile")
+                            .typography(.en_medium_20)
+                        
+                        
                         LeftAlignText("My Profile")
                             .typography(.en_medium_20)
                         
@@ -294,3 +298,7 @@ fileprivate struct DeleteWidgetConfirmView: View {
         .padding(.vertical, 30)
     }
 }
+
+#Preview(body: {
+    HomeMainView(userInfo: .mock)
+})
