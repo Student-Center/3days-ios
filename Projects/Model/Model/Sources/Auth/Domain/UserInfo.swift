@@ -9,7 +9,17 @@
 import Foundation
 import OpenapiGenerated
 
-public struct UserInfo {
+public struct UserInfo: Equatable, Identifiable, Hashable {
+    public static func == (lhs: UserInfo, rhs: UserInfo) -> Bool {
+        if lhs.id != rhs.id { return false }
+        if lhs.name != rhs.name { return false }
+        if lhs.phone != rhs.phone { return false }
+        if lhs.profile != rhs.profile { return false }
+        if lhs.dreamPartner != rhs.dreamPartner { return false }
+        if lhs.profileWidgets != rhs.profileWidgets { return false }
+        return true
+    }
+    
     public let id: String?
     public let name: String
     public let phone: String
@@ -54,10 +64,25 @@ public struct UserInfo {
     }
 }
 
-public struct UserInfoProfile {
+public struct UserInfoProfile: Hashable, Identifiable, Equatable {
+    
+    public static func == (lhs: UserInfoProfile, rhs: UserInfoProfile) -> Bool {
+        if lhs.id != rhs.id { return false }
+        if lhs.gender != rhs.gender { return false }
+        if lhs.birthYear != rhs.birthYear { return false }
+        if lhs.companyId != rhs.companyId { return false }
+        if lhs.companyName != rhs.companyName { return false }
+        if lhs.jobOccupation != rhs.jobOccupation { return false }
+        if lhs.jobOccupationRawValue != rhs.jobOccupationRawValue { return false }
+        if lhs.locations != rhs.locations { return false }
+        return true
+    }
+    
+    public let id: String = UUID().uuidString
+    
     public let gender: GenderType
     public let birthYear: Int
-    public let companyId: String?
+    public var companyId: String?
     public var companyName: String?
     public let jobOccupation: String
     public var jobOccupationRawValue: String
@@ -113,12 +138,20 @@ public struct UserInfoProfile {
     }
 }
 
-public struct DreamPartnerInfo {
+public struct DreamPartnerInfo: Equatable, Hashable {
+    public static func == (lhs: DreamPartnerInfo, rhs: DreamPartnerInfo) -> Bool {
+        if lhs.upperBirthYear != rhs.upperBirthYear { return false }
+        if lhs.lowerBirthYear != rhs.lowerBirthYear { return false }
+        if lhs.jobOccupations != rhs.jobOccupations { return false }
+        if lhs.distanceType != rhs.distanceType { return false }
+        if lhs.allowSameCompany != rhs.allowSameCompany { return false }
+        return true
+    }
     public let upperBirthYear: Int?
     public let lowerBirthYear: Int?
     public let jobOccupations: [String]
     public let distanceType: DreamPartnerDistanceType
-    public let allowSameCompany: Bool?
+    public var allowSameCompany: Bool?
     
     public init(
         upperBirthYear: Int?,
@@ -186,7 +219,7 @@ public struct ProfileWidget: Hashable {
     }
 }
 
-public struct LocationModel {
+public struct LocationModel: Hashable {
     public let id: String
     public let name: String
     

@@ -10,6 +10,8 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import SearchCompany
+import Model
 
 public struct EditProfileCompanyView: View {
     
@@ -18,11 +20,25 @@ public struct EditProfileCompanyView: View {
     private var intent: EditProfileCompanyIntent.Intentable { container.intent }
     private var state: EditProfileCompanyModel.Stateful { container.model }
     
-    public init() {
-        let model = EditProfileCompanyModel()
+    @FocusState var showDropDown: Bool
+    var bottomSpacingHeight: CGFloat {
+        return showDropDown ? Device.height * 0.7 : 0
+    }
+    
+    public init(userInfo: UserInfo) {
+        let searchCompanyState = SearchCompanyModel()
+        let searchCompanyIntent = SearchCompanyIntent(
+            model: searchCompanyState,
+            input: .init()
+        )
+        
+        let model = EditProfileCompanyModel(
+            searchCompanyState: searchCompanyState
+        )
         let intent = EditProfileCompanyIntent(
             model: model,
-            input: .init()
+            input: .init(userInfo: userInfo),
+            searchCompanyIntent: searchCompanyIntent
         )
         let container = MVIContainer(
             intent: intent as EditProfileCompanyIntent.Intentable,
@@ -33,16 +49,82 @@ public struct EditProfileCompanyView: View {
     }
     
     public var body: some View {
-        VStack {
-            Text("Hello MVI")
+        ZStack {
+            ScrollView {
+                ScrollViewReader { proxy in
+                    VStack(spacing: 20) {
+                        if let userInfo = state.userInfo {
+                            HStack {
+                                Text("🏢 내 회사")
+                                    .typography(.regular_12)
+                                Text(userInfo.profile.companyName ?? "")
+                                    .pretendard(
+                                        weight: ._600,
+                                        size: 12
+                                    )
+                            }
+                            .foregroundStyle(DesignCore.Colors.grey400)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(
+                                Capsule()
+                                    .fill(DesignCore.Colors.yellow50)
+                                    .stroke(
+                                        Color(hex: 0xEDE9C1),
+                                        lineWidth: 1
+                                    )
+                            )
+                            .padding(.vertical, 20)
+                        }
+                        
+                        SearchCompanyView(
+                            state: state.searchCompanyState as! SearchCompanyModel,
+                            intent: intent.searchCompanyIntent as! SearchCompanyIntent,
+                            showDropDown: _showDropDown
+                        )
+                        .id(0)
+                        
+                        Spacer()
+                            .frame(height: bottomSpacingHeight)
+                            .id(1)
+                            .onChange(of: showDropDown) {
+                                if showDropDown {
+                                    withAnimation {
+                                        proxy.scrollTo(1)
+                                    }
+                                }
+                            }
+                            .foregroundStyle(.red)
+                    }
+                    .padding(.horizontal, 20)
+                    .onTapGesture {
+                        withAnimation {
+                            showDropDown = false
+                        }
+                    }
+                }
+            }
+            CTABottomButton(
+                title: "다음",
+                isActive: state.searchCompanyState.isValidated
+            ) {
+                /// 회사를 정확하게 파악할 수 있다면 -> 같은 회사 매칭 팝업 보여주기
+                if !state.searchCompanyState.isNoCompanyHere {
+                    intent.showSameCompanyPopup()
+                } else {
+                    /// 회사 정확하게 파악 불가하다면 다음 뷰로
+                    intent.onTapNextButton(state: state.searchCompanyState)
+                }
+            }
         }
+        .navigationTitle("회사 수정")
         .task {
             await intent.task()
         }
         .onAppear {
             intent.onAppear()
         }
-        .ignoresSafeArea(.all)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .textureBackground()
         .setPopNavigation {
             AppCoordinator.shared.pop()
@@ -53,7 +135,7 @@ public struct EditProfileCompanyView: View {
 
 #Preview {
     NavigationView {
-        EditProfileCompanyView()
+        EditProfileCompanyView(userInfo: .mock)
     }
 }
 

@@ -101,7 +101,9 @@ extension ProfileIntent: ProfileIntent.Intentable {
     }
     
     func fetchUserInfo(_ userInfo: UserInfo) {
-        model?.setUserInfo(userInfo)
+        DispatchQueue.main.async {
+            self.model?.setUserInfo(userInfo)
+        }
     }
     
     func task() async {}

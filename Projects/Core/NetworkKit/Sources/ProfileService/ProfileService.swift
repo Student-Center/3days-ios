@@ -66,6 +66,8 @@ extension ProfileService: ProfileServiceProtocol {
                     .init(
                         name: userInfo.name,
                         jobOccupation: jobOccupation,
+                        companyId: userInfo.profile.companyId,
+                        allowSameCompany: userInfo.dreamPartner.allowSameCompany,
                         locationIds: userInfo.profile.locations.map { $0.id }
                     )
                 )

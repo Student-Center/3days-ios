@@ -75,7 +75,7 @@ extension PathType {
             case .jobOccupation(let input):
                 EditProfileJobView(input)
             case .company(let input):
-                EmptyView()
+                EditProfileCompanyView(userInfo: input)
             case .region(let input):
                 EmptyView()
             }
