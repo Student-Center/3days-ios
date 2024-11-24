@@ -45,6 +45,7 @@ let workspace = Workspace(
             testAction: .targets(
                 [
                     .target(.coreKit),
+                    .target(.searchCompany),
                     .target(.designCore),
                     .target(.signUp),
                     .target(.home)

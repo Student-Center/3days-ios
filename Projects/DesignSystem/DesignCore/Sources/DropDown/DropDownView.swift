@@ -76,23 +76,24 @@ public struct DropDownPicker<Content: View>: View {
                         LazyVStack(alignment: .leading, spacing: 0) {
                             ForEach(0 ..< dataSources.count, id: \.self) { index in
                                 let item = dataSources[index]
-                                Button(action: {
-                                    tapHandler?(index)
+                                
+                                HStack(spacing: 16) {
+                                    Text(item.name)
+                                        .typography(.regular_14)
+                                        .multilineTextAlignment(.leading)
+                                    Spacer()
+                                }
+                                .foregroundStyle(DesignCore.Colors.grey500)
+                                .frame(height: itemSize)
+                                .padding(.horizontal, 16)
+                                .background(.white)
+                                .containerShape(Rectangle())
+                                .onTapGesture {
                                     withAnimation {
                                         showDropDown.toggle()
+                                        tapHandler?(index)
                                     }
-                                }, label: {
-                                    HStack(spacing: 16) {
-                                        Text(item.name)
-                                            .typography(.regular_14)
-                                            .multilineTextAlignment(.leading)
-                                        Spacer()
-                                    }
-                                    .foregroundStyle(DesignCore.Colors.grey500)
-                                    .frame(height: itemSize)
-                                    .padding(.horizontal, 16)
-                                    .background(.white)
-                                })
+                                }
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)

@@ -1,24 +1,21 @@
 //
-//  AuthCompanyModel.swift
-//  DesignPreview
+//  EditProfileCompanyModel.swift
+//  SignUp
 //
-//  Created by 김지수 on 10/9/24.
+//  Created by 김지수 on 11/24/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import Foundation
 import CommonKit
 import CoreKit
-import Model
-import DesignCore
-import SearchCompany
 
-final class AuthCompanyModel: ObservableObject {
+final class EditProfileCompanyModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
-        var searchCompanyState: SearchCompanyModel.Stateful { get }
+        var isValidated: Bool { get }
         
         // default
         var isLoading: Bool { get }
@@ -28,11 +25,9 @@ final class AuthCompanyModel: ObservableObject {
         var showErrorAlert: ErrorModel? { get }
     }
     
-    @Published var searchCompanyState: SearchCompanyModel.Stateful
-    
-    var isValidated: Bool {
-        return searchCompanyState.isValidated
-    }
+    //MARK: State Properties
+    // content
+    @Published var isValidated: Bool = false
     
     // default
     @Published var isLoading: Bool = false
@@ -40,17 +35,14 @@ final class AuthCompanyModel: ObservableObject {
     // error
     @Published var showErrorView: ErrorModel?
     @Published var showErrorAlert: ErrorModel?
-    
-    init(searchCompanyState: SearchCompanyModel.Stateful) {
-        self.searchCompanyState = searchCompanyState
-    }
 }
 
-extension AuthCompanyModel: AuthCompanyModel.Stateful {}
+extension EditProfileCompanyModel: EditProfileCompanyModel.Stateful {}
 
 //MARK: - Actionable
-protocol AuthCompanyModelActionable: AnyObject {
+protocol EditProfileCompanyModelActionable: AnyObject {
     // content
+    func setValidation(value: Bool)
 
     // default
     func setLoading(status: Bool)
@@ -61,8 +53,11 @@ protocol AuthCompanyModelActionable: AnyObject {
     func resetError()
 }
 
-extension AuthCompanyModel: AuthCompanyModelActionable {
+extension EditProfileCompanyModel: EditProfileCompanyModelActionable {
     // content
+    func setValidation(value: Bool) {
+        isValidated = value
+    }
     
     // default
     func setLoading(status: Bool) {
