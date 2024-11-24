@@ -77,7 +77,7 @@ extension PathType {
             case .company(let input):
                 EditProfileCompanyView(userInfo: input)
             case .region(let input):
-                EmptyView()
+                EditProfileRegionView(userInfo: input)
             }
             
         case .editDreamPartner(let subView):

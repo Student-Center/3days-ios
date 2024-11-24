@@ -57,7 +57,7 @@ public struct EditProfileCompanyView: View {
                             HStack {
                                 Text("🏢 내 회사")
                                     .typography(.regular_12)
-                                Text(userInfo.profile.companyName ?? "")
+                                Text(userInfo.profile.companyName)
                                     .pretendard(
                                         weight: ._600,
                                         size: 12
