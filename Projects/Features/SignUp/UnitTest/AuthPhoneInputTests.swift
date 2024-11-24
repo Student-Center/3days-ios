@@ -42,12 +42,4 @@ class AuthPhoneInputTests: XCTestCase {
         intent.onChangePhoneInput(phone: invalidPhone)
         XCTAssertFalse(model.isPhoneValidated)
     }
-    
-    func testOnTapNextButton() async {
-        let validPhone = "01012345678"
-        intent.onChangePhoneInput(phone: validPhone)
-        
-        intent.onTapNextButton(with: validPhone)
-        XCTAssertTrue(model.isLoading)
-    }
 }

@@ -67,6 +67,28 @@ extension PathType {
             case .dreamPartnerDistance(let input):
                 DreamPartnerDistanceView(input)
             }
+            
+        case .editProfile(let subView):
+            switch subView {
+            case .profileImage(let input):
+                EmptyView()
+            case .jobOccupation(let input):
+                EditProfileJobView(input)
+            case .company(let input):
+                EditProfileCompanyView(userInfo: input)
+            case .region(let input):
+                EditProfileRegionView(userInfo: input)
+            }
+            
+        case .editDreamPartner(let subView):
+            switch subView {
+            case .ageRange(let userInfo):
+                EmptyView()
+            case .jobOccupation(let userInfo):
+                EmptyView()
+            case .distance(let userInfo):
+                EmptyView()
+            }
         }
     }
 }

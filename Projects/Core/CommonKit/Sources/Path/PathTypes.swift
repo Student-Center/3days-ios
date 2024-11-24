@@ -26,6 +26,8 @@ public enum PathType: Hashable {
     // Features
     case home(UserInfo?)
     case signUp(SignUpSubViewType)
+    case editProfile(EditProfileViewType)
+    case editDreamPartner(EditDreamPartnerViewType)
     
     #if STAGING || DEBUG
     public static var debugPreviewTypes: [PathType] = [
@@ -64,8 +66,8 @@ public enum PathType: Hashable {
         case .intro: return "메인"
             
         case .home: return "홈"
-        case .signUp(let subType):
-            switch subType {
+        case .signUp(let subView):
+            switch subView {
             case .authPhoneInput: return "전화번호 입력"
             case .authPhoneVerify: return "전화번호 인증"
             case .authAgreement: return "이용 약관"
@@ -84,6 +86,21 @@ public enum PathType: Hashable {
             case .dreamPartnerAgeRange: return "이상형 나이대"
             case .dreamPartnerJobOccupation: return "이상형 직업"
             case .dreamPartnerDistance: return "이상형과의 거리"
+            }
+            
+        case .editProfile(let subView):
+            switch subView {
+            case .profileImage: return "프로필 이미지 수정"
+            case .jobOccupation: return "직군 수정"
+            case .company: return "직장 수정"
+            case .region: return "활동 지역 수정"
+            }
+            
+        case .editDreamPartner(let subView):
+            switch subView {
+            case .ageRange: return "이상형 나이대 수정"
+            case .jobOccupation: return "이상형 직군 수정"
+            case .distance: return "이상형과의 거리 수정"
             }
         }
     }
@@ -147,4 +164,17 @@ public enum SignUpSubViewType: Hashable {
             hasher.combine(12)
         }
     }
+}
+
+public enum EditProfileViewType {
+    case profileImage(UserInfo)
+    case jobOccupation(UserInfo)
+    case company(UserInfo)
+    case region(UserInfo)
+}
+
+public enum EditDreamPartnerViewType {
+    case ageRange(UserInfo)
+    case jobOccupation(UserInfo)
+    case distance(UserInfo)
 }

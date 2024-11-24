@@ -1,8 +1,8 @@
 //
-//  AuthCompanyView.swift
-//  DesignPreview
+//  EditProfileCompanyView.swift
+//  SignUp
 //
-//  Created by 김지수 on 10/9/24.
+//  Created by 김지수 on 11/24/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
@@ -10,61 +10,78 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
-import Model
 import SearchCompany
+import Model
 
-public struct AuthCompanyView: View {
+public struct EditProfileCompanyView: View {
     
-    @StateObject var container: MVIContainer<AuthCompanyIntent.Intentable, AuthCompanyModel.Stateful>
+    @StateObject var container: MVIContainer<EditProfileCompanyIntent.Intentable, EditProfileCompanyModel.Stateful>
     
-    private var intent: AuthCompanyIntent.Intentable { container.intent }
-    private var state: AuthCompanyModel.Stateful { container.model }
+    private var intent: EditProfileCompanyIntent.Intentable { container.intent }
+    private var state: EditProfileCompanyModel.Stateful { container.model }
     
     @FocusState var showDropDown: Bool
+    var bottomSpacingHeight: CGFloat {
+        return showDropDown ? Device.height * 0.7 : 0
+    }
     
-    public init(_ input: SignUpFormDomain) {
+    public init(userInfo: UserInfo) {
         let searchCompanyState = SearchCompanyModel()
         let searchCompanyIntent = SearchCompanyIntent(
             model: searchCompanyState,
             input: .init()
         )
         
-        let model = AuthCompanyModel(searchCompanyState: searchCompanyState)
-        let intent = AuthCompanyIntent(
+        let model = EditProfileCompanyModel(
+            searchCompanyState: searchCompanyState
+        )
+        let intent = EditProfileCompanyIntent(
             model: model,
-            input: .init(input: input),
+            input: .init(userInfo: userInfo),
             searchCompanyIntent: searchCompanyIntent
         )
         let container = MVIContainer(
-            intent: intent as AuthCompanyIntent.Intentable,
-            model: model as AuthCompanyModel.Stateful,
+            intent: intent as EditProfileCompanyIntent.Intentable,
+            model: model as EditProfileCompanyModel.Stateful,
             modelChangePublisher: model.objectWillChange
         )
         self._container = StateObject(wrappedValue: container)
     }
     
-    var bottomSpacingHeight: CGFloat {
-        return showDropDown ? Device.height * 0.7 : 0
-    }
-    
-    
     public var body: some View {
         ZStack {
             ScrollView {
                 ScrollViewReader { proxy in
-                    VStack {
-                        ProfileInputTemplatedView(
-                            currentPage: 3,
-                            maxPage: 5,
-                            subMessage: "운명의 상대를 만나기 딱 좋은 나이네요.",
-                            mainMessage: "당신은 지금 어떤 회사에서\n재직하고 있나요?"
-                        ) {
-                            SearchCompanyView(
-                                state: state.searchCompanyState as! SearchCompanyModel,
-                                intent: intent.searchCompanyIntent as! SearchCompanyIntent,
-                                showDropDown: _showDropDown
+                    VStack(spacing: 20) {
+                        if let userInfo = state.userInfo {
+                            HStack {
+                                Text("🏢 내 회사")
+                                    .typography(.regular_12)
+                                Text(userInfo.profile.companyName)
+                                    .pretendard(
+                                        weight: ._600,
+                                        size: 12
+                                    )
+                            }
+                            .foregroundStyle(DesignCore.Colors.grey400)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(
+                                Capsule()
+                                    .fill(DesignCore.Colors.yellow50)
+                                    .stroke(
+                                        Color(hex: 0xEDE9C1),
+                                        lineWidth: 1
+                                    )
                             )
+                            .padding(.vertical, 20)
                         }
+                        
+                        SearchCompanyView(
+                            state: state.searchCompanyState as! SearchCompanyModel,
+                            intent: intent.searchCompanyIntent as! SearchCompanyIntent,
+                            showDropDown: _showDropDown
+                        )
                         .id(0)
                         
                         Spacer()
@@ -79,6 +96,7 @@ public struct AuthCompanyView: View {
                             }
                             .foregroundStyle(.red)
                     }
+                    .padding(.horizontal, 20)
                     .onTapGesture {
                         withAnimation {
                             showDropDown = false
@@ -88,7 +106,7 @@ public struct AuthCompanyView: View {
             }
             CTABottomButton(
                 title: "다음",
-                isActive: state.searchCompanyState.isValidated
+                isActive: state.isValidated
             ) {
                 /// 회사를 정확하게 파악할 수 있다면 -> 같은 회사 매칭 팝업 보여주기
                 if !state.searchCompanyState.isNoCompanyHere {
@@ -99,6 +117,7 @@ public struct AuthCompanyView: View {
                 }
             }
         }
+        .navigationTitle("회사 수정")
         .task {
             await intent.task()
         }
@@ -116,6 +135,6 @@ public struct AuthCompanyView: View {
 
 #Preview {
     NavigationView {
-        AuthCompanyView(.mock)
+        EditProfileCompanyView(userInfo: .mock)
     }
 }

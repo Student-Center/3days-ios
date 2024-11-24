@@ -8,46 +8,37 @@
 
 import SwiftUI
 import CommonKit
-import Combine
 import CoreKit
 import Model
 import NetworkKit
+import SearchCompany
 
 //MARK: - Intent
 class AuthCompanyIntent {
     private weak var model: AuthCompanyModelActionable?
     private let input: DataModel
-    private let companyService: CompanyServiceProtocol
     
-    private var cancellables = Set<AnyCancellable>()
+    internal let searchCompanyIntent: SearchCompanyIntent.Intentable
 
     // MARK: Life cycle
     init(
         model: AuthCompanyModelActionable,
         input: DataModel,
-        companyService: CompanyServiceProtocol = CompanyService.shared
+        searchCompanyIntent: SearchCompanyIntent.Intentable
     ) {
         self.input = input
         self.model = model
-        self.companyService = companyService
+        self.searchCompanyIntent = searchCompanyIntent
     }
 }
 
 //MARK: - Intentable
 extension AuthCompanyIntent {
     protocol Intentable {
+        var searchCompanyIntent: SearchCompanyIntent.Intentable { get }
         // content
-        func onTextChanged(text: String)
-        func onCompanySelected(company: CompanySearchResponse)
-        func onTapNoCompanyToggle()
-        func onChangedFocusState(_ value: Bool)
-        func onTapSameCompanyMatching(isAgree: Bool)
-        func needRequestNextPage(
-            keyword: String,
-            next: String
-        )
-        func onTapNextButton(state: AuthCompanyModel.Stateful)
-        
+        func onTapNextButton(state: SearchCompanyModel.Stateful)
+        func showSameCompanyPopup()
         // default
         func onAppear()
         func task() async
@@ -60,89 +51,22 @@ extension AuthCompanyIntent {
 
 //MARK: - Intentable
 extension AuthCompanyIntent: AuthCompanyIntent.Intentable {
-    // default
     func onAppear() {
-        if let model = model as? AuthCompanyModel {
-            model.$textInput
-                .removeDuplicates()
-                .debounce(
-                    for: .seconds(0.75),
-                    scheduler: RunLoop.main
-                )
-                .sink { [weak self] text in
-                    Task { [weak self] in
-                        await self?.searchCompanyData(
-                            keyword: text
-                        )
-                    }
-                }
-                .store(in: &cancellables)
+        searchCompanyIntent.setSameCompanyPopupHandler { [weak self] state in
+            self?.onTapNextButton(state: state)
         }
     }
     
-    func task() async {}
+    func task() async {
+        
+    }
     
-    // content
-    func onChangedFocusState(_ value: Bool) {
-        model?.setFocusState(value)
+    func showSameCompanyPopup() {
+        searchCompanyIntent.showSameCompanyPopup()
     }
-    func onTapNoCompanyToggle() {
-        model?.setToggleNoCompany()
-    }
-    func onTextChanged(text: String) {
-        if let model = model as? AuthCompanyModel,
-           model.selectedCompany?.name != text {
-            model.setSelectedCompany(nil)
-        }
-    }
-    func onCompanySelected(company: CompanySearchResponse) {
-        model?.setSelectedCompany(company)
-    }
-    func searchCompanyData(keyword: String) async {
-        guard keyword.count > 0 else {
-            model?.setResponseData([])
-            model?.setSelectedCompany(nil)
-            return
-        }
-        await requestCompanyList(keyword: keyword, needAppend: false)
-    }
-    func onTapSameCompanyMatching(isAgree: Bool) {
-        model?.setSameCompanyMatchingAvailable(isAgree)
-    }
-    func needRequestNextPage(
-        keyword: String,
-        next: String
-    ) {
-        Task {
-            await requestCompanyList(
-                keyword: keyword,
-                next: next,
-                needAppend: true
-            )
-        }
-    }
-    // company list API 요청
-    func requestCompanyList(
-        keyword: String,
-        next: String? = nil,
-        needAppend: Bool
-    ) async {
-        do {
-            let (response, next) = try await companyService.requestSearchCompany(
-                keyword: keyword,
-                next: next
-            )
-            if needAppend {
-                model?.appendResponseData(response)
-            } else {
-                model?.setResponseData(response)
-            }
-            model?.setNextPaginationKey(next)
-        } catch {
-            print(error)
-        }
-    }
-    func onTapNextButton(state: AuthCompanyModel.Stateful) {
+    
+    // default
+    func onTapNextButton(state: SearchCompanyModel.Stateful) {
         Task {
             var payload = input.input
             payload.profile?.companyId = state.selectedCompany?.id
