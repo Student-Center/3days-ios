@@ -9,12 +9,17 @@
 import Foundation
 import CommonKit
 import CoreKit
+import SearchCompany
+import Model
 
 final class EditProfileCompanyModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
+        var userInfo: UserInfo? { get }
+        var searchCompanyState: SearchCompanyModel.Stateful { get }
+        
         var isValidated: Bool { get }
         
         // default
@@ -27,7 +32,12 @@ final class EditProfileCompanyModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    @Published var isValidated: Bool = false
+    @Published var userInfo: UserInfo?
+    @Published var searchCompanyState: SearchCompanyModel.Stateful
+    
+    var isValidated: Bool {
+        return searchCompanyState.isValidated
+    }
     
     // default
     @Published var isLoading: Bool = false
@@ -35,6 +45,10 @@ final class EditProfileCompanyModel: ObservableObject {
     // error
     @Published var showErrorView: ErrorModel?
     @Published var showErrorAlert: ErrorModel?
+    
+    init(searchCompanyState: SearchCompanyModel.Stateful) {
+        self.searchCompanyState = searchCompanyState
+    }
 }
 
 extension EditProfileCompanyModel: EditProfileCompanyModel.Stateful {}
@@ -42,8 +56,7 @@ extension EditProfileCompanyModel: EditProfileCompanyModel.Stateful {}
 //MARK: - Actionable
 protocol EditProfileCompanyModelActionable: AnyObject {
     // content
-    func setValidation(value: Bool)
-
+    func setUserInfo(userInfo: UserInfo)
     // default
     func setLoading(status: Bool)
     
@@ -55,10 +68,9 @@ protocol EditProfileCompanyModelActionable: AnyObject {
 
 extension EditProfileCompanyModel: EditProfileCompanyModelActionable {
     // content
-    func setValidation(value: Bool) {
-        isValidated = value
+    func setUserInfo(userInfo: UserInfo) {
+        self.userInfo = userInfo
     }
-    
     // default
     func setLoading(status: Bool) {
         isLoading = status

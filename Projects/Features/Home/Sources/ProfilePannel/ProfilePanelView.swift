@@ -1,41 +1,20 @@
 //
-//  ProfilePannelView.swift
+//  ProfilePanelView.swift
 //  Home
 //
-//  Created by 김지수 on 11/3/24.
+//  Created by 김지수 on 11/25/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
 import SwiftUI
-import UIKit
-import CoreKit
+import Model
 import DesignCore
 import CommonKit
-import Model
 
-public struct ProfilePannelView: View {
+struct ProfilePannelView: View {
     
-    @StateObject var container: MVIContainer<ProfilePannelIntent.Intentable, ProfilePannelModel.Stateful>
-    
-    private var intent: ProfilePannelIntent.Intentable { container.intent }
-    private var state: ProfilePannelModel.Stateful { container.model }
-    
-    public init(name: String, profile: UserInfoProfile) {
-        let model = ProfilePannelModel()
-        let intent = ProfilePannelIntent(
-            model: model,
-            input: .init(
-                name: name,
-                profile: profile
-            )
-        )
-        let container = MVIContainer(
-            intent: intent as ProfilePannelIntent.Intentable,
-            model: model as ProfilePannelModel.Stateful,
-            modelChangePublisher: model.objectWillChange
-        )
-        self._container = StateObject(wrappedValue: container)
-    }
+    let name: String
+    let profile: UserInfoProfile
     
     @ViewBuilder
     var circleDot: some View {
@@ -63,11 +42,11 @@ public struct ProfilePannelView: View {
                 .shadow(.default)
                 
                 VStack(spacing: 4) {
-                    Text(state.name ?? "")
+                    Text(name)
                         .pretendard(weight: ._600, size: 28)
                         .foregroundStyle(Color(hex: 0x1F1F1F))
                     
-                    Text("\(state.profile?.birthYear.toString() ?? "")년생")
+                    Text("\(profile.birthYear.toString())년생")
                         .pretendard(weight: ._500, size: 14)
                         .foregroundStyle(Color(hex: 0xA0A0A0))
                 }
@@ -80,11 +59,12 @@ public struct ProfilePannelView: View {
                     horizonIconKeyValueView(
                         icon: DesignCore.Images.businessFill.image,
                         key: "직군",
-                        value: state.profile?.jobOccupation ?? "-",
+                        value: profile.jobOccupation,
                         textColor: Color(hex: 0x5B6654),
                         showEditIcon: true
                     ) {
-                        intent.onTapEditJobOccupationIcon()
+                        guard let userInfo = AppCoordinator.shared.userInfo else { return }
+                        onTapEditIcon(type: .jobOccupation(userInfo))
                     }
                 }
                 
@@ -95,44 +75,49 @@ public struct ProfilePannelView: View {
                     horizonIconKeyValueView(
                         icon: DesignCore.Images.buildingFill.image,
                         key: "직장",
-                        value: state.profile?.companyName ?? "",
+                        value: profile.companyName,
                         textColor: Color(hex: 0x846470),
                         showEditIcon: true
-                    )
+                    ) {
+                        guard let userInfo = AppCoordinator.shared.userInfo else { return }
+                        onTapEditIcon(type: .company(userInfo))
+                    }
                 }
                 
-                if let profile = state.profile {
-                    innerRoundBoxView(
-                        fillColor: DesignCore.Colors.blue50,
-                        strokeColor: Color(hex: 0xDFE8EF)
-                    ) {
-                        VStack {
-                            horizonIconKeyValueView(
-                                icon: DesignCore.Images.locationFill.image,
-                                key: "활동 지역",
-                                value: nil,
-                                textColor: Color(hex: 0x606D8F),
-                                showEditIcon: true
-                            )
-                            let tagModels: [TagModel] = profile.locations
-                                .map {
-                                    .init(
-                                        id: $0.id,
-                                        name: $0.name
-                                    )
-                                }
-                            
-                            TagListView(
-                                tagModels: tagModels,
-                                selectedTagModels: []
-                            ) { _ in }
-                                .frame(
-                                    height: TagListCollectionView.calculateHeight(
-                                        tags: tagModels,
-                                        deviceWidth: Device.width - (76 + 36)
-                                    )
-                                )
+                innerRoundBoxView(
+                    fillColor: DesignCore.Colors.blue50,
+                    strokeColor: Color(hex: 0xDFE8EF)
+                ) {
+                    VStack {
+                        horizonIconKeyValueView(
+                            icon: DesignCore.Images.locationFill.image,
+                            key: "활동 지역",
+                            value: nil,
+                            textColor: Color(hex: 0x606D8F),
+                            showEditIcon: true
+                        ) {
+                            guard let userInfo = AppCoordinator.shared.userInfo else { return }
+                            onTapEditIcon(type: .region(userInfo))
                         }
+                        
+                        let tagModels: [TagModel] = profile.locations
+                            .map {
+                                .init(
+                                    id: $0.id,
+                                    name: $0.name
+                                )
+                            }
+                        
+                        TagListView(
+                            tagModels: tagModels,
+                            selectedTagModels: []
+                        ) { _ in }
+                            .frame(
+                                height: TagListCollectionView.calculateHeight(
+                                    tags: tagModels,
+                                    deviceWidth: Device.width - (76 + 36)
+                                )
+                            )
                     }
                 }
             }
@@ -168,12 +153,6 @@ public struct ProfilePannelView: View {
             .shadow(.default)
         }
         .padding(.vertical, 30)
-        .task {
-            await intent.task()
-        }
-        .onAppear {
-            intent.onAppear()
-        }
     }
     
     @ViewBuilder
@@ -228,13 +207,12 @@ public struct ProfilePannelView: View {
                 .fill(fillColor)
         }
     }
-}
-
-#Preview {
-    NavigationView {
-        ProfilePannelView(
-            name: "김삼일",
-            profile: .mock
-        )
+    
+    func onTapEditIcon(type: EditProfileViewType) {
+        Task {
+            await MainActor.run {
+                AppCoordinator.shared.push(.editProfile(type))
+            }
+        }
     }
 }

@@ -83,6 +83,8 @@ extension SearchCompanyIntent: SearchCompanyIntent.Intentable {
                 }
                 .store(in: &cancellables)
         }
+        
+        onChangedFocusState(true)
     }
     
     public func task() async {}
