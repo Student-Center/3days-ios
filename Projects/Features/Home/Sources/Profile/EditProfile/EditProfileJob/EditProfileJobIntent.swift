@@ -74,6 +74,7 @@ extension EditProfileJobIntent: EditProfileJobIntent.Intentable {
                 newUserInfo.profile.jobOccupationRawValue = state.singleSelectedJob!.rawValue
                 model?.setLoading(status: true)
                 try await requestEditProfile(newUserInfo: newUserInfo)
+                model?.setLoading(status: false)
                 await popToRoot()
             } catch {
                 ToastHelper.showErrorMessage(error.localizedDescription)

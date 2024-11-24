@@ -7,11 +7,27 @@
 //
 
 import Testing
+@testable import Home
+import NetworkKit
 
 struct EditProfileJobOccupationTests {
-
-    @Test func something() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    
+    let state: EditProfileJobModel
+    let intent: EditProfileJobIntent
+    
+    init() {
+        state = EditProfileJobModel()
+        intent = EditProfileJobIntent(
+            model: state,
+            input: .init(userInfo: .mock),
+            service: ProfileServiceMock()
+        )
     }
 
+    @Test func jobSelection() async throws {
+        intent.onTapJobOccupation(
+            selectedJob: .business
+        )
+        #expect(state.singleSelectedJob == .business)
+    }
 }
