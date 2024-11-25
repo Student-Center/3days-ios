@@ -28,6 +28,7 @@ class EditDateProfileAgeRangeIntent {
         self.input = input
         self.model = model
         self.profileService = service
+        model.setUserInfo(input.userInfo)
     }
 }
 
@@ -52,7 +53,14 @@ extension EditDateProfileAgeRangeIntent {
 //MARK: - Intentable
 extension EditDateProfileAgeRangeIntent: EditDateProfileAgeRangeIntent.Intentable {
     // default
-    func onAppear() {}
+    func onAppear() {
+        if let upperYear = input.userInfo.dreamPartner.upperBirthYear {
+            model?.setUpperValue(value: String(upperYear))
+        }
+        if let lowerYear = input.userInfo.dreamPartner.lowerBirthYear {
+            model?.setLowerValue(value: String(lowerYear))
+        }
+    }
     
     func task() async {}
     
@@ -66,12 +74,12 @@ extension EditDateProfileAgeRangeIntent: EditDateProfileAgeRangeIntent.Intentabl
     func onTapNextButton(state: EditDateProfileAgeRangeModel.Stateful) {
         Task {
             do {
-                guard let upperValue = state.upperValue,
-                      let lowerValue = state.lowerValue else { return }
                 model?.setLoading(status: true)
                 var newUserInfo = input.userInfo
-                newUserInfo.dreamPartner.upperBirthYear = Int(upperValue)
-                newUserInfo.dreamPartner.lowerBirthYear = Int(lowerValue)
+                newUserInfo.dreamPartner.upperBirthYear = state.upperValue
+                    .flatMap { Int($0) }
+                newUserInfo.dreamPartner.lowerBirthYear = state.lowerValue
+                    .flatMap { Int($0) }
                 try await requestUpdatePartnerInfo(newUserInfo: newUserInfo)
                 model?.setLoading(status: false)
                 await popView()

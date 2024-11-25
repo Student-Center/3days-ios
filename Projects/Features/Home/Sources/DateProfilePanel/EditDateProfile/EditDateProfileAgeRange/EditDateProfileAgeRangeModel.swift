@@ -9,6 +9,7 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 final class EditDateProfileAgeRangeModel: ObservableObject {
     
@@ -18,6 +19,7 @@ final class EditDateProfileAgeRangeModel: ObservableObject {
         var upperValue: String? { get }
         var lowerValue: String? { get }
         var isValidated: Bool { get }
+        var userInfo: UserInfo? { get }
         
         // default
         var isLoading: Bool { get }
@@ -29,10 +31,22 @@ final class EditDateProfileAgeRangeModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    var upperValue: String?
-    var lowerValue: String?
+    var userInfo: UserInfo?
+    @Published var upperValue: String?
+    @Published var lowerValue: String?
     
-    @Published var isValidated: Bool = false
+    var isValidated: Bool {
+        if let dreamPartnerInfo = userInfo?.dreamPartner,
+           let lowerBirthYear = dreamPartnerInfo.lowerBirthYear,
+           let upperBirthYear = dreamPartnerInfo.upperBirthYear {
+            
+            let isInitialState = String(lowerBirthYear) == self.lowerValue && String(upperBirthYear) == self.upperValue
+            if isInitialState {
+                return false
+            }
+        }
+        return true
+    }
     
     // default
     @Published var isLoading: Bool = false
@@ -49,7 +63,7 @@ protocol EditDateProfileAgeRangeModelActionable: AnyObject {
     // content
     func setUpperValue(value: String?)
     func setLowerValue(value: String?)
-    func setValidation(value: Bool)
+    func setUserInfo(_ userInfo: UserInfo)
 
     // default
     func setLoading(status: Bool)
@@ -68,8 +82,8 @@ extension EditDateProfileAgeRangeModel: EditDateProfileAgeRangeModelActionable {
     func setLowerValue(value: String?) {
         lowerValue = value
     }
-    func setValidation(value: Bool) {
-        isValidated = value
+    func setUserInfo(_ userInfo: UserInfo) {
+        self.userInfo = userInfo
     }
     
     // default
