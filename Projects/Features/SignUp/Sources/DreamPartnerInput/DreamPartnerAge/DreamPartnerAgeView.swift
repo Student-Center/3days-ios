@@ -16,7 +16,7 @@ enum AgeUpDownType {
     case up
     case down
     
-    var imoji: String {
+    var emoji: String {
         switch self {
         case .up: "👆"
         case .down: "👇"

@@ -12,7 +12,7 @@ public enum AgeUpDownType {
     case up
     case down
     
-    var imoji: String {
+    var emoji: String {
         switch self {
         case .up: "👆"
         case .down: "👇"
@@ -71,7 +71,7 @@ public struct AgeUpDownView: View {
     public var body: some View {
         HStack(spacing: 8) {
             HStack {
-                Text(type.imoji)
+                Text(type.emoji)
                 Text("내 나이보다")
                 Text(type.text)
                 Text("로")
