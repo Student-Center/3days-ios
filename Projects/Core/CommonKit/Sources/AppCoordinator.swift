@@ -34,6 +34,8 @@ public final class AppCoordinator: ObservableObject {
     private func setup() {
         AuthState.changeHandler = { [weak self] state in
             DispatchQueue.main.async {
+                guard self?.authState != state else { return }
+                print("⚠️ Auth 상태 \(state)로 변경")
                 self?.authState = state
                 if state == .loggedOut {
                     if self?.navigationStack != [.intro] {

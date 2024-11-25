@@ -33,4 +33,9 @@ public final class ProfileServiceMock: ProfileServiceProtocol {
         print("✅ [ProfileServiceMock] requestPutUserInfo 성공!")
         return
     }
+    
+    public func requestPutPartnerInfo(userInfo: UserInfo) async throws {
+        print("✅ [ProfileServiceMock] requestPutPartnerInfo 성공!")
+        return
+    }
 }
