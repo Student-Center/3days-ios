@@ -156,8 +156,8 @@ public struct DreamPartnerInfo: Equatable, Hashable {
         if lhs.allowSameCompany != rhs.allowSameCompany { return false }
         return true
     }
-    public let upperBirthYear: Int?
-    public let lowerBirthYear: Int?
+    public var upperBirthYear: Int?
+    public var lowerBirthYear: Int?
     public let jobOccupations: [String]
     public let distanceType: DreamPartnerDistanceType
     public var allowSameCompany: Bool?

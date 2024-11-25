@@ -22,6 +22,8 @@ public protocol ProfileServiceProtocol {
     ) async throws
     
     func requestPutUserInfo(userInfo: UserInfo) async throws
+    
+    func requestPutPartnerInfo(userInfo: UserInfo) async throws
 }
 
 public final class ProfileService {
@@ -74,5 +76,10 @@ extension ProfileService: ProfileServiceProtocol {
             )
         )
         _ = try result.ok
+    }
+    
+    public func requestPutPartnerInfo(userInfo: UserInfo) async throws {
+        // TODO: API 구현
+        return
     }
 }
