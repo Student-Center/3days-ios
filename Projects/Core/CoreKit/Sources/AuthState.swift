@@ -17,7 +17,6 @@ public enum AuthState {
 public extension AuthState {
     static var changeHandler: ((AuthState) -> Void)?
     static func change(_ state: AuthState) {
-        print("⚠️ Auth 상태 \(state)로 변경")
         if state == .loggedOut {
             TokenManager.accessToken = nil
             TokenManager.refreshToken = nil

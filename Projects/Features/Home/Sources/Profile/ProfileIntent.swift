@@ -39,6 +39,7 @@ extension ProfileIntent {
         func onTapDeleteWidget(_ widget: ProfileWidget)
         func onTapAddWidget()
         func deleteWidget(_ widget: ProfileWidget) async
+        func onTapModifyDatePartnerProfile(_ type: DateProfileTab)
         
         func onTapNextButton()
         func refreshUserInfo() async
@@ -86,6 +87,25 @@ extension ProfileIntent: ProfileIntent.Intentable {
                 ToastHelper.showErrorMessage()
             }
         }
+    }
+    
+    func onTapModifyDatePartnerProfile(_ type: DateProfileTab) {
+        Task {
+            guard let userInfo = AppCoordinator.shared.userInfo else { return }
+            switch type {
+            case .ageRange:
+                await pushEditDreamPartnerInfoView(.ageRange(userInfo))
+            case .occupation:
+                await pushEditDreamPartnerInfoView(.jobOccupation(userInfo))
+            case .distance:
+                await pushEditDreamPartnerInfoView(.distance(userInfo))
+            }
+        }
+    }
+    
+    @MainActor
+    func pushEditDreamPartnerInfoView(_ view: EditDreamPartnerViewType) {
+        AppCoordinator.shared.push(.editDreamPartner(view))
     }
     
     func onAppear() {

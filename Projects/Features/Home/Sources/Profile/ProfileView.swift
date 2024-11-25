@@ -55,7 +55,7 @@ public struct ProfileView: View {
                         DateProfilePanelView(
                             partnerInfo: userInfo.dreamPartner
                         ) { tab in
-                            print("\(tab) 수정!")
+                            intent.onTapModifyDatePartnerProfile(tab)
                         }
                         .padding(.vertical, 20)
                         

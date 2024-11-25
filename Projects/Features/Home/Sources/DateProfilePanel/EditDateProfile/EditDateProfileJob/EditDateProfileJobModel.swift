@@ -1,8 +1,8 @@
 //
-//  DreamPartnerDistanceModel.swift
-//  DesignPreview
+//  EditDateProfileJobModel.swift
+//  Home
 //
-//  Created by 김지수 on 10/25/24.
+//  Created by 김지수 on 11/25/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
@@ -10,16 +10,16 @@ import Foundation
 import CommonKit
 import CoreKit
 import Model
+import DesignCore
 
-final class DreamPartnerDistanceModel: ObservableObject {
+final class EditDateProfileJobModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
-        var signUpDomain: SignUpFormDomain? { get }
-        var selectedDistanceType: DreamPartnerDistanceType? { get }
+        var userInfo: UserInfo? { get }
+        var selectedJobs: [JobOccupation] { get }
         var isValidated: Bool { get }
-        var myRegionString: String { get }
         
         // default
         var isLoading: Bool { get }
@@ -31,21 +31,22 @@ final class DreamPartnerDistanceModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    @Published var selectedDistanceType: DreamPartnerDistanceType?
+    @Published var userInfo: UserInfo?
+    @Published var selectedJobs: [JobOccupation] = []
+    
     var isValidated: Bool {
-        selectedDistanceType != nil
-    }
-    var myRegionString: String {
-        if let regions = signUpDomain?.profile?.regions {
-            return regions
-                .map { $0.subRegion }
-                .joined(separator: ", ")
+        let isInitial = selectedJobs.map { $0.rawValue } == userInfo?.dreamPartner.jobOccupations
+        if isInitial {
+            return false
         }
-        return "-"
+        if selectedJobs.isEmpty {
+            return false
+        }
+        
+        return true
     }
     
     // default
-    var signUpDomain: SignUpFormDomain?
     @Published var isLoading: Bool = false
     
     // error
@@ -53,14 +54,13 @@ final class DreamPartnerDistanceModel: ObservableObject {
     @Published var showErrorAlert: ErrorModel?
 }
 
-extension DreamPartnerDistanceModel: DreamPartnerDistanceModel.Stateful {}
+extension EditDateProfileJobModel: EditDateProfileJobModel.Stateful {}
 
 //MARK: - Actionable
-protocol DreamPartnerDistanceModelActionable: AnyObject {
+protocol EditDateProfileJobModelActionable: AnyObject {
     // content
-    func setSignUpFormDomain(_ domain: SignUpFormDomain)
-    func setDistanceType(_ type: DreamPartnerDistanceType)
-    func setValidation(value: Bool)
+    func setSelectedJobs(_ jobs: [JobOccupation])
+    func setUserInfo(_ userInfo: UserInfo)
 
     // default
     func setLoading(status: Bool)
@@ -71,15 +71,14 @@ protocol DreamPartnerDistanceModelActionable: AnyObject {
     func resetError()
 }
 
-extension DreamPartnerDistanceModel: DreamPartnerDistanceModelActionable {
+extension EditDateProfileJobModel: EditDateProfileJobModelActionable {
     // content
-    func setSignUpFormDomain(_ domain: SignUpFormDomain) {
-        signUpDomain = domain
+    func setUserInfo(_ userInfo: UserInfo) {
+        self.userInfo = userInfo
     }
-    func setDistanceType(_ type: DreamPartnerDistanceType) {
-        selectedDistanceType = type
+    func setSelectedJobs(_ jobs: [JobOccupation]) {
+        self.selectedJobs = jobs
     }
-    func setValidation(value: Bool) {}
     
     // default
     func setLoading(status: Bool) {

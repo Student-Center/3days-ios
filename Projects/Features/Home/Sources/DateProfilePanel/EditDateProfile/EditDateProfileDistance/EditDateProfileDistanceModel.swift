@@ -1,8 +1,8 @@
 //
-//  DreamPartnerDistanceModel.swift
-//  DesignPreview
+//  EditDateProfileDistanceModel.swift
+//  Home
 //
-//  Created by 김지수 on 10/25/24.
+//  Created by 김지수 on 11/25/24.
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
@@ -11,12 +11,12 @@ import CommonKit
 import CoreKit
 import Model
 
-final class DreamPartnerDistanceModel: ObservableObject {
+final class EditDateProfileDistanceModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
-        var signUpDomain: SignUpFormDomain? { get }
+        var userInfo: UserInfo? { get }
         var selectedDistanceType: DreamPartnerDistanceType? { get }
         var isValidated: Bool { get }
         var myRegionString: String { get }
@@ -31,21 +31,28 @@ final class DreamPartnerDistanceModel: ObservableObject {
     
     //MARK: State Properties
     // content
+    @Published var userInfo: UserInfo?
     @Published var selectedDistanceType: DreamPartnerDistanceType?
     var isValidated: Bool {
-        selectedDistanceType != nil
+        if selectedDistanceType == nil {
+            return false
+        }
+        if userInfo?.dreamPartner.distanceType == selectedDistanceType {
+            return false
+        }
+        return true
     }
+    
     var myRegionString: String {
-        if let regions = signUpDomain?.profile?.regions {
-            return regions
-                .map { $0.subRegion }
+        if let location = userInfo?.profile.locations {
+            return location
+                .compactMap { $0.name }
                 .joined(separator: ", ")
         }
         return "-"
     }
     
     // default
-    var signUpDomain: SignUpFormDomain?
     @Published var isLoading: Bool = false
     
     // error
@@ -53,15 +60,13 @@ final class DreamPartnerDistanceModel: ObservableObject {
     @Published var showErrorAlert: ErrorModel?
 }
 
-extension DreamPartnerDistanceModel: DreamPartnerDistanceModel.Stateful {}
+extension EditDateProfileDistanceModel: EditDateProfileDistanceModel.Stateful {}
 
 //MARK: - Actionable
-protocol DreamPartnerDistanceModelActionable: AnyObject {
+protocol EditDateProfileDistanceModelActionable: AnyObject {
     // content
-    func setSignUpFormDomain(_ domain: SignUpFormDomain)
+    func setUserInfo(_ userInfo: UserInfo)
     func setDistanceType(_ type: DreamPartnerDistanceType)
-    func setValidation(value: Bool)
-
     // default
     func setLoading(status: Bool)
     
@@ -71,16 +76,14 @@ protocol DreamPartnerDistanceModelActionable: AnyObject {
     func resetError()
 }
 
-extension DreamPartnerDistanceModel: DreamPartnerDistanceModelActionable {
+extension EditDateProfileDistanceModel: EditDateProfileDistanceModelActionable {
     // content
-    func setSignUpFormDomain(_ domain: SignUpFormDomain) {
-        signUpDomain = domain
-    }
     func setDistanceType(_ type: DreamPartnerDistanceType) {
         selectedDistanceType = type
     }
-    func setValidation(value: Bool) {}
-    
+    func setUserInfo(_ userInfo: UserInfo) {
+        self.userInfo = userInfo
+    }
     // default
     func setLoading(status: Bool) {
         isLoading = status

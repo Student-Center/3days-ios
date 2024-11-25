@@ -22,6 +22,8 @@ public protocol ProfileServiceProtocol {
     ) async throws
     
     func requestPutUserInfo(userInfo: UserInfo) async throws
+    
+    func requestPutPartnerInfo(userInfo: UserInfo) async throws
 }
 
 public final class ProfileService {
@@ -74,5 +76,28 @@ extension ProfileService: ProfileServiceProtocol {
             )
         )
         _ = try result.ok
+    }
+    
+    public func requestPutPartnerInfo(userInfo: UserInfo) async throws {
+        let dreamPartner = userInfo.dreamPartner
+        let jobOccupations = dreamPartner.jobOccupations
+            .compactMap { Components.Schemas.JobOccupation(rawValue: $0) }
+        
+        let result = try await client.updateMyDesiredPartner(
+            .init(
+                body: .json(
+                    .init(
+                        birthYearRange: .init(
+                            start: dreamPartner.lowerBirthYear,
+                            end: dreamPartner.upperBirthYear
+                        ),
+                        jobOccupations: jobOccupations,
+                        preferDistance: dreamPartner.distanceType.toDto
+                    )
+                )
+            )
+        )
+        _ = try result.ok
+        return
     }
 }

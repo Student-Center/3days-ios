@@ -83,11 +83,11 @@ extension PathType {
         case .editDreamPartner(let subView):
             switch subView {
             case .ageRange(let userInfo):
-                EmptyView()
+                EditDateProfileAgeRangeView(userInfo: userInfo)
             case .jobOccupation(let userInfo):
-                EmptyView()
+                EditDateProfileJobView(userInfo)
             case .distance(let userInfo):
-                EmptyView()
+                EditDateProfileDistanceView(userInfo)
             }
         }
     }

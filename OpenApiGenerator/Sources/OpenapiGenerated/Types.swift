@@ -53,6 +53,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `PUT /users/my`.
     /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)`.
     func updateMyUserInfo(_ input: Operations.updateMyUserInfo.Input) async throws -> Operations.updateMyUserInfo.Output
+    /// 내 원하는 파트너 수정
+    ///
+    /// 현재 로그인한 사용자의 원하는 파트너 정보를 수정합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/my/desiredPartner`.
+    /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)`.
+    func updateMyDesiredPartner(_ input: Operations.updateMyDesiredPartner.Input) async throws -> Operations.updateMyDesiredPartner.Output
     /// 프로필 위젯 추가 및 수정
     ///
     /// 현재 사용자의 프로필 위젯을 추가 및 수정합니다.
@@ -190,6 +197,21 @@ extension APIProtocol {
         body: Operations.updateMyUserInfo.Input.Body
     ) async throws -> Operations.updateMyUserInfo.Output {
         try await updateMyUserInfo(Operations.updateMyUserInfo.Input(
+            headers: headers,
+            body: body
+        ))
+    }
+    /// 내 원하는 파트너 수정
+    ///
+    /// 현재 로그인한 사용자의 원하는 파트너 정보를 수정합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/my/desiredPartner`.
+    /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)`.
+    public func updateMyDesiredPartner(
+        headers: Operations.updateMyDesiredPartner.Input.Headers = .init(),
+        body: Operations.updateMyDesiredPartner.Input.Body
+    ) async throws -> Operations.updateMyDesiredPartner.Output {
+        try await updateMyDesiredPartner(Operations.updateMyDesiredPartner.Input(
             headers: headers,
             body: body
         ))
@@ -676,6 +698,52 @@ public enum Components {
                 case name
                 case phoneNumber
                 case profile
+                case desiredPartner
+            }
+        }
+        /// 사용자가 원하는 파트너의 조건
+        ///
+        /// - Remark: Generated from `#/components/schemas/UpdateUserDesiredPartnerRequest`.
+        public struct UpdateUserDesiredPartnerRequest: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/UpdateUserDesiredPartnerRequest/birthYearRange`.
+            public var birthYearRange: Components.Schemas.BirthYearRange
+            /// - Remark: Generated from `#/components/schemas/UpdateUserDesiredPartnerRequest/jobOccupations`.
+            public var jobOccupations: Components.Schemas.JobOccupations
+            /// - Remark: Generated from `#/components/schemas/UpdateUserDesiredPartnerRequest/preferDistance`.
+            public var preferDistance: Components.Schemas.PreferDistance
+            /// Creates a new `UpdateUserDesiredPartnerRequest`.
+            ///
+            /// - Parameters:
+            ///   - birthYearRange:
+            ///   - jobOccupations:
+            ///   - preferDistance:
+            public init(
+                birthYearRange: Components.Schemas.BirthYearRange,
+                jobOccupations: Components.Schemas.JobOccupations,
+                preferDistance: Components.Schemas.PreferDistance
+            ) {
+                self.birthYearRange = birthYearRange
+                self.jobOccupations = jobOccupations
+                self.preferDistance = preferDistance
+            }
+            public enum CodingKeys: String, CodingKey {
+                case birthYearRange
+                case jobOccupations
+                case preferDistance
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/UpdateUserDesiredPartnerResponse`.
+        public struct UpdateUserDesiredPartnerResponse: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/UpdateUserDesiredPartnerResponse/desiredPartner`.
+            public var desiredPartner: Components.Schemas.UserDesiredPartner
+            /// Creates a new `UpdateUserDesiredPartnerResponse`.
+            ///
+            /// - Parameters:
+            ///   - desiredPartner:
+            public init(desiredPartner: Components.Schemas.UserDesiredPartner) {
+                self.desiredPartner = desiredPartner
+            }
+            public enum CodingKeys: String, CodingKey {
                 case desiredPartner
             }
         }
@@ -2512,6 +2580,198 @@ public enum Operations {
             /// 서버 오류
             ///
             /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 내 원하는 파트너 수정
+    ///
+    /// 현재 로그인한 사용자의 원하는 파트너 정보를 수정합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/my/desiredPartner`.
+    /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)`.
+    public enum updateMyDesiredPartner {
+        public static let id: Swift.String = "updateMyDesiredPartner"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/my/desiredPartner/PUT/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.updateMyDesiredPartner.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.updateMyDesiredPartner.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.updateMyDesiredPartner.Input.Headers
+            /// - Remark: Generated from `#/paths/users/my/desiredPartner/PUT/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/my/desiredPartner/PUT/requestBody/content/application\/json`.
+                case json(Components.Schemas.UpdateUserDesiredPartnerRequest)
+            }
+            public var body: Operations.updateMyDesiredPartner.Input.Body
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            ///   - body:
+            public init(
+                headers: Operations.updateMyDesiredPartner.Input.Headers = .init(),
+                body: Operations.updateMyDesiredPartner.Input.Body
+            ) {
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/my/desiredPartner/PUT/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/my/desiredPartner/PUT/responses/200/content/application\/json`.
+                    case json(Components.Schemas.UpdateUserDesiredPartnerResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.UpdateUserDesiredPartnerResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.updateMyDesiredPartner.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.updateMyDesiredPartner.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 수정 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.updateMyDesiredPartner.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.updateMyDesiredPartner.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)/responses/500`.
             ///
             /// HTTP response code: `500 internalServerError`.
             case internalServerError(Components.Responses.InternalServerError)

@@ -46,7 +46,7 @@ public struct DreamPartnerDistanceView: View {
                         HStack {
                             Text("🏢 내 활동 지역")
                                 .pretendard(weight: ._400, size: 14)
-                            Text("용인, 강남")
+                            Text(state.myRegionString)
                                 .typography(.semibold_14)
                         }
                         .foregroundStyle(DesignCore.Colors.grey400)
@@ -61,7 +61,7 @@ public struct DreamPartnerDistanceView: View {
                         .padding(.bottom, 10)
                         
                         ForEach(DreamPartnerDistanceType.allCases, id: \.self) { type in
-                            buttonView(
+                            HorizontalButtonView(
                                 text: type.description,
                                 isSelected: state.selectedDistanceType == type
                             ) {
@@ -93,45 +93,6 @@ public struct DreamPartnerDistanceView: View {
             AppCoordinator.shared.pop()
         }
         .setLoading(state.isLoading)
-    }
-    
-    @ViewBuilder
-    func buttonView(
-        text: String,
-        isSelected: Bool,
-        handler: @escaping () -> Void
-    ) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(.white, lineWidth: 5)
-                .fill(
-                    isSelected ?
-                    LinearGradient(
-                        colors: [
-                            Color(hex: 0x93CAF8),
-                            Color(hex: 0x76B6EB),
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    : 
-                    LinearGradient(
-                        colors: [
-                            DesignCore.Colors.blue50
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-            Text(text)
-                .typography(.medium_14)
-                .foregroundStyle(isSelected ? .white : DesignCore.Colors.grey500)
-        }
-        .frame(height: 60)
-        .shadow(.default)
-        .onTapGesture {
-            handler()
-        }
     }
 }
 
