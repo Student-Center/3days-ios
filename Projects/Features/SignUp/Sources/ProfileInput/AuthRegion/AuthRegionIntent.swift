@@ -126,7 +126,7 @@ extension AuthRegionIntent: AuthRegionIntent.Intentable {
     func onTapNextButton(state: AuthRegionModel.Stateful) {
         Task {
             var payload = input.input
-            payload.profile?.locationIds = state.selectedSubRegions.map { $0.id }
+            payload.profile?.regions = state.selectedSubRegions
             await pushNextView(payload: payload)
         }
     }

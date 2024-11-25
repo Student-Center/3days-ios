@@ -87,7 +87,7 @@ extension PathType {
             case .jobOccupation(let userInfo):
                 EditDateProfileJobView(userInfo)
             case .distance(let userInfo):
-                EmptyView()
+                EditDateProfileDistanceView(userInfo)
             }
         }
     }
