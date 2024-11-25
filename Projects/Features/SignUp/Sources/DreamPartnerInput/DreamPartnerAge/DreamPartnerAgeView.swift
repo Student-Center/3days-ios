@@ -88,16 +88,26 @@ public struct DreamPartnerAgeView: View {
                     mainMessage: "상대의 나이대는\n어느 정도가 좋을까요?"
                 ) {
                     VStack {
-                        ageUpDownView(type: .up)
-                            .onTapGesture {
-                                showUpperPicker = true
-                                showLowerPicker = false
-                            }
-                        ageUpDownView(type: .down)
-                            .onTapGesture {
-                                showUpperPicker = false
-                                showLowerPicker = true
-                            }
+                        AgeUpDownView(
+                            type: .up,
+                            upperValue: upperValue,
+                            lowerValue: lowerValue,
+                            showPicker: showUpperPicker
+                        )
+                        .onTapGesture {
+                            showUpperPicker = true
+                            showLowerPicker = false
+                        }
+                        AgeUpDownView(
+                            type: .down,
+                            upperValue: upperValue,
+                            lowerValue: lowerValue,
+                            showPicker: showLowerPicker
+                        )
+                        .onTapGesture {
+                            showUpperPicker = false
+                            showLowerPicker = true
+                        }
                     }
                 }
                 
@@ -106,7 +116,7 @@ public struct DreamPartnerAgeView: View {
             if showUpperPicker || showLowerPicker {
                 VStack {
                     Spacer()
-                    BottomSheetPickerView(
+                    AgePickerView(
                         selectedValue: showUpperPicker ? $upperValue : $lowerValue
                     )
                     .padding(.bottom, 90)
@@ -141,72 +151,6 @@ public struct DreamPartnerAgeView: View {
             AppCoordinator.shared.pop()
         }
         .setLoading(state.isLoading)
-    }
-    
-    @ViewBuilder
-    func ageUpDownView(type: AgeUpDownType) -> some View {
-        HStack(spacing: 8) {
-            HStack {
-                Text(type.imoji)
-                Text("내 나이보다")
-                Text(type.text)
-                Text("로")
-            }
-            Spacer()
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .inset(by: 4)
-                    .stroke(
-                        borderColor(type: type),
-                        lineWidth: 10
-                    )
-                    .fill(type.backgroundColor)
-                    .shadow(.default)
-                switch type {
-                case .up:
-                    Text(upperValue ?? "-")
-                        .pretendard(weight: ._600, size: 36)
-                        .foregroundStyle(type.textColor)
-                case .down:
-                    Text(lowerValue ?? "-")
-                        .pretendard(weight: ._600, size: 36)
-                        .foregroundStyle(type.textColor)
-                }
-            }
-            .frame(width: 92, height: 62)
-            .padding(.horizontal, 2)
-            
-            Text("살")
-        }
-        .padding(.horizontal, 8)
-        .foregroundStyle(DesignCore.Colors.grey300)
-        .typography(.semibold_18)
-    }
-    
-    func borderColor(type: AgeUpDownType) -> Color {
-        switch type {
-        case .up: showUpperPicker ? type.borderColor : .white
-        case .down: showLowerPicker ? type.borderColor : .white
-        }
-    }
-}
-
-struct BottomSheetPickerView: View {
-    @Binding var selectedValue: String?
-    
-    var body: some View {
-        Picker("숫자 선택", selection: $selectedValue) {
-            Text("상관없어요")
-                .tag(String?.none)
-            ForEach(0...15, id: \.self) { number in
-                Text("\(number)")
-                    .tag(String?(String(number)))
-            }
-        }
-        .pickerStyle(.wheel)
-        .padding(.bottom)
-        .background(Color(.systemBackground))
-        .cornerRadius(16)
     }
 }
 
