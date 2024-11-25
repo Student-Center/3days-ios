@@ -86,6 +86,9 @@ extension EditDateProfileJobIntent: EditDateProfileJobIntent.Intentable {
                 newUserInfo.dreamPartner.jobOccupations = jobOccupations
                 try await requestUpdateProfile(newUserInfo: newUserInfo)
                 model?.setLoading(status: false)
+                await MainActor.run {
+                    AppCoordinator.shared.pop()
+                }
             } catch {
                 print(error)
                 model?.setLoading(status: false)
