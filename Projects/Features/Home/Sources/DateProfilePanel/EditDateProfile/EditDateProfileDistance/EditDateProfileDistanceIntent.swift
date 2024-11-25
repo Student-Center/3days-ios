@@ -25,6 +25,7 @@ class EditDateProfileDistanceIntent {
         self.input = input
         self.model = model
         model.setUserInfo(input.userInfo)
+        model.setDistanceType(input.userInfo.dreamPartner.distanceType)
     }
 }
 

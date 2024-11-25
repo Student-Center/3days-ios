@@ -16,8 +16,10 @@ final class DreamPartnerDistanceModel: ObservableObject {
     //MARK: Stateful
     protocol Stateful {
         // content
+        var signUpDomain: SignUpFormDomain? { get }
         var selectedDistanceType: DreamPartnerDistanceType? { get }
         var isValidated: Bool { get }
+        var myRegionString: String { get }
         
         // default
         var isLoading: Bool { get }
@@ -33,8 +35,17 @@ final class DreamPartnerDistanceModel: ObservableObject {
     var isValidated: Bool {
         selectedDistanceType != nil
     }
+    var myRegionString: String {
+        if let regions = signUpDomain?.profile?.regions {
+            return regions
+                .map { $0.subRegion }
+                .joined(separator: ", ")
+        }
+        return "-"
+    }
     
     // default
+    var signUpDomain: SignUpFormDomain?
     @Published var isLoading: Bool = false
     
     // error
@@ -47,6 +58,7 @@ extension DreamPartnerDistanceModel: DreamPartnerDistanceModel.Stateful {}
 //MARK: - Actionable
 protocol DreamPartnerDistanceModelActionable: AnyObject {
     // content
+    func setSignUpFormDomain(_ domain: SignUpFormDomain)
     func setDistanceType(_ type: DreamPartnerDistanceType)
     func setValidation(value: Bool)
 
@@ -61,6 +73,9 @@ protocol DreamPartnerDistanceModelActionable: AnyObject {
 
 extension DreamPartnerDistanceModel: DreamPartnerDistanceModelActionable {
     // content
+    func setSignUpFormDomain(_ domain: SignUpFormDomain) {
+        signUpDomain = domain
+    }
     func setDistanceType(_ type: DreamPartnerDistanceType) {
         selectedDistanceType = type
     }

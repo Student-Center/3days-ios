@@ -46,7 +46,7 @@ public struct DreamPartnerDistanceView: View {
                         HStack {
                             Text("🏢 내 활동 지역")
                                 .pretendard(weight: ._400, size: 14)
-                            Text("용인, 강남")
+                            Text(state.myRegionString)
                                 .typography(.semibold_14)
                         }
                         .foregroundStyle(DesignCore.Colors.grey400)

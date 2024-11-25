@@ -36,7 +36,7 @@ public struct SignUpFormDomain {
         registerToken: String,
         name: String? = nil,
         phone: String? = nil,
-        profile: SignUpProfileDomain? = .init(locationIds: []),
+        profile: SignUpProfileDomain? = .init(regions: []),
         dreamPartner: SignUpDreamPartnerDomain? = .init(jobOccupations: [])
     ) {
         self.registerToken = registerToken
@@ -56,7 +56,7 @@ public struct SignUpProfileDomain {
     public var birthYear: Int?
     public var companyId: String?
     public var jobOccupation: String?
-    public var locationIds: [String]
+    public var regions: [RegionDomain]
     
     var toDto: Components.Schemas.UserProfile? {
         guard let gender,
@@ -71,7 +71,7 @@ public struct SignUpProfileDomain {
             birthYear: birthYear,
             companyId: companyId ?? "",
             jobOccupation: jobOccupationRequest,
-            locationIds: locationIds
+            locationIds: regions.map { $0.id }
         )
     }
     
@@ -80,13 +80,13 @@ public struct SignUpProfileDomain {
         birthYear: Int? = nil,
         companyId: String? = nil,
         jobOccupation: String? = nil,
-        locationIds: [String]
+        regions: [RegionDomain]
     ) {
         self.gender = gender
         self.birthYear = birthYear
         self.companyId = companyId
         self.jobOccupation = jobOccupation
-        self.locationIds = locationIds
+        self.regions = regions
     }
 }
 
