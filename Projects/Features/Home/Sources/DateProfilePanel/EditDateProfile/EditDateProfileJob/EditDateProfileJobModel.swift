@@ -1,5 +1,5 @@
 //
-//  EditDateProfileAgeRangeModel.swift
+//  EditDateProfileJobModel.swift
 //  Home
 //
 //  Created by 김지수 on 11/25/24.
@@ -10,16 +10,16 @@ import Foundation
 import CommonKit
 import CoreKit
 import Model
+import DesignCore
 
-final class EditDateProfileAgeRangeModel: ObservableObject {
+final class EditDateProfileJobModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
-        var upperValue: String? { get }
-        var lowerValue: String? { get }
-        var isValidated: Bool { get }
         var userInfo: UserInfo? { get }
+        var selectedJobs: [JobOccupation] { get }
+        var isValidated: Bool { get }
         
         // default
         var isLoading: Bool { get }
@@ -31,20 +31,18 @@ final class EditDateProfileAgeRangeModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    var userInfo: UserInfo?
-    @Published var upperValue: String?
-    @Published var lowerValue: String?
+    @Published var userInfo: UserInfo?
+    @Published var selectedJobs: [JobOccupation] = []
     
     var isValidated: Bool {
-        if let dreamPartnerInfo = userInfo?.dreamPartner,
-           let lowerBirthYear = dreamPartnerInfo.lowerBirthYear,
-           let upperBirthYear = dreamPartnerInfo.upperBirthYear {
-            
-            let isInitialState = String(lowerBirthYear) == self.lowerValue && String(upperBirthYear) == self.upperValue
-            if isInitialState {
-                return false
-            }
+        let isInitial = selectedJobs.map { $0.rawValue } == userInfo?.dreamPartner.jobOccupations
+        if isInitial {
+            return false
         }
+        if selectedJobs.isEmpty {
+            return false
+        }
+        
         return true
     }
     
@@ -56,13 +54,12 @@ final class EditDateProfileAgeRangeModel: ObservableObject {
     @Published var showErrorAlert: ErrorModel?
 }
 
-extension EditDateProfileAgeRangeModel: EditDateProfileAgeRangeModel.Stateful {}
+extension EditDateProfileJobModel: EditDateProfileJobModel.Stateful {}
 
 //MARK: - Actionable
-protocol EditDateProfileAgeRangeModelActionable: AnyObject {
+protocol EditDateProfileJobModelActionable: AnyObject {
     // content
-    func setUpperValue(value: String?)
-    func setLowerValue(value: String?)
+    func setSelectedJobs(_ jobs: [JobOccupation])
     func setUserInfo(_ userInfo: UserInfo)
 
     // default
@@ -74,16 +71,13 @@ protocol EditDateProfileAgeRangeModelActionable: AnyObject {
     func resetError()
 }
 
-extension EditDateProfileAgeRangeModel: EditDateProfileAgeRangeModelActionable {
+extension EditDateProfileJobModel: EditDateProfileJobModelActionable {
     // content
-    func setUpperValue(value: String?) {
-        upperValue = value
-    }
-    func setLowerValue(value: String?) {
-        lowerValue = value
-    }
     func setUserInfo(_ userInfo: UserInfo) {
         self.userInfo = userInfo
+    }
+    func setSelectedJobs(_ jobs: [JobOccupation]) {
+        self.selectedJobs = jobs
     }
     
     // default
