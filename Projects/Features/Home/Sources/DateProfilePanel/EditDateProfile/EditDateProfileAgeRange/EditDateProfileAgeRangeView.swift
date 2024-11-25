@@ -82,7 +82,10 @@ public struct EditDateProfileAgeRangeView: View {
             
             VStack {
                 Spacer()
-                CTABottomButton(title: "다음") {
+                CTABottomButton(
+                    title: "다음",
+                    isActive: state.isValidated
+                ) {
                     intent.onTapNextButton(state: state)
                 }
             }
@@ -92,6 +95,12 @@ public struct EditDateProfileAgeRangeView: View {
         }
         .onChange(of: lowerValue) {
             intent.onChangeLowerValue(value: lowerValue)
+        }
+        .onChange(of: state.upperValue) {
+            upperValue = state.upperValue
+        }
+        .onChange(of: state.lowerValue) {
+            lowerValue = state.lowerValue
         }
         .task {
             await intent.task()

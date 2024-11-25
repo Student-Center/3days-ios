@@ -158,7 +158,7 @@ public struct DreamPartnerInfo: Equatable, Hashable {
     }
     public var upperBirthYear: Int?
     public var lowerBirthYear: Int?
-    public let jobOccupations: [String]
+    public var jobOccupations: [String]
     public var distanceType: DreamPartnerDistanceType
     public var allowSameCompany: Bool?
     
