@@ -79,7 +79,25 @@ extension ProfileService: ProfileServiceProtocol {
     }
     
     public func requestPutPartnerInfo(userInfo: UserInfo) async throws {
-        // TODO: API 구현
+        let dreamPartner = userInfo.dreamPartner
+        let jobOccupations = dreamPartner.jobOccupations
+            .compactMap { Components.Schemas.JobOccupation(rawValue: $0) }
+        
+        let result = try await client.updateMyDesiredPartner(
+            .init(
+                body: .json(
+                    .init(
+                        birthYearRange: .init(
+                            start: dreamPartner.lowerBirthYear,
+                            end: dreamPartner.upperBirthYear
+                        ),
+                        jobOccupations: jobOccupations,
+                        preferDistance: dreamPartner.distanceType.toDto
+                    )
+                )
+            )
+        )
+        _ = try result.ok
         return
     }
 }
