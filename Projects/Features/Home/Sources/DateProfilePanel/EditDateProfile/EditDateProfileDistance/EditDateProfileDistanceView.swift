@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import Model
 
 public struct EditDateProfileDistanceView: View {
     
@@ -18,11 +19,11 @@ public struct EditDateProfileDistanceView: View {
     private var intent: EditDateProfileDistanceIntent.Intentable { container.intent }
     private var state: EditDateProfileDistanceModel.Stateful { container.model }
     
-    public init() {
+    public init(_ userInfo: UserInfo) {
         let model = EditDateProfileDistanceModel()
         let intent = EditDateProfileDistanceIntent(
             model: model,
-            input: .init()
+            input: .init(userInfo: userInfo)
         )
         let container = MVIContainer(
             intent: intent as EditDateProfileDistanceIntent.Intentable,
@@ -34,7 +35,45 @@ public struct EditDateProfileDistanceView: View {
     
     public var body: some View {
         VStack {
-            Text("Hello MVI")
+            VStack(spacing: 12) {
+                HStack {
+                    Text("🏢 내 활동 지역")
+                        .pretendard(weight: ._400, size: 14)
+                    Text(state.myRegionString)
+                        .typography(.semibold_14)
+                }
+                .foregroundStyle(DesignCore.Colors.grey400)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background {
+                    Capsule()
+                        .inset(by: 1)
+                        .stroke(Color(hex: 0xEDE9C1), lineWidth: 2)
+                        .fill(DesignCore.Colors.yellow50)
+                }
+                .padding(.bottom, 10)
+                
+                ForEach(DreamPartnerDistanceType.allCases, id: \.self) { type in
+                    HorizontalButtonView(
+                        text: type.description,
+                        isSelected: state.selectedDistanceType == type
+                    ) {
+                        withAnimation {
+                            intent.onTapDistanceType(type)
+                        }
+                    }
+                }
+                .animation(.default, value: state.selectedDistanceType)
+            }
+            .padding(.vertical, 20)
+            .padding(.horizontal, 28)
+            Spacer()
+            CTABottomButton(
+                title: "다음",
+                isActive: state.isValidated
+            ) {
+                intent.onTapNextButton(state: state)
+            }
         }
         .task {
             await intent.task()
@@ -42,7 +81,8 @@ public struct EditDateProfileDistanceView: View {
         .onAppear {
             intent.onAppear()
         }
-        .ignoresSafeArea(.all)
+        .navigationTitle("선호 거리 수정")
+        .ignoresSafeArea(.keyboard)
         .textureBackground()
         .setPopNavigation {
             AppCoordinator.shared.pop()
@@ -53,6 +93,6 @@ public struct EditDateProfileDistanceView: View {
 
 #Preview {
     NavigationView {
-        EditDateProfileDistanceView()
+        EditDateProfileDistanceView(.mock)
     }
 }

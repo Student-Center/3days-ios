@@ -144,7 +144,7 @@ public enum DreamPartnerDistanceType: CaseIterable {
         }
     }
     
-    var toDto: Components.Schemas.PreferDistance {
+    public var toDto: Components.Schemas.PreferDistance {
         switch self {
         case .myArea: .ONLY_MY_AREA
         case .surroundRegion: .INCLUDE_SURROUNDING_REGIONS

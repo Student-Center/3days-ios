@@ -9,13 +9,17 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 final class EditDateProfileDistanceModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
+        var userInfo: UserInfo? { get }
+        var selectedDistanceType: DreamPartnerDistanceType? { get }
         var isValidated: Bool { get }
+        var myRegionString: String { get }
         
         // default
         var isLoading: Bool { get }
@@ -27,7 +31,26 @@ final class EditDateProfileDistanceModel: ObservableObject {
     
     //MARK: State Properties
     // content
-    @Published var isValidated: Bool = false
+    @Published var userInfo: UserInfo?
+    @Published var selectedDistanceType: DreamPartnerDistanceType?
+    var isValidated: Bool {
+        if selectedDistanceType == nil {
+            return false
+        }
+        if userInfo?.dreamPartner.distanceType == selectedDistanceType {
+            return false
+        }
+        return true
+    }
+    
+    var myRegionString: String {
+        if let location = userInfo?.profile.locations {
+            return location
+                .compactMap { $0.name }
+                .joined(separator: ", ")
+        }
+        return "-"
+    }
     
     // default
     @Published var isLoading: Bool = false
@@ -42,8 +65,8 @@ extension EditDateProfileDistanceModel: EditDateProfileDistanceModel.Stateful {}
 //MARK: - Actionable
 protocol EditDateProfileDistanceModelActionable: AnyObject {
     // content
-    func setValidation(value: Bool)
-
+    func setUserInfo(_ userInfo: UserInfo)
+    func setDistanceType(_ type: DreamPartnerDistanceType)
     // default
     func setLoading(status: Bool)
     
@@ -55,10 +78,12 @@ protocol EditDateProfileDistanceModelActionable: AnyObject {
 
 extension EditDateProfileDistanceModel: EditDateProfileDistanceModelActionable {
     // content
-    func setValidation(value: Bool) {
-        isValidated = value
+    func setDistanceType(_ type: DreamPartnerDistanceType) {
+        selectedDistanceType = type
     }
-    
+    func setUserInfo(_ userInfo: UserInfo) {
+        self.userInfo = userInfo
+    }
     // default
     func setLoading(status: Bool) {
         isLoading = status
