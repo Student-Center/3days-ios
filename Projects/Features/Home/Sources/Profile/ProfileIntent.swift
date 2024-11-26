@@ -50,7 +50,9 @@ extension ProfileIntent {
         func task() async
     }
     
-    struct DataModel {}
+    struct DataModel {
+        let userInfo: UserInfo?
+    }
 }
 
 //MARK: - Intentable
@@ -107,6 +109,10 @@ extension ProfileIntent: ProfileIntent.Intentable {
     }
     
     func onAppear() {
+        if let userInfo = input.userInfo {
+            model?.setUserInfo(userInfo)
+            return
+        }
         Task {
             await refreshUserInfo()
         }

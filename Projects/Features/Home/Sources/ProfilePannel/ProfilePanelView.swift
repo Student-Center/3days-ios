@@ -31,10 +31,17 @@ struct ProfilePannelView: View {
             VStack(spacing: 6) {
                 HStack {
                     Spacer()
-                    ZStack {
+                    ZStack(alignment: .topTrailing) {
                         DesignCore.Images.profileDefault.image
                             .cornerRadius(20, corners: .allCorners)
                         DesignCore.Images.profileBorder.image
+                        DesignCore.Images.cameraCircleFill.image
+                            .resizable()
+                            .frame(width: 36, height: 36)
+                            .offset(x: 6, y: -6)
+                            .onTapGesture {
+                                
+                            }
                     }
                     .frame(width: 102, height: 102)
                     Spacer()
@@ -215,4 +222,8 @@ struct ProfilePannelView: View {
             }
         }
     }
+}
+
+#Preview {
+    ProfileView(userInfo: .mock)
 }
