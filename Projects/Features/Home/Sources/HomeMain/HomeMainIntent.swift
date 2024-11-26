@@ -55,15 +55,6 @@ extension HomeMainIntent: HomeMainIntent.Intentable {
         model?.setSelectedTab(tab: tab)
     }
     func onAppear() {
-        Task {
-            if let userInfo = input.userInfo {
-                model?.setUserInfo(userInfo: userInfo)
-            } else {
-                let userInfo = try await authService.requestMyUserInfo()
-                AppCoordinator.shared.userInfo = userInfo
-                model?.setUserInfo(userInfo: userInfo)
-            }
-        }
     }
     
     func task() async {}

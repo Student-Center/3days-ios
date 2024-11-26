@@ -11,19 +11,23 @@ import CommonKit
 import CoreKit
 import Model
 import DesignCore
+import NetworkKit
 
 //MARK: - Intent
 class EditDateProfileDistanceIntent {
     private weak var model: EditDateProfileDistanceModelActionable?
     private let input: DataModel
+    private let profileService: ProfileServiceProtocol
 
     // MARK: Life cycle
     init(
         model: EditDateProfileDistanceModelActionable,
-        input: DataModel
+        input: DataModel,
+        service: ProfileServiceProtocol = ProfileService.shared
     ) {
         self.input = input
         self.model = model
+        self.profileService = service
         model.setUserInfo(input.userInfo)
         model.setDistanceType(input.userInfo.dreamPartner.distanceType)
     }
@@ -70,7 +74,7 @@ extension EditDateProfileDistanceIntent: EditDateProfileDistanceIntent.Intentabl
         }
     }
     func requestUpdatePartnerInfo(newUserInfo: UserInfo) async throws {
-        
+        try await profileService.requestPutPartnerInfo(userInfo: newUserInfo)
     }
     
     // default

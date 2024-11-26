@@ -28,13 +28,11 @@ public struct ProfileView: View {
         GridItem(.flexible(), spacing: 16)
     ]
     
-    public init(userInfo: UserInfo) {
+    public init() {
         let model = ProfileModel()
         let intent = ProfileIntent(
             model: model,
-            input: .init(
-                userInfo: userInfo
-            )
+            input: .init()
         )
         let container = MVIContainer(
             intent: intent as ProfileIntent.Intentable,

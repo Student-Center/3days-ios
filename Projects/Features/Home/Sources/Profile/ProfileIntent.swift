@@ -50,9 +50,7 @@ extension ProfileIntent {
         func task() async
     }
     
-    struct DataModel {
-        let userInfo: UserInfo
-    }
+    struct DataModel {}
 }
 
 //MARK: - Intentable
