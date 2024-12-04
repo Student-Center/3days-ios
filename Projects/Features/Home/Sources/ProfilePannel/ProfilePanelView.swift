@@ -11,6 +11,7 @@ import Model
 import DesignCore
 import CommonKit
 import Nuke
+import NetworkKit
 
 struct ProfilePannelView: View {
     
@@ -82,8 +83,20 @@ struct ProfilePannelView: View {
                                     backHandler: {
                                         isShowPhotoPreview = false
                                     },
-                                    buttonHandler: {
-                                        isShowPhotoPreview = false
+                                    buttonHandler: { imageData in
+                                        do {
+                                            if let imageData {
+                                                try await ProfileService.shared.requestUploadImage(image: imageData)
+                                            }
+                                            await MainActor.run {
+                                                isShowPhotoPreview = false
+                                            }
+                                        } catch {
+                                            print(error)
+                                            ToastHelper.showErrorMessage(
+                                                "프로필 사진 업로드에 실패하였습니다."
+                                            )
+                                        }
                                     }
                                 )
                             }

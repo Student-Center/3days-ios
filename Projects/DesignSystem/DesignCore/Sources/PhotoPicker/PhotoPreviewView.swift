@@ -10,15 +10,15 @@ import SwiftUI
 import CoreKit
 
 public struct PhotoPreviewView: View {
-    
     let image: UIImage?
     @Binding var isPresented: Bool
+    @State var isLoading: Bool = false
     
     let showButton: Bool
     let navigationTitle: String?
     let buttonTitle: String
     var backHandler: (() -> Void)?
-    var buttonHandler: (() -> Void)?
+    var buttonHandler: ((Data?) async -> Void)?
     
     public init(
         image: UIImage?,
@@ -27,7 +27,7 @@ public struct PhotoPreviewView: View {
         navigationTitle: String?,
         buttonTitle: String,
         backHandler: (() -> Void)? = nil,
-        buttonHandler: (() -> Void)? = nil
+        buttonHandler: ((Data?) async -> Void)? = nil  // 클로저 타입 변경
     ) {
         self.image = image
         self._isPresented = isPresented
@@ -36,6 +36,35 @@ public struct PhotoPreviewView: View {
         self.buttonTitle = buttonTitle
         self.backHandler = backHandler
         self.buttonHandler = buttonHandler
+    }
+    
+    private func compressImage(_ image: UIImage) -> Data? {
+        guard let originalData = image.pngData() else { return nil }
+        if originalData.count <= 5 * 1024 * 1024 { return originalData }
+        
+        // PNG 이미지 크기 조절
+        let scale = CGFloat(0.7)  // 10% 씩 크기 감소
+        var newSize = image.size
+        var whileCount = 0
+        while true {
+            print(whileCount)
+            whileCount += 1
+            newSize = CGSize(width: newSize.width * scale, height: newSize.height * scale)
+            let renderer = UIGraphicsImageRenderer(size: newSize)
+            let resizedImage = renderer.image { context in
+                image.draw(in: CGRect(origin: .zero, size: newSize))
+            }
+            
+            if let data = resizedImage.pngData(),
+               data.count <= 4 * 1024 * 1024 {
+                return data
+            }
+            
+            if newSize.width < 200 || newSize.height < 200 {
+                break
+            }
+        }
+        return nil
     }
     
     public var body: some View {
@@ -56,7 +85,12 @@ public struct PhotoPreviewView: View {
                     title: buttonTitle,
                     backgroundStyle: LinearGradient.gradientA
                 ) {
-                    buttonHandler?()
+                    Task {
+                        if let image = image,
+                           let compressedImage = compressImage(image) {
+                            await buttonHandler?(compressedImage)
+                        }
+                    }
                 }
             }
         }
@@ -67,6 +101,7 @@ public struct PhotoPreviewView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .navigationBarBackButtonHidden()
+        .setLoading(isLoading)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -76,7 +111,6 @@ public struct PhotoPreviewView: View {
                         .fontWeight(.medium)
                         .foregroundStyle(.white)
                 }
-                
             }
         }
     }

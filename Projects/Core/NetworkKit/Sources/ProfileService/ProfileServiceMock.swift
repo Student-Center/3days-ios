@@ -38,4 +38,9 @@ public final class ProfileServiceMock: ProfileServiceProtocol {
         print("✅ [ProfileServiceMock] requestPutPartnerInfo 성공!")
         return
     }
+    
+    public func requestUploadImage(image: Data) async throws {
+        print("✅ [ProfileServiceMock] requestUploadImage 성공!")
+        return
+    }
 }
