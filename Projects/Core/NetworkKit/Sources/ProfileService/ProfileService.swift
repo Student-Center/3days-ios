@@ -125,10 +125,7 @@ extension ProfileService: ProfileServiceProtocol {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = "PUT"
         urlRequest.setValue("image/png", forHTTPHeaderField: "Content-Type")
-        urlRequest.setValue(
-            "Bearer \(TokenManager.accessToken ?? "")",
-            forHTTPHeaderField: "Authorization"
-        )
+        urlRequest.setValue("public-read", forHTTPHeaderField: "x-amz-acl")
 
         debugPrint("✅ [Upload Image Url] : \(url)")
         debugPrint("✅ [Upload Image] : \(image)")
