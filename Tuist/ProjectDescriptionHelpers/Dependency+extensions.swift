@@ -8,7 +8,7 @@
 import ProjectDescription
 
 public enum ExternalDependency: String {
-    case nuke = "Nuke"
+    case nuke = "NukeUI"
     case openapiGenerated = "OpenapiGenerated"
     case navigationTransitions = "NavigationTransitions"
     case toast = "Toast"

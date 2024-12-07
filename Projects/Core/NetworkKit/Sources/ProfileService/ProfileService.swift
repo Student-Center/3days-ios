@@ -25,6 +25,8 @@ public protocol ProfileServiceProtocol {
     
     func requestPutPartnerInfo(userInfo: UserInfo) async throws
     
+    func requestResetProfileImage(imageId: String) async throws
+    
     func requestUploadImage(image: Data) async throws
 }
 
@@ -103,6 +105,11 @@ extension ProfileService: ProfileServiceProtocol {
         return
     }
     
+    public func requestResetProfileImage(imageId: String) async throws {
+        let result = try await client.deleteProfileImage(path: .init(imageId: imageId))
+        _ = try result.noContent
+    }
+    
     public func requestUploadImage(image: Data) async throws {
         // url 받기
         let uploadUrlInfo = try await requestPresignedUrl()
@@ -143,7 +150,7 @@ extension ProfileService: ProfileServiceProtocol {
     }
     
     private func requestCompleteCallback(imageId: String) async throws {
-        let result = try await client.completeProfileImageUpload(body: .json(.init(imageId: imageId)))
+        let result = try await client.completeProfileImageUpload(body: .json(.init(imageId: imageId, _extension: .PNG)))
         _ = try result.ok
     }
 }

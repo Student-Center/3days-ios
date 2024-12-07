@@ -63,7 +63,11 @@ public struct ProfileView: View {
                         ProfilePannelView(
                             name: userInfo.name,
                             profile: userInfo.profile
-                        )
+                        ) {
+                            Task {
+                                await intent.refreshUserInfo()
+                            }
+                        }
                         
                         LeftAlignText("Introductions")
                             .typography(.en_medium_16)

@@ -10,13 +10,14 @@ import SwiftUI
 import Model
 import DesignCore
 import CommonKit
-import Nuke
+import NukeUI
 import NetworkKit
 
 struct ProfilePannelView: View {
     
     let name: String
     let profile: UserInfoProfile
+    var refreshHandler: () -> Void
     
     @State var isShowPhotoSheet: Bool = false
     @State var isShowPhotoPicker: Bool = false
@@ -38,68 +39,96 @@ struct ProfilePannelView: View {
             VStack(spacing: 6) {
                 HStack {
                     Spacer()
-                    ZStack(alignment: .topTrailing) {
-                        DesignCore.Images.profileDefault.image
-                            .cornerRadius(20, corners: .allCorners)
-                        if profile.profileImageUrl == nil {
-                            DesignCore.Images.profileBorder.image
-                        }
-                        DesignCore.Images.cameraCircleFill.image
-                            .resizable()
-                            .frame(width: 36, height: 36)
-                            .offset(x: 6, y: -6)
-                            .onTapGesture {
-                                isShowPhotoSheet = true
-                            }
-                            .confirmationDialog(
-                                "프로필 사진 설정",
-                                isPresented: $isShowPhotoSheet,
-                                actions: {
-                                    Button("앨범에서 사진 선택") {
-                                        isShowPhotoPicker = true
-                                    }
-                                    Button("기본 이미지 적용") {
-                                        // default image
-                                    }
-                                    Button("취소", role: .cancel) {}
-                                },
-                                message: {
-                                    Text("프로필 사진 설정")
+                    ZStack(alignment: .center) {
+                        if let profileImageUrl = profile.profileImageUrl {
+                            LazyImage(url: profileImageUrl) { state in
+                                if let image = state.image {
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 96, height: 96, alignment: .center)
+                                        .clipped()
+                                        .cornerRadius(20, corners: .allCorners)
+                                        .cornerRadius(48, corners: .bottomRight)
+                                } else {
+                                    ProgressView()
                                 }
-                            )
-                            .photoPicker(
-                                isPresented: $isShowPhotoPicker
-                            ) { images in
-                                selectedImage = images.first
-                                isShowPhotoPreview = true
                             }
-                            .navigationDestination(isPresented: $isShowPhotoPreview) {
-                                PhotoPreviewView(
-                                    image: selectedImage,
-                                    isPresented: .constant(true),
-                                    showButton: true,
-                                    navigationTitle: "내 프로필 설정",
-                                    buttonTitle: "프로필 사진으로 등록하기",
-                                    backHandler: {
-                                        isShowPhotoPreview = false
-                                    },
-                                    buttonHandler: { imageData in
-                                        do {
-                                            if let imageData {
-                                                try await ProfileService.shared.requestUploadImage(image: imageData)
-                                            }
-                                            await MainActor.run {
-                                                isShowPhotoPreview = false
-                                            }
-                                        } catch {
-                                            print(error)
-                                            ToastHelper.showErrorMessage(
-                                                "프로필 사진 업로드에 실패하였습니다."
-                                            )
+                        } else {
+                            DesignCore.Images.profileDefault.image
+                                .frame(width: 102, height: 102)
+                                .cornerRadius(20, corners: .allCorners)
+                        }
+                        DesignCore.Images.profileBorder.image
+                            .resizable()
+                            .frame(width: 102, height: 102)
+                        
+                        ZStack(alignment: .topTrailing) {
+                            Color.clear
+                            DesignCore.Images.cameraCircleFill.image
+                                .resizable()
+                                .frame(width: 36, height: 36)
+                                .offset(x: 6, y: -6)
+                                .onTapGesture {
+                                    isShowPhotoSheet = true
+                                }
+                                .confirmationDialog(
+                                    "프로필 사진 설정",
+                                    isPresented: $isShowPhotoSheet,
+                                    actions: {
+                                        Button("앨범에서 사진 선택") {
+                                            isShowPhotoPicker = true
                                         }
+                                        Button("기본 이미지 적용") {
+                                            Task {
+                                                if let profileImageId = profile.profileImageId {
+                                                    try await ProfileService.shared.requestResetProfileImage(
+                                                        imageId: profileImageId
+                                                    )
+                                                    _ = try await AppCoordinator.shared.refreshMyUserInfo()
+                                                    refreshHandler()
+                                                }
+                                            }
+                                        }
+                                        Button("취소", role: .cancel) {}
+                                    },
+                                    message: {
+                                        Text("프로필 사진 설정")
                                     }
                                 )
-                            }
+                                .photoPicker(
+                                    isPresented: $isShowPhotoPicker
+                                ) { images in
+                                    selectedImage = images.first
+                                    isShowPhotoPreview = true
+                                }
+                                .navigationDestination(isPresented: $isShowPhotoPreview) {
+                                    PhotoPreviewView(
+                                        image: selectedImage,
+                                        isPresented: .constant(true),
+                                        showButton: true,
+                                        navigationTitle: "내 프로필 설정",
+                                        buttonTitle: "프로필 사진으로 등록하기",
+                                        backHandler: {
+                                            isShowPhotoPreview = false
+                                        },
+                                        buttonHandler: { imageData in
+                                            do {
+                                                if let imageData {
+                                                    try await ProfileService.shared.requestUploadImage(image: imageData)
+                                                }
+                                                await MainActor.run {
+                                                    isShowPhotoPreview = false
+                                                }
+                                            } catch {
+                                                ToastHelper.showErrorMessage(
+                                                    "프로필 사진 업로드에 실패하였습니다."
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                        }
                     }
                     .frame(width: 102, height: 102)
                     Spacer()
