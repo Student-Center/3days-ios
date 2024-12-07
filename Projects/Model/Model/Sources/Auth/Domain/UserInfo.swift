@@ -50,8 +50,9 @@ public struct UserInfo: Equatable, Identifiable, Hashable {
         self.profile = .init(from: dto.profile)
         self.dreamPartner = .init(from: dto.desiredPartner)
         self.profileWidgets = dto.profileWidgets.map { .init(from: $0) }
-        if let profileUrl = dto.profileImages?.first?.url {
-            self.profile.profileImageUrl = URL(string: profileUrl)
+        if let profileImage = dto.profileImages?.first {
+            self.profile.profileImageUrl = URL(string: profileImage.url)
+            self.profile.profileImageId = profileImage.id
         }
     }
     
@@ -91,6 +92,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
     public var jobOccupationRawValue: String
     public var locations: [LocationModel]
     public var profileImageUrl: URL?
+    public var profileImageId: String?
     
     public var companyName: String {
         set {
@@ -113,7 +115,8 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
         jobOccupation: String,
         jobOccupationRawValue: String,
         locations: [LocationModel],
-        profileImageUrl: URL? = nil
+        profileImageUrl: URL? = nil,
+        profileImageId: String? = nil
     ) {
         self.gender = gender
         self.birthYear = birthYear
@@ -123,6 +126,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
         self.jobOccupationRawValue = jobOccupationRawValue
         self.locations = locations
         self.profileImageUrl = profileImageUrl
+        self.profileImageId = profileImageId
     }
     
     public init(from dto: Components.Schemas.UserProfileDisplayInfo) {

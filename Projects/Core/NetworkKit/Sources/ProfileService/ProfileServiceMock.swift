@@ -39,6 +39,11 @@ public final class ProfileServiceMock: ProfileServiceProtocol {
         return
     }
     
+    public func requestResetProfileImage(imageId: String) async throws {
+        print("✅ [ProfileServiceMock] requestResetProfileImage 성공!")
+        return
+    }
+    
     public func requestUploadImage(image: Data) async throws {
         print("✅ [ProfileServiceMock] requestUploadImage 성공!")
         return

@@ -25,6 +25,8 @@ public protocol ProfileServiceProtocol {
     
     func requestPutPartnerInfo(userInfo: UserInfo) async throws
     
+    func requestResetProfileImage(imageId: String) async throws
+    
     func requestUploadImage(image: Data) async throws
 }
 
@@ -101,6 +103,11 @@ extension ProfileService: ProfileServiceProtocol {
         )
         _ = try result.ok
         return
+    }
+    
+    public func requestResetProfileImage(imageId: String) async throws {
+        let result = try await client.deleteProfileImage(path: .init(imageId: imageId))
+        _ = try result.noContent
     }
     
     public func requestUploadImage(image: Data) async throws {
