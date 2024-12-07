@@ -17,6 +17,7 @@ struct ProfilePannelView: View {
     
     let name: String
     let profile: UserInfoProfile
+    var refreshHandler: () -> Void
     
     @State var isShowPhotoSheet: Bool = false
     @State var isShowPhotoPicker: Bool = false
@@ -79,7 +80,15 @@ struct ProfilePannelView: View {
                                             isShowPhotoPicker = true
                                         }
                                         Button("기본 이미지 적용") {
-                                            // default image
+                                            Task {
+                                                if let profileImageId = profile.profileImageId {
+                                                    try await ProfileService.shared.requestResetProfileImage(
+                                                        imageId: profileImageId
+                                                    )
+                                                    _ = try await AppCoordinator.shared.refreshMyUserInfo()
+                                                    refreshHandler()
+                                                }
+                                            }
                                         }
                                         Button("취소", role: .cancel) {}
                                     },
@@ -112,7 +121,6 @@ struct ProfilePannelView: View {
                                                     isShowPhotoPreview = false
                                                 }
                                             } catch {
-                                                print(error)
                                                 ToastHelper.showErrorMessage(
                                                     "프로필 사진 업로드에 실패하였습니다."
                                                 )
