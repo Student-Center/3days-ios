@@ -143,7 +143,7 @@ extension ProfileService: ProfileServiceProtocol {
     }
     
     private func requestCompleteCallback(imageId: String) async throws {
-        let result = try await client.completeProfileImageUpload(body: .json(.init(imageId: imageId)))
+        let result = try await client.completeProfileImageUpload(body: .json(.init(imageId: imageId, _extension: .PNG)))
         _ = try result.ok
     }
 }

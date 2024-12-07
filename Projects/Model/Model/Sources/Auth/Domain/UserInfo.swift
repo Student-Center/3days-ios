@@ -50,6 +50,9 @@ public struct UserInfo: Equatable, Identifiable, Hashable {
         self.profile = .init(from: dto.profile)
         self.dreamPartner = .init(from: dto.desiredPartner)
         self.profileWidgets = dto.profileWidgets.map { .init(from: $0) }
+        if let profileUrl = dto.profileImages?.first?.url {
+            self.profile.profileImageUrl = URL(string: profileUrl)
+        }
     }
     
     public static var mock: UserInfo {
@@ -87,7 +90,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
     public let jobOccupation: String
     public var jobOccupationRawValue: String
     public var locations: [LocationModel]
-    public let profileImageUrl: URL?
+    public var profileImageUrl: URL?
     
     public var companyName: String {
         set {

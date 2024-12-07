@@ -67,6 +67,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `POST /users/my/profile-images/upload-complete`.
     /// - Remark: Generated from `#/paths//users/my/profile-images/upload-complete/post(completeProfileImageUpload)`.
     func completeProfileImageUpload(_ input: Operations.completeProfileImageUpload.Input) async throws -> Operations.completeProfileImageUpload.Output
+    /// 프로필 이미지 삭제
+    ///
+    /// 특정 프로필 이미지를 삭제합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/my/profile-images/{imageId}`.
+    /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)`.
+    func deleteProfileImage(_ input: Operations.deleteProfileImage.Input) async throws -> Operations.deleteProfileImage.Output
     /// 내 원하는 파트너 수정
     ///
     /// 현재 로그인한 사용자의 원하는 파트너 정보를 수정합니다.
@@ -243,6 +250,21 @@ extension APIProtocol {
         try await completeProfileImageUpload(Operations.completeProfileImageUpload.Input(
             headers: headers,
             body: body
+        ))
+    }
+    /// 프로필 이미지 삭제
+    ///
+    /// 특정 프로필 이미지를 삭제합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/my/profile-images/{imageId}`.
+    /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)`.
+    public func deleteProfileImage(
+        path: Operations.deleteProfileImage.Input.Path,
+        headers: Operations.deleteProfileImage.Input.Headers = .init()
+    ) async throws -> Operations.deleteProfileImage.Output {
+        try await deleteProfileImage(Operations.deleteProfileImage.Input(
+            path: path,
+            headers: headers
         ))
     }
     /// 내 원하는 파트너 수정
@@ -604,6 +626,10 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/name`.
             public var name: Swift.String
+            /// 프로필 이미지 목록
+            ///
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/profileImages`.
+            public var profileImages: [Components.Schemas.ProfileImage]?
             /// 사용자의 전화번호 (한국 휴대폰 번호 형식)
             ///
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/phoneNumber`.
@@ -619,6 +645,7 @@ public enum Components {
             /// - Parameters:
             ///   - id: 사용자 식별자
             ///   - name: 사용자 이름
+            ///   - profileImages: 프로필 이미지 목록
             ///   - phoneNumber: 사용자의 전화번호 (한국 휴대폰 번호 형식)
             ///   - profile:
             ///   - desiredPartner:
@@ -626,6 +653,7 @@ public enum Components {
             public init(
                 id: Swift.String? = nil,
                 name: Swift.String,
+                profileImages: [Components.Schemas.ProfileImage]? = nil,
                 phoneNumber: Swift.String,
                 profile: Components.Schemas.UserProfileDisplayInfo,
                 desiredPartner: Components.Schemas.UserDesiredPartner,
@@ -633,6 +661,7 @@ public enum Components {
             ) {
                 self.id = id
                 self.name = name
+                self.profileImages = profileImages
                 self.phoneNumber = phoneNumber
                 self.profile = profile
                 self.desiredPartner = desiredPartner
@@ -641,6 +670,7 @@ public enum Components {
             public enum CodingKeys: String, CodingKey {
                 case id
                 case name
+                case profileImages
                 case phoneNumber
                 case profile
                 case desiredPartner
@@ -1293,7 +1323,7 @@ public enum Components {
             /// - Remark: Generated from `#/components/schemas/CompleteProfileImageUploadRequest/imageId`.
             public var imageId: Swift.String
             /// - Remark: Generated from `#/components/schemas/CompleteProfileImageUploadRequest/extension`.
-            public var _extension: Components.Schemas.ProfileImageExtension?
+            public var _extension: Components.Schemas.ProfileImageExtension
             /// Creates a new `CompleteProfileImageUploadRequest`.
             ///
             /// - Parameters:
@@ -1301,7 +1331,7 @@ public enum Components {
             ///   - _extension:
             public init(
                 imageId: Swift.String,
-                _extension: Components.Schemas.ProfileImageExtension? = nil
+                _extension: Components.Schemas.ProfileImageExtension
             ) {
                 self.imageId = imageId
                 self._extension = _extension
@@ -1360,6 +1390,39 @@ public enum Components {
         /// - Remark: Generated from `#/components/schemas/ProfileImageExtension`.
         @frozen public enum ProfileImageExtension: String, Codable, Hashable, Sendable {
             case PNG = "PNG"
+        }
+        /// - Remark: Generated from `#/components/schemas/ProfileImage`.
+        public struct ProfileImage: Codable, Hashable, Sendable {
+            /// 이미지 식별자
+            ///
+            /// - Remark: Generated from `#/components/schemas/ProfileImage/id`.
+            public var id: Swift.String
+            /// 이미지 URL
+            ///
+            /// - Remark: Generated from `#/components/schemas/ProfileImage/url`.
+            public var url: Swift.String
+            /// - Remark: Generated from `#/components/schemas/ProfileImage/extension`.
+            public var _extension: Components.Schemas.ProfileImageExtension
+            /// Creates a new `ProfileImage`.
+            ///
+            /// - Parameters:
+            ///   - id: 이미지 식별자
+            ///   - url: 이미지 URL
+            ///   - _extension:
+            public init(
+                id: Swift.String,
+                url: Swift.String,
+                _extension: Components.Schemas.ProfileImageExtension
+            ) {
+                self.id = id
+                self.url = url
+                self._extension = _extension
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case url
+                case _extension = "extension"
+            }
         }
     }
     /// Types generated from the `#/components/parameters` section of the OpenAPI document.
@@ -3065,6 +3128,183 @@ public enum Operations {
             /// 서버 오류
             ///
             /// - Remark: Generated from `#/paths//users/my/profile-images/upload-complete/post(completeProfileImageUpload)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 프로필 이미지 삭제
+    ///
+    /// 특정 프로필 이미지를 삭제합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/my/profile-images/{imageId}`.
+    /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)`.
+    public enum deleteProfileImage {
+        public static let id: Swift.String = "deleteProfileImage"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/my/profile-images/{imageId}/DELETE/path`.
+            public struct Path: Sendable, Hashable {
+                /// 삭제할 프로필 이미지 ID
+                ///
+                /// - Remark: Generated from `#/paths/users/my/profile-images/{imageId}/DELETE/path/imageId`.
+                public var imageId: Swift.String
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - imageId: 삭제할 프로필 이미지 ID
+                public init(imageId: Swift.String) {
+                    self.imageId = imageId
+                }
+            }
+            public var path: Operations.deleteProfileImage.Input.Path
+            /// - Remark: Generated from `#/paths/users/my/profile-images/{imageId}/DELETE/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteProfileImage.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteProfileImage.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.deleteProfileImage.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            public init(
+                path: Operations.deleteProfileImage.Input.Path,
+                headers: Operations.deleteProfileImage.Input.Headers = .init()
+            ) {
+                self.path = path
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct NoContent: Sendable, Hashable {
+                /// Creates a new `NoContent`.
+                public init() {}
+            }
+            /// 삭제 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)/responses/204`.
+            ///
+            /// HTTP response code: `204 noContent`.
+            case noContent(Operations.deleteProfileImage.Output.NoContent)
+            /// The associated value of the enum case if `self` is `.noContent`.
+            ///
+            /// - Throws: An error if `self` is not `.noContent`.
+            /// - SeeAlso: `.noContent`.
+            public var noContent: Operations.deleteProfileImage.Output.NoContent {
+                get throws {
+                    switch self {
+                    case let .noContent(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "noContent",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리소스를 찾을 수 없음
+            ///
+            /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Components.Responses.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Components.Responses.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)/responses/500`.
             ///
             /// HTTP response code: `500 internalServerError`.
             case internalServerError(Components.Responses.InternalServerError)
