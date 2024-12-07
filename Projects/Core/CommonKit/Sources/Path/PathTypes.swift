@@ -6,7 +6,7 @@
 //  Copyright © 2024 com.weave. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import Model
 
 public enum PathType: Hashable {

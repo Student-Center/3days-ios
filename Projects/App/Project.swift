@@ -15,7 +15,8 @@ let infoPlist = InfoPlist.extendingDefault(
         "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": [
             "NSAllowsArbitraryLoads": true
-        ]
+        ],
+        "NSPhotoLibraryUsageDescription": "프로필 사진 변경에 활용됩니다."
     ]
 )
 

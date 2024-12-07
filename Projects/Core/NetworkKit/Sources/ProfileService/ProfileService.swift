@@ -24,6 +24,8 @@ public protocol ProfileServiceProtocol {
     func requestPutUserInfo(userInfo: UserInfo) async throws
     
     func requestPutPartnerInfo(userInfo: UserInfo) async throws
+    
+    func requestUploadImage(image: Data) async throws
 }
 
 public final class ProfileService {
@@ -99,5 +101,49 @@ extension ProfileService: ProfileServiceProtocol {
         )
         _ = try result.ok
         return
+    }
+    
+    public func requestUploadImage(image: Data) async throws {
+        // url 받기
+        let uploadUrlInfo = try await requestPresignedUrl()
+        
+        // url로 업로드
+        try await requestUploadImage(image: image, url: uploadUrlInfo.url)
+        
+        // 콜백 전달
+        try await requestCompleteCallback(imageId: uploadUrlInfo.imageId)
+    }
+    
+    private func requestPresignedUrl() async throws -> Components.Schemas.GetProfileImageUploadUrlResponse {
+        let result = try await client.getProfileImageUploadUrl(query: .init(_extension: .PNG))
+        return try result.ok.body.json
+    }
+    
+    private func requestUploadImage(image: Data, url: String) async throws {
+        debugPrint("✅ [Upload Image Start]")
+        guard let url = URL(string: url) else { return }
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "PUT"
+        urlRequest.setValue("image/png", forHTTPHeaderField: "Content-Type")
+        urlRequest.setValue("public-read", forHTTPHeaderField: "x-amz-acl")
+
+        debugPrint("✅ [Upload Image Url] : \(url)")
+        debugPrint("✅ [Upload Image] : \(image)")
+        debugPrint("✅ [Upload Header] : \(urlRequest.allHTTPHeaderFields)")
+        let (_, urlResponse) = try await URLSession.shared.upload(for: urlRequest, from: image)
+        
+        debugPrint("✅ [Response] : \(urlResponse)")
+        guard let response = urlResponse as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        guard 200 <= response.statusCode && response.statusCode <= 299 else {
+            throw URLError(.badServerResponse)
+        }
+        return
+    }
+    
+    private func requestCompleteCallback(imageId: String) async throws {
+        let result = try await client.completeProfileImageUpload(body: .json(.init(imageId: imageId)))
+        _ = try result.ok
     }
 }

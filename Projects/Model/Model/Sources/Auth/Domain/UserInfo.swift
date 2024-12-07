@@ -87,6 +87,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
     public let jobOccupation: String
     public var jobOccupationRawValue: String
     public var locations: [LocationModel]
+    public let profileImageUrl: URL?
     
     public var companyName: String {
         set {
@@ -108,7 +109,8 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
         companyName: String?,
         jobOccupation: String,
         jobOccupationRawValue: String,
-        locations: [LocationModel]
+        locations: [LocationModel],
+        profileImageUrl: URL? = nil
     ) {
         self.gender = gender
         self.birthYear = birthYear
@@ -117,6 +119,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
         self.jobOccupation = jobOccupation
         self.jobOccupationRawValue = jobOccupationRawValue
         self.locations = locations
+        self.profileImageUrl = profileImageUrl
     }
     
     public init(from dto: Components.Schemas.UserProfileDisplayInfo) {
@@ -132,6 +135,7 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
                 name: $0.display
             )
         }
+        self.profileImageUrl = nil
     }
     
     public static var mock: UserInfoProfile {
@@ -142,7 +146,8 @@ public struct UserInfoProfile: Hashable, Identifiable, Equatable {
             companyName: "현대자동차",
             jobOccupation: "IT",
             jobOccupationRawValue: "IT_INFORMATION",
-            locations: LocationModel.mock
+            locations: LocationModel.mock,
+            profileImageUrl: nil
         )
     }
 }

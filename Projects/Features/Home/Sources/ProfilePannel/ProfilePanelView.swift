@@ -10,11 +10,18 @@ import SwiftUI
 import Model
 import DesignCore
 import CommonKit
+import Nuke
+import NetworkKit
 
 struct ProfilePannelView: View {
     
     let name: String
     let profile: UserInfoProfile
+    
+    @State var isShowPhotoSheet: Bool = false
+    @State var isShowPhotoPicker: Bool = false
+    @State var isShowPhotoPreview: Bool = false
+    @State var selectedImage: UIImage?
     
     @ViewBuilder
     var circleDot: some View {
@@ -31,10 +38,68 @@ struct ProfilePannelView: View {
             VStack(spacing: 6) {
                 HStack {
                     Spacer()
-                    ZStack {
+                    ZStack(alignment: .topTrailing) {
                         DesignCore.Images.profileDefault.image
                             .cornerRadius(20, corners: .allCorners)
-                        DesignCore.Images.profileBorder.image
+                        if profile.profileImageUrl == nil {
+                            DesignCore.Images.profileBorder.image
+                        }
+                        DesignCore.Images.cameraCircleFill.image
+                            .resizable()
+                            .frame(width: 36, height: 36)
+                            .offset(x: 6, y: -6)
+                            .onTapGesture {
+                                isShowPhotoSheet = true
+                            }
+                            .confirmationDialog(
+                                "프로필 사진 설정",
+                                isPresented: $isShowPhotoSheet,
+                                actions: {
+                                    Button("앨범에서 사진 선택") {
+                                        isShowPhotoPicker = true
+                                    }
+                                    Button("기본 이미지 적용") {
+                                        // default image
+                                    }
+                                    Button("취소", role: .cancel) {}
+                                },
+                                message: {
+                                    Text("프로필 사진 설정")
+                                }
+                            )
+                            .photoPicker(
+                                isPresented: $isShowPhotoPicker
+                            ) { images in
+                                selectedImage = images.first
+                                isShowPhotoPreview = true
+                            }
+                            .navigationDestination(isPresented: $isShowPhotoPreview) {
+                                PhotoPreviewView(
+                                    image: selectedImage,
+                                    isPresented: .constant(true),
+                                    showButton: true,
+                                    navigationTitle: "내 프로필 설정",
+                                    buttonTitle: "프로필 사진으로 등록하기",
+                                    backHandler: {
+                                        isShowPhotoPreview = false
+                                    },
+                                    buttonHandler: { imageData in
+                                        do {
+                                            if let imageData {
+                                                try await ProfileService.shared.requestUploadImage(image: imageData)
+                                            }
+                                            await MainActor.run {
+                                                isShowPhotoPreview = false
+                                            }
+                                        } catch {
+                                            print(error)
+                                            ToastHelper.showErrorMessage(
+                                                "프로필 사진 업로드에 실패하였습니다."
+                                            )
+                                        }
+                                    }
+                                )
+                            }
                     }
                     .frame(width: 102, height: 102)
                     Spacer()
@@ -214,5 +279,11 @@ struct ProfilePannelView: View {
                 AppCoordinator.shared.push(.editProfile(type))
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ProfileView(userInfo: .mock)
     }
 }

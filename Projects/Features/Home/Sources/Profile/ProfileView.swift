@@ -28,11 +28,11 @@ public struct ProfileView: View {
         GridItem(.flexible(), spacing: 16)
     ]
     
-    public init() {
+    public init(userInfo: UserInfo? = nil) {
         let model = ProfileModel()
         let intent = ProfileIntent(
             model: model,
-            input: .init()
+            input: .init(userInfo: userInfo)
         )
         let container = MVIContainer(
             intent: intent as ProfileIntent.Intentable,
@@ -304,5 +304,5 @@ fileprivate struct DeleteWidgetConfirmView: View {
 }
 
 #Preview(body: {
-    HomeMainView(userInfo: .mock)
+    ProfileView(userInfo: .mock)
 })
