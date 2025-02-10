@@ -23,6 +23,7 @@ let infoPlist = InfoPlist.extendingDefault(
 let appDependencies: [TargetDependency] = [
     .project(target: .home),
     .project(target: .signUp),
+    .project(target: .chat),
     .project(target: .designPreview),
     .external(.navigationTransitions)
 ]

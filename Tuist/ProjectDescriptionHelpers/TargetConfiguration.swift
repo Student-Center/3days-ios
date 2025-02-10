@@ -23,6 +23,7 @@ public enum TargetName: String {
     case designPreview = "DesignPreview"
     case signUp = "SignUp"
     case home = "Home"
+    case chat = "Chat"
 }
 
 public extension TargetName {
@@ -36,7 +37,7 @@ public extension TargetName {
             return .model
         case .designCore:
             return .designSystem
-        case .home, .designPreview, .signUp, .searchCompany:
+        case .home, .designPreview, .signUp, .searchCompany, .chat:
             return .feature
         }
     }
