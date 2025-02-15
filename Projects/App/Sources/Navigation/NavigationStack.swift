@@ -94,7 +94,7 @@ extension PathType {
         case .chat(let subView):
             switch subView {
             case .stompTestBed:
-                StompTestView()
+                ChattingView()
             }
         }
     }

@@ -10,6 +10,7 @@ import SwiftUI
 import CoreKit
 import DesignCore
 import CommonKit
+import NetworkKit
 
 public struct StompTestView: View {
     
@@ -38,6 +39,10 @@ public struct StompTestView: View {
             
             Button("Connect") {
                 intent.requestConnect()
+            }
+            
+            Button("SendMessage") {
+                StompClient.shared.sendMessage("Test HI")
             }
         }
         .task {

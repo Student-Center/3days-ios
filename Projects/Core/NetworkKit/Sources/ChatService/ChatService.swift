@@ -7,3 +7,24 @@
 //
 
 import Foundation
+import OpenapiGenerated
+import Model
+
+//MARK: - Service Protocol
+public protocol ChatServiceProtocol {
+    func requestChannelMessage(channeId: String) async throws -> MessageList
+}
+
+//MARK: - Service
+public final class ChatService {
+    public static let shared = ChatService()
+    private init() {}
+}
+
+extension ChatService: ChatServiceProtocol {
+    public func requestChannelMessage(channeId: String) async throws -> MessageList {
+        let response = try await client.getChannelMessages(.init(path: .init(channelId: channeId)))
+            .ok.body.json
+        return MessageList(from: response)
+    }
+}

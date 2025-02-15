@@ -14,7 +14,6 @@ let project: Project = .make(
             target: .networkKit,
             dependencies: [
                 .project(target: .model),
-                .target(name: .coreKit),
                 .external(.swiftStomp)
             ]
         ),

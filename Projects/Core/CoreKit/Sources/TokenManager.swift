@@ -35,4 +35,6 @@ public enum TokenManager {
             UserDefaults.standard.setValue(newValue, forKey: "registerToken")
         }
     }
+    
+    public static var userId: String? = nil
 }

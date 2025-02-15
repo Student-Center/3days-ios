@@ -12,6 +12,7 @@ let project: Project = .make(
         .make(
             target: .model,
             dependencies: [
+                .project(target: .coreKit),
                 .external(.openapiGenerated)
             ]
         )
