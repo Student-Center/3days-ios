@@ -23,7 +23,8 @@ public struct ChattingView: View {
         let model = ChattingModel()
         let intent = ChattingIntent(
             model: model,
-            input: .init()
+            input: .init(),
+            customToken: token
         )
         let container = MVIContainer(
             intent: intent as ChattingIntent.Intentable,
@@ -35,7 +36,12 @@ public struct ChattingView: View {
     
     public var body: some View {
         VStack {
-            ChattingListView()
+            ZStack {
+                ChattingListView()
+                if state.isSocketConnected {
+                    Text("연결됨 !!")
+                }
+            }
         }
         .task {
             await intent.task()

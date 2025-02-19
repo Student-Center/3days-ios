@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftStomp
+import CoreKit
 
 struct MessageRequest: Codable {
     let senderUserId: String
@@ -23,25 +24,26 @@ struct MessageRequest: Codable {
 
 public class StompClient {
     public static let shared = StompClient()
-    private var stompClinet: SwiftStomp!
+    public var client: SwiftStomp!
+    public var accessToken: String? = TokenManager.accessToken
     
     private init() {
         let url = URL(string: "\(ServerType.current.socketBaseUrl)")!
-        self.stompClinet = SwiftStomp(
+        self.client = SwiftStomp(
             host: url,
             httpConnectionHeaders: [
-                "Authorization": "Bearer TEMP_TOKEN !!"
+                "Authorization": "Bearer \(accessToken ?? "")"
             ]
         )
-        self.stompClinet.delegate = self
-        self.stompClinet.autoReconnect = true
-        self.stompClinet.enableAutoPing()
+        self.client.delegate = self
+        self.client.autoReconnect = true
+        self.client.enableAutoPing()
     }
     
     public func connect() {
-        if !stompClinet.isConnected {
+        if !client.isConnected {
             print("연결시도!")
-            stompClinet.connect()
+            client.connect()
         }
     }
     
@@ -51,7 +53,15 @@ public class StompClient {
             messageContent: message,
             messageType: "TEXT"
         )
-        stompClinet.send(body: message, to: "/app/channel/channed_id")
+        client.send(body: message, to: "/app/channel/channed_id")
+    }
+    
+    public func subscribe(channelId: String) {
+        let destination = "/channel/\(channelId)"
+        client.subscribe(
+            to: destination,
+            mode: .client
+        )
     }
 }
 
@@ -62,11 +72,7 @@ extension StompClient: SwiftStompDelegate {
     ) {
         print("onConnect: \(connectType)")
         if connectType == .toStomp {
-            let destination = "/channel/channed_id"
-            swiftStomp.subscribe(
-                to: destination,
-                mode: .client
-            )
+
         }
     }
     

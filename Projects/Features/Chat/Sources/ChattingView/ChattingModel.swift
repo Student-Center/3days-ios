@@ -15,6 +15,7 @@ final class ChattingModel: ObservableObject {
     //MARK: Stateful
     protocol Stateful {
         // content
+        var isSocketConnected: Bool { get }
         var isValidated: Bool { get }
         
         // default
@@ -28,6 +29,7 @@ final class ChattingModel: ObservableObject {
     //MARK: State Properties
     // content
     @Published var isValidated: Bool = false
+    @Published var isSocketConnected: Bool = false
     
     // default
     @Published var isLoading: Bool = false
@@ -43,7 +45,10 @@ extension ChattingModel: ChattingModel.Stateful {}
 protocol ChattingModelActionable: AnyObject {
     // content
     func setValidation(value: Bool)
-
+    func setSocketStatus(isConnected: Bool)
+    
+    func socketReceivedNewMessage(message: String)
+    
     // default
     func setLoading(status: Bool)
     
@@ -57,6 +62,12 @@ extension ChattingModel: ChattingModelActionable {
     // content
     func setValidation(value: Bool) {
         isValidated = value
+    }
+    func setSocketStatus(isConnected: Bool) {
+        isSocketConnected = isConnected
+    }
+    func socketReceivedNewMessage(message: String) {
+        print("💬 [Received]", message)
     }
     
     // default
