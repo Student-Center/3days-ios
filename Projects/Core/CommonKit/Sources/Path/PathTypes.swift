@@ -108,6 +108,7 @@ public enum PathType: Hashable {
         case .chat(let subview):
             switch subview {
             case .stompTestBed: return "Stomp Test Bed"
+            case .chat: return "Chatting"
             }
         }
     }
@@ -188,4 +189,5 @@ public enum EditDreamPartnerViewType {
 
 public enum ChatViewType {
     case stompTestBed
+    case chat(customToken: String? = nil)
 }

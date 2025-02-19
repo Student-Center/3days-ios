@@ -16,6 +16,7 @@ final class StompTestModel: ObservableObject {
     protocol Stateful {
         // content
         var isValidated: Bool { get }
+        var authToken: String? { get }
         
         // default
         var isLoading: Bool { get }
@@ -28,6 +29,7 @@ final class StompTestModel: ObservableObject {
     //MARK: State Properties
     // content
     @Published var isValidated: Bool = false
+    @Published var authToken: String?
     
     // default
     @Published var isLoading: Bool = false
@@ -43,6 +45,7 @@ extension StompTestModel: StompTestModel.Stateful {}
 protocol StompTestModelActionable: AnyObject {
     // content
     func setValidation(value: Bool)
+    func setAuthToken(token: String)
 
     // default
     func setLoading(status: Bool)
@@ -57,6 +60,9 @@ extension StompTestModel: StompTestModelActionable {
     // content
     func setValidation(value: Bool) {
         isValidated = value
+    }
+    func setAuthToken(token: String) {
+        authToken = token
     }
     
     // default

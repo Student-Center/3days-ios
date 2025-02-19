@@ -15,6 +15,8 @@ import NetworkKit
 class StompTestIntent {
     private weak var model: StompTestModelActionable?
     private let input: DataModel
+    
+    private let authService = AuthService.shared
 
     // MARK: Life cycle
     init(
@@ -33,6 +35,9 @@ extension StompTestIntent {
         func onTapNextButton()
         func requestConnect()
         
+        func onTapVerifyButton(phone: String)
+        func onTapCustomToken(token: String)
+        
         // default
         func onAppear()
         func task() async
@@ -49,6 +54,29 @@ extension StompTestIntent: StompTestIntent.Intentable {
     }
     
     func task() async {}
+    
+    func onTapVerifyButton(phone: String) {
+        Task {
+            do {
+                let defaultCode = "123456"
+                let phone = phone.replacingOccurrences(of: "-", with: "")
+                let authCodeId = try await authService.requestSendSMS(phone: phone).authCodeId
+                let result = try await authService.requestExistingUserVerifyCode(
+                    .init(
+                        verificationId: authCodeId,
+                        verificationCode: defaultCode
+                    )
+                )
+                model?.setAuthToken(token: result.accessToken)
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func onTapCustomToken(token: String) {
+        model?.setAuthToken(token: token)
+    }
     
     // content
     func requestConnect() {

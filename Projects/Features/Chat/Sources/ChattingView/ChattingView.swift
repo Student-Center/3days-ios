@@ -19,7 +19,7 @@ public struct ChattingView: View {
     private var intent: ChattingIntent.Intentable { container.intent }
     private var state: ChattingModel.Stateful { container.model }
     
-    public init() {
+    public init(token: String? = TokenManager.accessToken) {
         let model = ChattingModel()
         let intent = ChattingIntent(
             model: model,
