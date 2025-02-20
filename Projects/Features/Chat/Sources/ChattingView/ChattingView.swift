@@ -37,10 +37,9 @@ public struct ChattingView: View {
     public var body: some View {
         VStack {
             ZStack {
-                ChattingListView()
-                if state.isSocketConnected {
-                    Text("연결됨 !!")
-                }
+                ChattingListView(
+                    messageDataSource: state.messageDataSource
+                )
             }
         }
         .task {
@@ -49,7 +48,6 @@ public struct ChattingView: View {
         .onAppear {
             intent.onAppear()
         }
-//        .ignoresSafeArea(.keyboard)
         .textureBackground()
         .setPopNavigation {
             AppCoordinator.shared.pop()
@@ -60,6 +58,7 @@ public struct ChattingView: View {
 
 public struct ChattingListView: View {
     
+    let messageDataSource: MessageList
     @State var inputText: String = ""
     @State private var textEditorHeight: CGFloat = 23
     @State var textFieldSize: CGSize = .init()
@@ -69,7 +68,7 @@ public struct ChattingListView: View {
         VStack {
             ScrollView {
                 LazyVStack(spacing: 10) {
-                    ForEach(Message.mock.toMessageSections, id: \.self) { section in
+                    ForEach(messageDataSource.messages.toMessageSections, id: \.self) { section in
                         LazyVStack(spacing: 2) {
                             ForEach(section) { model in
                                 ChatBubbleHorizontalLineView(
@@ -136,7 +135,6 @@ struct TextInputContainerView: View {
             .background {
                 RoundedRectangle(cornerRadius: 30)
                     .fill(Color(hex: 0xF7F3F1))
-//                        .fill(.red)
             }
             .frame(
                 maxHeight: textFieldSize.height < textInputViewMaxHeight ? nil : textInputViewMaxHeight,

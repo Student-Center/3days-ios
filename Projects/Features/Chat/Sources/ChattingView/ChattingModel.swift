@@ -9,12 +9,14 @@
 import Foundation
 import CommonKit
 import CoreKit
+import Model
 
 final class ChattingModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
         // content
+        var messageDataSource: MessageList { get }
         var isSocketConnected: Bool { get }
         var isValidated: Bool { get }
         
@@ -28,6 +30,11 @@ final class ChattingModel: ObservableObject {
     
     //MARK: State Properties
     // content
+    @Published var messageDataSource: MessageList = .init(
+        messages: [],
+        hasNext: nil,
+        nextCursor: nil
+    )
     @Published var isValidated: Bool = false
     @Published var isSocketConnected: Bool = false
     
@@ -47,7 +54,7 @@ protocol ChattingModelActionable: AnyObject {
     func setValidation(value: Bool)
     func setSocketStatus(isConnected: Bool)
     
-    func socketReceivedNewMessage(message: String)
+    func socketReceivedNewMessage(message: Message)
     
     // default
     func setLoading(status: Bool)
@@ -66,8 +73,10 @@ extension ChattingModel: ChattingModelActionable {
     func setSocketStatus(isConnected: Bool) {
         isSocketConnected = isConnected
     }
-    func socketReceivedNewMessage(message: String) {
+    func socketReceivedNewMessage(message: Message) {
         print("💬 [Received]", message)
+        messageDataSource.messages.append(message)
+        
     }
     
     // default

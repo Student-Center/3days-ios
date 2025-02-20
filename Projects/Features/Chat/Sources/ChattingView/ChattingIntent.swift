@@ -60,46 +60,28 @@ extension ChattingIntent: ChattingIntent.Intentable {
     func onTapNextButton() {}
     
     func subscribeStomp() {
-        
-        stompClient.client.eventsUpstream
+        stompClient.socketConnectionStatus
             .receive(on: RunLoop.main)
             .sink { [weak self] event in
                 guard let self else { return }
                 print("event", event)
                 switch event {
-                case let .connected(type):
-                    if type == .toStomp {
-                        stompClient.subscribe(channelId: "33333333-3333-3333-3333-333333333333")
-                    }
-                    model?.setSocketStatus(isConnected: true)
-                case .disconnected(_):
-                    model?.setSocketStatus(isConnected: false)
-                case let .error(error):
-                    model?.setSocketStatus(isConnected: false)
-                    print("Error: \(error)")
+                case .connected:
+                    print("connected")
+                    stompClient.subscribe(channelId: "33333333-3333-3333-3333-333333333333")
+                case .disconnected:
+                    print("disconnected")
+                default:
+                    return
                 }
             }
             .store(in: &subscriptions)
         
-        stompClient.client.messagesUpstream
+        stompClient.onMessageReceived
             .receive(on: RunLoop.main)
             .sink { [weak self] message in
                 guard let self else { return }
-                
-                switch message {
-                case let .text(message, messageId, destination, _):
-                    let message = "\(Date().formatted()) [id: \(messageId), at: \(destination)]: \(message)"
-                    model?.socketReceivedNewMessage(message: message)
-                case let .data(data, messageId, destination, _):
-                    let message = "Data message with id `\(messageId)` and binary length `\(data.count)` received at destination `\(destination)`"
-                    model?.socketReceivedNewMessage(message: message)
-                }
-            }
-            .store(in: &subscriptions)
-        
-        stompClient.client.receiptUpstream
-            .sink { receiptId in
-                print("SwiftStop: Receipt received: \(receiptId)")
+                model?.socketReceivedNewMessage(message: message)
             }
             .store(in: &subscriptions)
     }

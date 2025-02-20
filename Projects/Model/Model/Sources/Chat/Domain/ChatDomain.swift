@@ -11,7 +11,7 @@ import CoreKit
 import OpenapiGenerated
 
 public struct MessageList {
-    public let messages: [Message]?
+    public var messages: [Message]
     public let hasNext: Bool?
     public let nextCursor: String?
     
@@ -26,7 +26,11 @@ public struct MessageList {
     }
     
     public init(from dto: Components.Schemas.MessageList) {
-        self.messages = dto.messages?.map { Message(from: $0) }
+        if let messages = dto.messages {
+            self.messages = messages.map { Message(from: $0) }
+        } else {
+            self.messages = []
+        }
         self.hasNext = dto.hasNext
         self.nextCursor = dto.nextCursor
     }
@@ -77,6 +81,18 @@ public struct Message: Identifiable, Hashable, Equatable {
         self.id = dto.id
         self.senderUserId = dto.senderUserId
         self.createdAt = dto.createdAt
+        self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
+        self.content = MessageContent(from: dto.content)
+    }
+    
+    public init(from dto: ChatSocketResponse) {
+        self.id = dto.id
+        self.senderUserId = dto.senderUserId
+        
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        self.createdAt = formatter.date(from: dto.createdAt)
+
         self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
         self.content = MessageContent(from: dto.content)
     }
@@ -177,6 +193,18 @@ public struct MessageContent {
         case .CARD:
             self.type = .card(dto.cardColor == .BLUE ? .blue : .pink)
         case .none:
+            self.type = .text
+        }
+    }
+    
+    init(from dto: ChatSocketResponse.Content) {
+        self.text = dto.text
+        switch dto.type {
+        case "TEXT":
+            self.type = .text
+        case "CARD":
+            self.type = .card(.blue)
+        default:
             self.type = .text
         }
     }
