@@ -15,6 +15,10 @@ public struct MessageList {
     public let hasNext: Bool?
     public let nextCursor: String?
     
+    public var messageWithSections: [[Message]] {
+        return messages.toMessageSections
+    }
+    
     public init(
         messages: [Message],
         hasNext: Bool?,
@@ -52,6 +56,7 @@ public struct Message: Identifiable, Hashable, Equatable {
     public let createdAt: Date?
     public var bubbleType: ChatBubbleType = .normal
     public var needShowAvatar: Bool = true
+    public var isLoading: Bool = false
     
     public init(
         id: String,

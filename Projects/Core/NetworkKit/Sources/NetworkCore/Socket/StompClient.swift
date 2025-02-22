@@ -12,18 +12,6 @@ import Combine
 import SwiftStomp
 import CoreKit
 
-struct MessageRequest: Codable {
-    let senderUserId: String
-    let messageContent: String
-    let messageType: String
-    
-    init(senderUserId: String, messageContent: String, messageType: String) {
-        self.senderUserId = senderUserId
-        self.messageContent = messageContent
-        self.messageType = messageType
-    }
-}
-
 public class StompClient {
     public static let shared = StompClient()
     private var client: SwiftStomp!
@@ -53,17 +41,8 @@ public class StompClient {
         }
     }
     
-    public func sendMessage(
-        userId: String,
-        message: String,
-        channelId: String
-    ) {
-        let message = MessageRequest(
-            senderUserId: userId,
-            messageContent: message,
-            messageType: "TEXT"
-        )
-        client.send(body: message, to: "/app/channel/\(channelId)")
+    public func sendMessage(request: ChatSocketMessageRequest, channelId: String) {
+        client.send(body: request, to: "/app/channel/\(channelId)")
     }
     
     public func subscribe(channelId: String) {
@@ -83,7 +62,7 @@ extension StompClient {
                 guard let self else { return }
                 print("event", event)
                 switch event {
-                case let .connected(type):
+                case .connected(_):
                     socketConnectionStatus.send(.connected)
                 case .disconnected(_):
                     socketConnectionStatus.send(.disconnected)

@@ -34,6 +34,7 @@ public enum PathType: Hashable {
     public static var debugPreviewTypes: [PathType] = [
         .designPreview,
         .chat(.stompTestBed),
+        .chat(.chat(customToken: "")),
         .authDebug,
         .intro,
         .signUp(.authPhoneInput),

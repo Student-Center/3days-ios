@@ -16,6 +16,8 @@ public struct ChattingView: View {
     
     @StateObject var container: MVIContainer<ChattingIntent.Intentable, ChattingModel.Stateful>
     
+    @State private var inputText: String = ""
+    
     private var intent: ChattingIntent.Intentable { container.intent }
     private var state: ChattingModel.Stateful { container.model }
     
@@ -38,7 +40,12 @@ public struct ChattingView: View {
         VStack {
             ZStack {
                 ChattingListView(
-                    messageDataSource: state.messageDataSource
+                    messageDataSource: state.messageDataSource,
+                    inputText: $inputText,
+                    sendAction: {
+                        intent.sendMessage(inputText)
+                        inputText = ""
+                    }
                 )
             }
         }
@@ -59,16 +66,19 @@ public struct ChattingView: View {
 public struct ChattingListView: View {
     
     let messageDataSource: MessageList
-    @State var inputText: String = ""
+    @Binding var inputText: String
     @State private var textEditorHeight: CGFloat = 23
-    @State var textFieldSize: CGSize = .init()
+    @State private var textFieldSize: CGSize = .init()
+    
+    var sendAction: () -> Void
+    
     @FocusState var isTextFieldFocused
     
     public var body: some View {
         VStack {
             ScrollView {
                 LazyVStack(spacing: 10) {
-                    ForEach(messageDataSource.messages.toMessageSections, id: \.self) { section in
+                    ForEach(messageDataSource.messageWithSections, id: \.self) { section in
                         LazyVStack(spacing: 2) {
                             ForEach(section) { model in
                                 ChatBubbleHorizontalLineView(
@@ -94,7 +104,8 @@ public struct ChattingListView: View {
             
             TextInputContainerView(
                 inputText: $inputText,
-                isTextFieldFocused: _isTextFieldFocused
+                isTextFieldFocused: _isTextFieldFocused,
+                sendAction: sendAction
             )
         }
     }
@@ -105,6 +116,8 @@ struct TextInputContainerView: View {
     @Binding var inputText: String
     @State var textFieldSize: CGSize = .init()
     @FocusState var isTextFieldFocused
+    
+    var sendAction: () -> Void
     
     private var textFieldHeight: CGFloat {
         return textFieldSize.height
@@ -122,15 +135,20 @@ struct TextInputContainerView: View {
                     isTextFieldFocused: _isTextFieldFocused
                 )
                 
-                if inputText.isEmpty {
-                    DesignCore.Images.iconSend.image
-                        .padding(.bottom, 20)
-                        .padding(.horizontal, 20)
-                } else {
-                    DesignCore.Images.iconSendFilled.image
-                        .padding(.bottom, 20)
-                        .padding(.horizontal, 20)
+                Button {
+                    sendAction()
+                } label: {
+                    if inputText.isEmpty {
+                        DesignCore.Images.iconSend.image
+                            .padding(.bottom, 20)
+                            .padding(.horizontal, 20)
+                    } else {
+                        DesignCore.Images.iconSendFilled.image
+                            .padding(.bottom, 20)
+                            .padding(.horizontal, 20)
+                    }
                 }
+                .disabled(inputText.isEmpty)
             }
             .background {
                 RoundedRectangle(cornerRadius: 30)

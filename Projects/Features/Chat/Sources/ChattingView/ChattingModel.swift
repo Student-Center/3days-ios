@@ -53,7 +53,6 @@ protocol ChattingModelActionable: AnyObject {
     // content
     func setValidation(value: Bool)
     func setSocketStatus(isConnected: Bool)
-    
     func socketReceivedNewMessage(message: Message)
     
     // default
@@ -76,7 +75,6 @@ extension ChattingModel: ChattingModelActionable {
     func socketReceivedNewMessage(message: Message) {
         print("💬 [Received]", message)
         messageDataSource.messages.append(message)
-        
     }
     
     // default

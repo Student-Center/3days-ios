@@ -11,6 +11,7 @@ import Combine
 import CommonKit
 import CoreKit
 import NetworkKit
+import Model
 
 //MARK: - Intent
 class ChattingIntent {
@@ -18,6 +19,8 @@ class ChattingIntent {
     private let input: DataModel
     private let stompClient = StompClient.shared
     private var subscriptions = [AnyCancellable]()
+    private let channelId: String = "33333333-3333-3333-3333-333333333333"
+    private let tempUserId: String = "11111111-1111-1111-1111-111111111111"
     
     // MARK: Life cycle
     init(
@@ -28,6 +31,7 @@ class ChattingIntent {
         self.input = input
         self.model = model
         stompClient.accessToken = customToken
+        TokenManager.userId = tempUserId
     }
 }
 
@@ -36,6 +40,7 @@ extension ChattingIntent {
     protocol Intentable {
         // content
         func onTapNextButton()
+        func sendMessage(_ message: String)
         
         // default
         func onAppear()
@@ -57,6 +62,18 @@ extension ChattingIntent: ChattingIntent.Intentable {
     func task() async {}
     
     // content
+    func sendMessage(_ message: String) {
+        let requestBody = ChatSocketMessageRequest(
+            senderUserId: tempUserId,
+            messageContent: message,
+            messageType: "TEXT"
+        )
+        stompClient.sendMessage(
+            request: requestBody,
+            channelId: channelId
+        )
+    }
+    
     func onTapNextButton() {}
     
     func subscribeStomp() {
@@ -68,7 +85,7 @@ extension ChattingIntent: ChattingIntent.Intentable {
                 switch event {
                 case .connected:
                     print("connected")
-                    stompClient.subscribe(channelId: "33333333-3333-3333-3333-333333333333")
+                    stompClient.subscribe(channelId: channelId)
                 case .disconnected:
                     print("disconnected")
                 default:
