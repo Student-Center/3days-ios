@@ -78,6 +78,7 @@ extension StompClient {
             .sink { [weak self] message in
                 guard let self else { return }
                 if case let .text(message, messageId, destination, _) = message {
+                    print("💬 [Received]", message)
                     guard let response = decodeMessageToDto(message) else { return }
                     let messageModel = Message(from: response)
                     onMessageReceived.send(messageModel)

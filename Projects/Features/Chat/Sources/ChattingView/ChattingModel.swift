@@ -73,7 +73,6 @@ extension ChattingModel: ChattingModelActionable {
         isSocketConnected = isConnected
     }
     func socketReceivedNewMessage(message: Message) {
-        print("💬 [Received]", message)
         messageDataSource.messages.append(message)
     }
     

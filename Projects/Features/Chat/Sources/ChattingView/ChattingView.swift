@@ -85,6 +85,7 @@ public struct ChattingListView: View {
                                     text: model.content.text,
                                     userType: model.type,
                                     bubbleType: model.bubbleType,
+                                    timeStamp: model.showTimeStamp ? model.sendTime : nil,
                                     avatarVisible: model.needShowAvatar
                                 )
                             }
@@ -197,16 +198,13 @@ public struct ChatBubbleHorizontalLineView: View {
     let text: String
     let userType: ChatUserType
     let bubbleType: ChatBubbleType
+    let timeStamp: String?
     let avatarVisible: Bool
-    
-    var chatBubbleMaxWidth: CGFloat {
-        return Device.width * 0.648
-    }
     
     public var body: some View {
         switch userType {
             
-        case .other(let otherUser):
+        case .other(_):
             HStack(alignment: .bottom, spacing: 10) {
                 if avatarVisible {
                     DesignCore.Images.profileDefault.image
@@ -225,12 +223,10 @@ public struct ChatBubbleHorizontalLineView: View {
                 
                 ChatBubble(
                     text: text,
+                    timeStamp: timeStamp,
                     userType: userType,
                     bubbleType: bubbleType
                 )
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: chatBubbleMaxWidth, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
                 
                 Spacer()
             }
@@ -241,12 +237,10 @@ public struct ChatBubbleHorizontalLineView: View {
                 
                 ChatBubble(
                     text: text,
+                    timeStamp: timeStamp,
                     userType: userType,
                     bubbleType: bubbleType
                 )
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: chatBubbleMaxWidth, alignment: .trailing)
-                .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -255,49 +249,79 @@ public struct ChatBubbleHorizontalLineView: View {
 public struct ChatBubble: View {
     
     let text: String
+    let timeStamp: String?
     let userType: ChatUserType
     let bubbleType: ChatBubbleType
     
+    var chatBubbleMaxWidth: CGFloat {
+        return Device.width * 0.648 + (timeStamp != nil ? 42 : 0)
+    }
+    
     public var body: some View {
         ZStack(alignment: userType.alignment) {
-            Text(text)
-                .typography(.regular_15)
-                .multilineTextAlignment(.leading)
-                .foregroundStyle(userType.textColor)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(content: {
-                    let largeRadiusValue: CGFloat = 20
-                    let smallRadiusValue: CGFloat = 4
-                    
-                    switch bubbleType {
-                    case .normal:
-                        RoundedRectangle(cornerRadius: largeRadiusValue)
-                            .fill(userType.backgroundColor)
-                    case .top:
-                        let corners: UIRectCorner = userType == .my ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
-                        let subtractedCorner = UIRectCorner.allCorners.subtracting(corners)
-                        Rectangle()
-                            .fill(userType.backgroundColor)
-                            .cornerRadius(largeRadiusValue, corners: corners)
-                            .cornerRadius(smallRadiusValue, corners: subtractedCorner)
+            HStack(alignment: .bottom, spacing: 4) {
+                if userType == .my {
+                    timeStampView
+                }
+                
+                Text(text)
+                    .typography(.regular_15)
+                    .multilineTextAlignment(.leading)
+                    .foregroundStyle(userType.textColor)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(content: {
+                        let largeRadiusValue: CGFloat = 20
+                        let smallRadiusValue: CGFloat = 4
                         
-                    case .middle:
-                        let corners: UIRectCorner = userType == .my ? [.topLeft, .bottomLeft] : [.topRight, .bottomRight]
-                        let subtractedCorner = UIRectCorner.allCorners.subtracting(corners)
-                        Rectangle()
-                            .fill(userType.backgroundColor)
-                            .cornerRadius(largeRadiusValue, corners: corners)
-                            .cornerRadius(smallRadiusValue, corners: subtractedCorner)
-                    case .bottom:
-                        let corners: UIRectCorner = userType == .my ? [.bottomLeft, .topLeft, .bottomRight] : [.topRight, .bottomLeft, .bottomRight]
-                        let subtractedCorner = UIRectCorner.allCorners.subtracting(corners)
-                        Rectangle()
-                            .fill(userType.backgroundColor)
-                            .cornerRadius(largeRadiusValue, corners: corners)
-                            .cornerRadius(smallRadiusValue, corners: subtractedCorner)
-                    }
-                })
+                        switch bubbleType {
+                        case .normal:
+                            RoundedRectangle(cornerRadius: largeRadiusValue)
+                                .fill(userType.backgroundColor)
+                        case .top:
+                            let corners: UIRectCorner = userType == .my ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight]
+                            let subtractedCorner = UIRectCorner.allCorners.subtracting(corners)
+                            Rectangle()
+                                .fill(userType.backgroundColor)
+                                .cornerRadius(largeRadiusValue, corners: corners)
+                                .cornerRadius(smallRadiusValue, corners: subtractedCorner)
+                            
+                        case .middle:
+                            let corners: UIRectCorner = userType == .my ? [.topLeft, .bottomLeft] : [.topRight, .bottomRight]
+                            let subtractedCorner = UIRectCorner.allCorners.subtracting(corners)
+                            Rectangle()
+                                .fill(userType.backgroundColor)
+                                .cornerRadius(largeRadiusValue, corners: corners)
+                                .cornerRadius(smallRadiusValue, corners: subtractedCorner)
+                        case .bottom:
+                            let corners: UIRectCorner = userType == .my ? [.bottomLeft, .topLeft, .bottomRight] : [.topRight, .bottomLeft, .bottomRight]
+                            let subtractedCorner = UIRectCorner.allCorners.subtracting(corners)
+                            Rectangle()
+                                .fill(userType.backgroundColor)
+                                .cornerRadius(largeRadiusValue, corners: corners)
+                                .cornerRadius(smallRadiusValue, corners: subtractedCorner)
+                        }
+                    })
+                    .multilineTextAlignment(.leading)
+                
+                if case .other(_) = userType {
+                    timeStampView
+                }
+            }
+            .frame(
+                maxWidth: chatBubbleMaxWidth,
+                alignment: userType == .my ? .trailing : .leading
+            )
+            .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+    
+    @ViewBuilder
+    var timeStampView: some View {
+        if let timeStamp {
+            Text(timeStamp)
+                .pretendard(weight: ._400, size: 10)
+                .foregroundStyle(Color(hex: 0x534C44).opacity(0.5))
         }
     }
 }

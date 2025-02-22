@@ -56,7 +56,15 @@ public struct Message: Identifiable, Hashable, Equatable {
     public let createdAt: Date?
     public var bubbleType: ChatBubbleType = .normal
     public var needShowAvatar: Bool = true
+    public var showTimeStamp: Bool = true
     public var isLoading: Bool = false
+    
+    public var sendTime: String {
+        return DateConverter.dateToString(
+            date: createdAt,
+            format: "a h시 m분"
+        )
+    }
     
     public init(
         id: String,
@@ -93,11 +101,7 @@ public struct Message: Identifiable, Hashable, Equatable {
     public init(from dto: ChatSocketResponse) {
         self.id = dto.id
         self.senderUserId = dto.senderUserId
-        
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        self.createdAt = formatter.date(from: dto.createdAt)
-
+        self.createdAt = DateConverter.stringToDate(string: dto.createdAt)
         self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
         self.content = MessageContent(from: dto.content)
     }
@@ -109,8 +113,17 @@ extension Array where Element == Message {
         var currentGroup: [Message] = []
         
         for message in self {
+            /*
+             이전 메시지와 type 이 달라졌는지,
+             시간 차이가 벌어졌는지 ?
+             -> 섹션 분리
+             */
             if let lastMessage = currentGroup.last,
-               lastMessage.type == message.type {
+               lastMessage.type == message.type,
+               isIntervalDifferent(
+                date1: lastMessage.createdAt,
+                date2: message.createdAt
+               ) == false {
                 currentGroup.append(message)
             } else {
                 if !currentGroup.isEmpty {
@@ -127,11 +140,31 @@ extension Array where Element == Message {
         return result
     }
     
+    // interval 이상으로 date 간 간격이 벌어졌는지 체크
+    private func isIntervalDifferent(
+        date1: Date?,
+        date2: Date?,
+        intervalSecond: Int = 120
+    ) -> Bool {
+        guard let date1 = date1,
+              let date2 = date2 else {
+            return false
+        }
+        let secondsDiff = abs(date1.timeIntervalSince(date2))
+        return Int(secondsDiff) > intervalSecond
+    }
+    
     private func updateBubbleTypes(for messages: [Message]) -> [Message] {
         return messages.enumerated().map { index, message in
             var updatedMessage = message
             updatedMessage.bubbleType = getBubbleType(for: index, count: messages.count)
             updatedMessage.needShowAvatar = needShowAvatar(for: index, count: messages.count)
+            switch updatedMessage.bubbleType {
+            case .normal, .bottom:
+                updatedMessage.showTimeStamp = true
+            case .middle, .top:
+                updatedMessage.showTimeStamp = false
+            }
             return updatedMessage
         }
     }
