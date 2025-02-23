@@ -19,6 +19,7 @@ final class ChattingModel: ObservableObject {
         var messageDataSource: MessageList { get }
         var isSocketConnected: Bool { get }
         var isValidated: Bool { get }
+        var hasNextPage: Bool { get }
         
         // default
         var isLoading: Bool { get }
@@ -38,6 +39,10 @@ final class ChattingModel: ObservableObject {
     @Published var isValidated: Bool = false
     @Published var isSocketConnected: Bool = false
     
+    var hasNextPage: Bool {
+        return messageDataSource.hasNext == true && messageDataSource.messages.isNotEmpty
+    }
+    
     // default
     @Published var isLoading: Bool = false
     
@@ -52,6 +57,9 @@ extension ChattingModel: ChattingModel.Stateful {}
 protocol ChattingModelActionable: AnyObject {
     // content
     func setValidation(value: Bool)
+    func setMessageList(message: MessageList)
+    func appendMessageList(message: MessageList)
+    
     func setSocketStatus(isConnected: Bool)
     func socketReceivedNewMessage(message: Message)
     
@@ -68,6 +76,17 @@ extension ChattingModel: ChattingModelActionable {
     // content
     func setValidation(value: Bool) {
         isValidated = value
+    }
+    func setMessageList(message: MessageList) {
+        messageDataSource = message
+    }
+    func appendMessageList(message: MessageList) {
+        let oldMessages = messageDataSource.messages
+        var newMessages = message.messages
+        newMessages.append(contentsOf: oldMessages)
+        messageDataSource.messages = newMessages
+        messageDataSource.nextCursor = message.nextCursor
+        messageDataSource.hasNext = message.hasNext
     }
     func setSocketStatus(isConnected: Bool) {
         isSocketConnected = isConnected

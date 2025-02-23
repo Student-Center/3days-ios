@@ -85,7 +85,8 @@ extension LoggingMiddleware {
         
         if let bodyData = bodyData,
            let responseString = String(data: bodyData, encoding: .utf8)?.toPrettyPrintedString {
-            debugPrint("✅ [Response] : \(responseString)")
+            print("✅ [Response] : ")
+            print(responseString)
         } else {
             debugPrint("✅ [Response] : 응답 없음")
         }

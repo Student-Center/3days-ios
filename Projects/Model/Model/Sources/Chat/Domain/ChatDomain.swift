@@ -12,8 +12,8 @@ import OpenapiGenerated
 
 public struct MessageList {
     public var messages: [Message]
-    public let hasNext: Bool?
-    public let nextCursor: String?
+    public var hasNext: Bool?
+    public var nextCursor: String?
     
     public var messageWithSections: [[Message]] {
         return messages.toMessageSections
@@ -29,14 +29,14 @@ public struct MessageList {
         self.nextCursor = nextCursor
     }
     
-    public init(from dto: Components.Schemas.MessageList) {
+    public init(from dto: Components.Schemas.GetChannelMessagesResponse) {
         if let messages = dto.messages {
             self.messages = messages.map { Message(from: $0) }
         } else {
             self.messages = []
         }
-        self.hasNext = dto.hasNext
-        self.nextCursor = dto.nextCursor
+        self.hasNext = dto.next != nil
+        self.nextCursor = dto.next
     }
 }
 
@@ -93,7 +93,10 @@ public struct Message: Identifiable, Hashable, Equatable {
     public init(from dto: Components.Schemas.Message) {
         self.id = dto.id
         self.senderUserId = dto.senderUserId
-        self.createdAt = dto.createdAt
+        self.createdAt = DateConverter.stringToDate(
+            string: dto.createdAt,
+            format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        )
         self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
         self.content = MessageContent(from: dto.content)
     }
@@ -229,7 +232,7 @@ public struct MessageContent {
         case .TEXT:
             self.type = .text
         case .CARD:
-            self.type = .card(dto.cardColor == .BLUE ? .blue : .pink)
+            self.type = .card(dto.cardColor == "BLUE" ? .blue : .pink)
         case .none:
             self.type = .text
         }
@@ -264,15 +267,38 @@ public struct OtherUser: Equatable {
 extension Message {
     public static var mock: [Message] {
         return [
-            .init(message: "안녕", type: .my),
-            .init(message: "3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
-            .init(message: "헤헤", type: .my),
-            .init(message: "안녕", type: .other(.init(id: "2"))),
-            .init(message: "안녕", type: .my),
-            .init(message: "님", type: .other(.init(id: "2"))),
-            .init(message: "3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
-            .init(message: "하세요", type: .other(.init(id: "2")))
-            
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2")))
             ]
     }
 }

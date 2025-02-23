@@ -60,7 +60,6 @@ extension StompClient {
             .receive(on: RunLoop.main)
             .sink { [weak self] event in
                 guard let self else { return }
-                print("event", event)
                 switch event {
                 case .connected(_):
                     socketConnectionStatus.send(.connected)

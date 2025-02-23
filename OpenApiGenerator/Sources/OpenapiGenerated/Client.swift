@@ -2309,15 +2309,15 @@ public struct Client: APIProtocol {
                     in: &request,
                     style: .form,
                     explode: true,
-                    name: "size",
-                    value: input.query.size
+                    name: "next",
+                    value: input.query.next
                 )
                 try converter.setQueryItemAsURI(
                     in: &request,
                     style: .form,
                     explode: true,
-                    name: "cursor",
-                    value: input.query.cursor
+                    name: "limit",
+                    value: input.query.limit
                 )
                 converter.setAcceptHeader(
                     in: &request.headerFields,
@@ -2339,7 +2339,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Components.Schemas.MessageList.self,
+                            Components.Schemas.GetChannelMessagesResponse.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)

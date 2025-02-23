@@ -457,7 +457,7 @@ public enum Components {
             /// 에러 발생 시각 (ISO 8601)
             ///
             /// - Remark: Generated from `#/components/schemas/ErrorResponse/time`.
-            public var time: Foundation.Date
+            public var time: Swift.String
             /// 에러 유형
             ///
             /// - Remark: Generated from `#/components/schemas/ErrorResponse/type`.
@@ -478,7 +478,7 @@ public enum Components {
             ///   - code: 에러 코드
             ///   - message: 상세 에러 메시지
             public init(
-                time: Foundation.Date,
+                time: Swift.String,
                 _type: Swift.String,
                 code: Swift.String,
                 message: Swift.String? = nil
@@ -1529,37 +1529,29 @@ public enum Components {
             case ACTIVE = "ACTIVE"
             case INACTIVE = "INACTIVE"
         }
-        /// - Remark: Generated from `#/components/schemas/MessageList`.
-        public struct MessageList: Codable, Hashable, Sendable {
-            /// - Remark: Generated from `#/components/schemas/MessageList/messages`.
+        /// - Remark: Generated from `#/components/schemas/GetChannelMessagesResponse`.
+        public struct GetChannelMessagesResponse: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/GetChannelMessagesResponse/messages`.
             public var messages: [Components.Schemas.Message]?
-            /// 다음 페이지 존재 여부
+            /// 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
             ///
-            /// - Remark: Generated from `#/components/schemas/MessageList/hasNext`.
-            public var hasNext: Swift.Bool?
-            /// 다음 페이지 조회를 위한 커서 (마지막 메시지 ID)
-            ///
-            /// - Remark: Generated from `#/components/schemas/MessageList/nextCursor`.
-            public var nextCursor: Swift.String?
-            /// Creates a new `MessageList`.
+            /// - Remark: Generated from `#/components/schemas/GetChannelMessagesResponse/next`.
+            public var next: Swift.String?
+            /// Creates a new `GetChannelMessagesResponse`.
             ///
             /// - Parameters:
             ///   - messages:
-            ///   - hasNext: 다음 페이지 존재 여부
-            ///   - nextCursor: 다음 페이지 조회를 위한 커서 (마지막 메시지 ID)
+            ///   - next: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
             public init(
                 messages: [Components.Schemas.Message]? = nil,
-                hasNext: Swift.Bool? = nil,
-                nextCursor: Swift.String? = nil
+                next: Swift.String? = nil
             ) {
                 self.messages = messages
-                self.hasNext = hasNext
-                self.nextCursor = nextCursor
+                self.next = next
             }
             public enum CodingKeys: String, CodingKey {
                 case messages
-                case hasNext
-                case nextCursor
+                case next
             }
         }
         /// - Remark: Generated from `#/components/schemas/Message`.
@@ -1573,7 +1565,7 @@ public enum Components {
             /// - Remark: Generated from `#/components/schemas/Message/content`.
             public var content: Components.Schemas.MessageContent
             /// - Remark: Generated from `#/components/schemas/Message/createdAt`.
-            public var createdAt: Foundation.Date
+            public var createdAt: Swift.String
             /// Creates a new `Message`.
             ///
             /// - Parameters:
@@ -1587,7 +1579,7 @@ public enum Components {
                 channelId: Swift.String,
                 senderUserId: Swift.String,
                 content: Components.Schemas.MessageContent,
-                createdAt: Foundation.Date
+                createdAt: Swift.String
             ) {
                 self.id = id
                 self.channelId = channelId
@@ -1615,12 +1607,7 @@ public enum Components {
             /// - Remark: Generated from `#/components/schemas/MessageContent/text`.
             public var text: Swift.String?
             /// - Remark: Generated from `#/components/schemas/MessageContent/cardColor`.
-            @frozen public enum cardColorPayload: String, Codable, Hashable, Sendable {
-                case BLUE = "BLUE"
-                case PINK = "PINK"
-            }
-            /// - Remark: Generated from `#/components/schemas/MessageContent/cardColor`.
-            public var cardColor: Components.Schemas.MessageContent.cardColorPayload?
+            public var cardColor: Swift.String?
             /// Creates a new `MessageContent`.
             ///
             /// - Parameters:
@@ -1630,7 +1617,7 @@ public enum Components {
             public init(
                 _type: Components.Schemas.MessageContent._typePayload? = nil,
                 text: Swift.String? = nil,
-                cardColor: Components.Schemas.MessageContent.cardColorPayload? = nil
+                cardColor: Swift.String? = nil
             ) {
                 self._type = _type
                 self.text = text
@@ -5364,25 +5351,25 @@ public enum Operations {
             public var path: Operations.getChannelMessages.Input.Path
             /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query`.
             public struct Query: Sendable, Hashable {
-                /// 한 번에 조회할 메시지 개수
+                /// 페이지네이션을 위한 다음 검색 시작 ID
                 ///
-                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query/size`.
-                public var size: Swift.Int?
-                /// 이전 조회 결과의 마지막 메시지 ID (이 메시지보다 이전 메시지들을 조회)
+                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query/next`.
+                public var next: Components.Parameters.NextQuery?
+                /// 반환할 최대 결과 수
                 ///
-                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query/cursor`.
-                public var cursor: Swift.String?
+                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query/limit`.
+                public var limit: Components.Parameters.LimitQuery?
                 /// Creates a new `Query`.
                 ///
                 /// - Parameters:
-                ///   - size: 한 번에 조회할 메시지 개수
-                ///   - cursor: 이전 조회 결과의 마지막 메시지 ID (이 메시지보다 이전 메시지들을 조회)
+                ///   - next: 페이지네이션을 위한 다음 검색 시작 ID
+                ///   - limit: 반환할 최대 결과 수
                 public init(
-                    size: Swift.Int? = nil,
-                    cursor: Swift.String? = nil
+                    next: Components.Parameters.NextQuery? = nil,
+                    limit: Components.Parameters.LimitQuery? = nil
                 ) {
-                    self.size = size
-                    self.cursor = cursor
+                    self.next = next
+                    self.limit = limit
                 }
             }
             public var query: Operations.getChannelMessages.Input.Query
@@ -5419,12 +5406,12 @@ public enum Operations {
                 /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/responses/200/content`.
                 @frozen public enum Body: Sendable, Hashable {
                     /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/responses/200/content/application\/json`.
-                    case json(Components.Schemas.MessageList)
+                    case json(Components.Schemas.GetChannelMessagesResponse)
                     /// The associated value of the enum case if `self` is `.json`.
                     ///
                     /// - Throws: An error if `self` is not `.json`.
                     /// - SeeAlso: `.json`.
-                    public var json: Components.Schemas.MessageList {
+                    public var json: Components.Schemas.GetChannelMessagesResponse {
                         get throws {
                             switch self {
                             case let .json(body):

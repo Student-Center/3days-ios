@@ -12,7 +12,10 @@ import Model
 
 //MARK: - Service Protocol
 public protocol ChatServiceProtocol {
-    func requestChannelMessage(channeId: String) async throws -> MessageList
+    func requestChannelMessage(
+        channeId: String,
+        nextCursor: String?
+    ) async throws -> MessageList
 }
 
 //MARK: - Service
@@ -22,9 +25,22 @@ public final class ChatService {
 }
 
 extension ChatService: ChatServiceProtocol {
-    public func requestChannelMessage(channeId: String) async throws -> MessageList {
-        let response = try await client.getChannelMessages(.init(path: .init(channelId: channeId)))
+    public func requestChannelMessage(
+        channeId: String,
+        nextCursor: String? = nil
+    ) async throws -> MessageList {
+        var response = try await client.getChannelMessages(
+            .init(
+                path: .init(
+                    channelId: channeId
+                ),
+                query: .init(
+                    next: nextCursor
+                )
+            )
+        )
             .ok.body.json
+        response.messages?.reverse()
         return MessageList(from: response)
     }
 }

@@ -21,15 +21,18 @@ class ChattingIntent {
     private var subscriptions = [AnyCancellable]()
     private let channelId: String = "33333333-3333-3333-3333-333333333333"
     private let tempUserId: String = "11111111-1111-1111-1111-111111111111"
+    private let chatService: ChatServiceProtocol
     
     // MARK: Life cycle
     init(
         model: ChattingModelActionable,
         input: DataModel,
-        customToken: String? = TokenManager.accessToken
+        customToken: String? = TokenManager.accessToken,
+        chatService: ChatServiceProtocol = ChatService.shared
     ) {
         self.input = input
         self.model = model
+        self.chatService = chatService
         stompClient.accessToken = customToken
         TokenManager.userId = tempUserId
     }
@@ -41,6 +44,7 @@ extension ChattingIntent {
         // content
         func onTapNextButton()
         func sendMessage(_ message: String)
+        func requestNextPage(cursor: String?)
         
         // default
         func onAppear()
@@ -57,6 +61,7 @@ extension ChattingIntent: ChattingIntent.Intentable {
         print("onAppear, 연결시도")
         subscribeStomp()
         stompClient.connect()
+        requestMessageList()
     }
     
     func task() async {}
@@ -81,7 +86,6 @@ extension ChattingIntent: ChattingIntent.Intentable {
             .receive(on: RunLoop.main)
             .sink { [weak self] event in
                 guard let self else { return }
-                print("event", event)
                 switch event {
                 case .connected:
                     print("connected")
@@ -101,5 +105,27 @@ extension ChattingIntent: ChattingIntent.Intentable {
                 model?.socketReceivedNewMessage(message: message)
             }
             .store(in: &subscriptions)
+    }
+    
+    func requestMessageList(nextCursor: String? = nil) {
+        Task {
+            do {
+                let messageList = try await chatService.requestChannelMessage(
+                    channeId: channelId,
+                    nextCursor: nextCursor
+                )
+                if nextCursor == nil {
+                    model?.setMessageList(message: messageList)
+                } else {
+                    model?.appendMessageList(message: messageList)
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    func requestNextPage(cursor: String?) {
+        requestMessageList(nextCursor: cursor)
     }
 }

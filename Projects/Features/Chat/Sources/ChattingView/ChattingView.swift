@@ -41,10 +41,16 @@ public struct ChattingView: View {
             ZStack {
                 ChattingListView(
                     messageDataSource: state.messageDataSource,
+                    hasNextPage: state.hasNextPage,
                     inputText: $inputText,
                     sendAction: {
                         intent.sendMessage(inputText)
                         inputText = ""
+                    },
+                    nextPageAction: {
+                        intent.requestNextPage(
+                            cursor: state.messageDataSource.nextCursor
+                        )
                     }
                 )
             }
@@ -66,11 +72,13 @@ public struct ChattingView: View {
 public struct ChattingListView: View {
     
     let messageDataSource: MessageList
+    let hasNextPage: Bool
     @Binding var inputText: String
     @State private var textEditorHeight: CGFloat = 23
     @State private var textFieldSize: CGSize = .init()
     
     var sendAction: () -> Void
+    var nextPageAction: () -> Void
     
     @FocusState var isTextFieldFocused
     
@@ -78,6 +86,15 @@ public struct ChattingListView: View {
         VStack {
             ScrollView {
                 LazyVStack(spacing: 10) {
+                    
+                    // pagination
+                    if hasNextPage {
+                        ProgressView()
+                            .onAppear {
+                                nextPageAction()
+                            }
+                    }
+                    
                     ForEach(messageDataSource.messageWithSections, id: \.self) { section in
                         LazyVStack(spacing: 2) {
                             ForEach(section) { model in
@@ -95,6 +112,7 @@ public struct ChattingListView: View {
                 .rotationEffect(Angle(degrees: 180))
                 .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
                 .padding(.horizontal, 18)
+                .padding(.vertical, 0)
             }
             .rotationEffect(Angle(degrees: 180))
             .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
