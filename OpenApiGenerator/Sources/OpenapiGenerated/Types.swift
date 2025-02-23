@@ -53,6 +53,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `PUT /users/my`.
     /// - Remark: Generated from `#/paths//users/my/put(updateMyUserInfo)`.
     func updateMyUserInfo(_ input: Operations.updateMyUserInfo.Input) async throws -> Operations.updateMyUserInfo.Output
+    /// 회원 탈퇴
+    ///
+    /// 요청 회원을 탈퇴합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)`.
+    func deleteMyUser(_ input: Operations.deleteMyUser.Input) async throws -> Operations.deleteMyUser.Output
     /// 프로필 이미지 업로드 URL 생성
     ///
     /// 프로필 이미지 업로드를 위한 URL을 생성합니다.
@@ -81,6 +88,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `PUT /users/my/desiredPartner`.
     /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)`.
     func updateMyDesiredPartner(_ input: Operations.updateMyDesiredPartner.Input) async throws -> Operations.updateMyDesiredPartner.Output
+    /// 유저 커넥션 활성화 상태 변경
+    ///
+    /// 현재 로그인한 사용자의 커넥션 상태를 활성화 또는 비활성화합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/my/connection/status`.
+    /// - Remark: Generated from `#/paths//users/my/connection/status/put(updateConnectionStatus)`.
+    func updateConnectionStatus(_ input: Operations.updateConnectionStatus.Input) async throws -> Operations.updateConnectionStatus.Output
     /// 프로필 위젯 추가 및 수정
     ///
     /// 현재 사용자의 프로필 위젯을 추가 및 수정합니다.
@@ -130,6 +144,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `GET /companies/{companyId}`.
     /// - Remark: Generated from `#/paths//companies/{companyId}/get(getCompanyDetails)`.
     func getCompanyDetails(_ input: Operations.getCompanyDetails.Input) async throws -> Operations.getCompanyDetails.Output
+    /// 채널 메시지 목록 조회
+    ///
+    /// 특정 채널의 메시지 목록을 최신순으로 조회합니다. (무한스크롤)
+    ///
+    /// - Remark: HTTP `GET /chat/channels/{channelId}/messages`.
+    /// - Remark: Generated from `#/paths//chat/channels/{channelId}/messages/get(getChannelMessages)`.
+    func getChannelMessages(_ input: Operations.getChannelMessages.Input) async throws -> Operations.getChannelMessages.Output
 }
 
 /// Convenience overloads for operation inputs.
@@ -222,6 +243,15 @@ extension APIProtocol {
             body: body
         ))
     }
+    /// 회원 탈퇴
+    ///
+    /// 요청 회원을 탈퇴합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)`.
+    public func deleteMyUser(headers: Operations.deleteMyUser.Input.Headers = .init()) async throws -> Operations.deleteMyUser.Output {
+        try await deleteMyUser(Operations.deleteMyUser.Input(headers: headers))
+    }
     /// 프로필 이미지 업로드 URL 생성
     ///
     /// 프로필 이미지 업로드를 위한 URL을 생성합니다.
@@ -278,6 +308,21 @@ extension APIProtocol {
         body: Operations.updateMyDesiredPartner.Input.Body
     ) async throws -> Operations.updateMyDesiredPartner.Output {
         try await updateMyDesiredPartner(Operations.updateMyDesiredPartner.Input(
+            headers: headers,
+            body: body
+        ))
+    }
+    /// 유저 커넥션 활성화 상태 변경
+    ///
+    /// 현재 로그인한 사용자의 커넥션 상태를 활성화 또는 비활성화합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/my/connection/status`.
+    /// - Remark: Generated from `#/paths//users/my/connection/status/put(updateConnectionStatus)`.
+    public func updateConnectionStatus(
+        headers: Operations.updateConnectionStatus.Input.Headers = .init(),
+        body: Operations.updateConnectionStatus.Input.Body
+    ) async throws -> Operations.updateConnectionStatus.Output {
+        try await updateConnectionStatus(Operations.updateConnectionStatus.Input(
             headers: headers,
             body: body
         ))
@@ -381,6 +426,23 @@ extension APIProtocol {
             headers: headers
         ))
     }
+    /// 채널 메시지 목록 조회
+    ///
+    /// 특정 채널의 메시지 목록을 최신순으로 조회합니다. (무한스크롤)
+    ///
+    /// - Remark: HTTP `GET /chat/channels/{channelId}/messages`.
+    /// - Remark: Generated from `#/paths//chat/channels/{channelId}/messages/get(getChannelMessages)`.
+    public func getChannelMessages(
+        path: Operations.getChannelMessages.Input.Path,
+        query: Operations.getChannelMessages.Input.Query = .init(),
+        headers: Operations.getChannelMessages.Input.Headers = .init()
+    ) async throws -> Operations.getChannelMessages.Output {
+        try await getChannelMessages(Operations.getChannelMessages.Input(
+            path: path,
+            query: query,
+            headers: headers
+        ))
+    }
 }
 
 /// Server URLs defined in the OpenAPI document.
@@ -395,7 +457,7 @@ public enum Components {
             /// 에러 발생 시각 (ISO 8601)
             ///
             /// - Remark: Generated from `#/components/schemas/ErrorResponse/time`.
-            public var time: Foundation.Date
+            public var time: Swift.String
             /// 에러 유형
             ///
             /// - Remark: Generated from `#/components/schemas/ErrorResponse/type`.
@@ -416,7 +478,7 @@ public enum Components {
             ///   - code: 에러 코드
             ///   - message: 상세 에러 메시지
             public init(
-                time: Foundation.Date,
+                time: Swift.String,
                 _type: Swift.String,
                 code: Swift.String,
                 message: Swift.String? = nil
@@ -640,6 +702,8 @@ public enum Components {
             public var desiredPartner: Components.Schemas.UserDesiredPartner
             /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/profileWidgets`.
             public var profileWidgets: [Components.Schemas.ProfileWidget]
+            /// - Remark: Generated from `#/components/schemas/GetMyUserInfoResponse/status`.
+            public var status: Components.Schemas.ConnectionStatus
             /// Creates a new `GetMyUserInfoResponse`.
             ///
             /// - Parameters:
@@ -650,6 +714,7 @@ public enum Components {
             ///   - profile:
             ///   - desiredPartner:
             ///   - profileWidgets:
+            ///   - status:
             public init(
                 id: Swift.String? = nil,
                 name: Swift.String,
@@ -657,7 +722,8 @@ public enum Components {
                 phoneNumber: Swift.String,
                 profile: Components.Schemas.UserProfileDisplayInfo,
                 desiredPartner: Components.Schemas.UserDesiredPartner,
-                profileWidgets: [Components.Schemas.ProfileWidget]
+                profileWidgets: [Components.Schemas.ProfileWidget],
+                status: Components.Schemas.ConnectionStatus
             ) {
                 self.id = id
                 self.name = name
@@ -666,6 +732,7 @@ public enum Components {
                 self.profile = profile
                 self.desiredPartner = desiredPartner
                 self.profileWidgets = profileWidgets
+                self.status = status
             }
             public enum CodingKeys: String, CodingKey {
                 case id
@@ -675,6 +742,7 @@ public enum Components {
                 case profile
                 case desiredPartner
                 case profileWidgets
+                case status
             }
         }
         /// 현재 사용자 프로필 수정 요청 (이름, 직군, 직장, 활동 지역)
@@ -1341,6 +1409,36 @@ public enum Components {
                 case _extension = "extension"
             }
         }
+        /// - Remark: Generated from `#/components/schemas/UpdateConnectionStatusRequest`.
+        public struct UpdateConnectionStatusRequest: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/UpdateConnectionStatusRequest/status`.
+            public var status: Components.Schemas.ConnectionStatus
+            /// Creates a new `UpdateConnectionStatusRequest`.
+            ///
+            /// - Parameters:
+            ///   - status:
+            public init(status: Components.Schemas.ConnectionStatus) {
+                self.status = status
+            }
+            public enum CodingKeys: String, CodingKey {
+                case status
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/UpdateConnectionStatusResponse`.
+        public struct UpdateConnectionStatusResponse: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/UpdateConnectionStatusResponse/status`.
+            public var status: Components.Schemas.ConnectionStatus
+            /// Creates a new `UpdateConnectionStatusResponse`.
+            ///
+            /// - Parameters:
+            ///   - status:
+            public init(status: Components.Schemas.ConnectionStatus) {
+                self.status = status
+            }
+            public enum CodingKeys: String, CodingKey {
+                case status
+            }
+        }
         /// - Remark: Generated from `#/components/schemas/ProfileWidget`.
         public struct ProfileWidget: Codable, Hashable, Sendable {
             /// - Remark: Generated from `#/components/schemas/ProfileWidget/type`.
@@ -1422,6 +1520,113 @@ public enum Components {
                 case id
                 case url
                 case _extension = "extension"
+            }
+        }
+        /// 커넥션 활성화 상태
+        ///
+        /// - Remark: Generated from `#/components/schemas/ConnectionStatus`.
+        @frozen public enum ConnectionStatus: String, Codable, Hashable, Sendable {
+            case ACTIVE = "ACTIVE"
+            case INACTIVE = "INACTIVE"
+        }
+        /// - Remark: Generated from `#/components/schemas/GetChannelMessagesResponse`.
+        public struct GetChannelMessagesResponse: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/GetChannelMessagesResponse/messages`.
+            public var messages: [Components.Schemas.Message]?
+            /// 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+            ///
+            /// - Remark: Generated from `#/components/schemas/GetChannelMessagesResponse/next`.
+            public var next: Swift.String?
+            /// Creates a new `GetChannelMessagesResponse`.
+            ///
+            /// - Parameters:
+            ///   - messages:
+            ///   - next: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+            public init(
+                messages: [Components.Schemas.Message]? = nil,
+                next: Swift.String? = nil
+            ) {
+                self.messages = messages
+                self.next = next
+            }
+            public enum CodingKeys: String, CodingKey {
+                case messages
+                case next
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/Message`.
+        public struct Message: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/Message/id`.
+            public var id: Swift.String
+            /// - Remark: Generated from `#/components/schemas/Message/channelId`.
+            public var channelId: Swift.String
+            /// - Remark: Generated from `#/components/schemas/Message/senderUserId`.
+            public var senderUserId: Swift.String
+            /// - Remark: Generated from `#/components/schemas/Message/content`.
+            public var content: Components.Schemas.MessageContent
+            /// - Remark: Generated from `#/components/schemas/Message/createdAt`.
+            public var createdAt: Swift.String
+            /// Creates a new `Message`.
+            ///
+            /// - Parameters:
+            ///   - id:
+            ///   - channelId:
+            ///   - senderUserId:
+            ///   - content:
+            ///   - createdAt:
+            public init(
+                id: Swift.String,
+                channelId: Swift.String,
+                senderUserId: Swift.String,
+                content: Components.Schemas.MessageContent,
+                createdAt: Swift.String
+            ) {
+                self.id = id
+                self.channelId = channelId
+                self.senderUserId = senderUserId
+                self.content = content
+                self.createdAt = createdAt
+            }
+            public enum CodingKeys: String, CodingKey {
+                case id
+                case channelId
+                case senderUserId
+                case content
+                case createdAt
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/MessageContent`.
+        public struct MessageContent: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/MessageContent/type`.
+            @frozen public enum _typePayload: String, Codable, Hashable, Sendable {
+                case TEXT = "TEXT"
+                case CARD = "CARD"
+            }
+            /// - Remark: Generated from `#/components/schemas/MessageContent/type`.
+            public var _type: Components.Schemas.MessageContent._typePayload?
+            /// - Remark: Generated from `#/components/schemas/MessageContent/text`.
+            public var text: Swift.String?
+            /// - Remark: Generated from `#/components/schemas/MessageContent/cardColor`.
+            public var cardColor: Swift.String?
+            /// Creates a new `MessageContent`.
+            ///
+            /// - Parameters:
+            ///   - _type:
+            ///   - text:
+            ///   - cardColor:
+            public init(
+                _type: Components.Schemas.MessageContent._typePayload? = nil,
+                text: Swift.String? = nil,
+                cardColor: Swift.String? = nil
+            ) {
+                self._type = _type
+                self.text = text
+                self.cardColor = cardColor
+            }
+            public enum CodingKeys: String, CodingKey {
+                case _type = "type"
+                case text
+                case cardColor
             }
         }
     }
@@ -2810,6 +3015,163 @@ public enum Operations {
             }
         }
     }
+    /// 회원 탈퇴
+    ///
+    /// 요청 회원을 탈퇴합니다.
+    ///
+    /// - Remark: HTTP `DELETE /users/my`.
+    /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)`.
+    public enum deleteMyUser {
+        public static let id: Swift.String = "deleteMyUser"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/my/DELETE/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteMyUser.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteMyUser.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.deleteMyUser.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            public init(headers: Operations.deleteMyUser.Input.Headers = .init()) {
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct NoContent: Sendable, Hashable {
+                /// Creates a new `NoContent`.
+                public init() {}
+            }
+            /// 회원 탈퇴 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)/responses/204`.
+            ///
+            /// HTTP response code: `204 noContent`.
+            case noContent(Operations.deleteMyUser.Output.NoContent)
+            /// The associated value of the enum case if `self` is `.noContent`.
+            ///
+            /// - Throws: An error if `self` is not `.noContent`.
+            /// - SeeAlso: `.noContent`.
+            public var noContent: Operations.deleteMyUser.Output.NoContent {
+                get throws {
+                    switch self {
+                    case let .noContent(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "noContent",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리소스를 찾을 수 없음
+            ///
+            /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Components.Responses.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Components.Responses.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
     /// 프로필 이미지 업로드 URL 생성
     ///
     /// 프로필 이미지 업로드를 위한 URL을 생성합니다.
@@ -3497,6 +3859,198 @@ public enum Operations {
             /// 서버 오류
             ///
             /// - Remark: Generated from `#/paths//users/my/desiredPartner/put(updateMyDesiredPartner)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 유저 커넥션 활성화 상태 변경
+    ///
+    /// 현재 로그인한 사용자의 커넥션 상태를 활성화 또는 비활성화합니다.
+    ///
+    /// - Remark: HTTP `PUT /users/my/connection/status`.
+    /// - Remark: Generated from `#/paths//users/my/connection/status/put(updateConnectionStatus)`.
+    public enum updateConnectionStatus {
+        public static let id: Swift.String = "updateConnectionStatus"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/my/connection/status/PUT/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.updateConnectionStatus.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.updateConnectionStatus.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.updateConnectionStatus.Input.Headers
+            /// - Remark: Generated from `#/paths/users/my/connection/status/PUT/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/my/connection/status/PUT/requestBody/content/application\/json`.
+                case json(Components.Schemas.UpdateConnectionStatusRequest)
+            }
+            public var body: Operations.updateConnectionStatus.Input.Body
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            ///   - body:
+            public init(
+                headers: Operations.updateConnectionStatus.Input.Headers = .init(),
+                body: Operations.updateConnectionStatus.Input.Body
+            ) {
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/my/connection/status/PUT/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/my/connection/status/PUT/responses/200/content/application\/json`.
+                    case json(Components.Schemas.UpdateConnectionStatusResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.UpdateConnectionStatusResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.updateConnectionStatus.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.updateConnectionStatus.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 상태 변경 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/connection/status/put(updateConnectionStatus)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.updateConnectionStatus.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.updateConnectionStatus.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//users/my/connection/status/put(updateConnectionStatus)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//users/my/connection/status/put(updateConnectionStatus)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//users/my/connection/status/put(updateConnectionStatus)/responses/500`.
             ///
             /// HTTP response code: `500 internalServerError`.
             case internalServerError(Components.Responses.InternalServerError)
@@ -4735,6 +5289,234 @@ public enum Operations {
                     default:
                         try throwUnexpectedResponseStatus(
                             expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// 채널 메시지 목록 조회
+    ///
+    /// 특정 채널의 메시지 목록을 최신순으로 조회합니다. (무한스크롤)
+    ///
+    /// - Remark: HTTP `GET /chat/channels/{channelId}/messages`.
+    /// - Remark: Generated from `#/paths//chat/channels/{channelId}/messages/get(getChannelMessages)`.
+    public enum getChannelMessages {
+        public static let id: Swift.String = "getChannelMessages"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/path`.
+            public struct Path: Sendable, Hashable {
+                /// 채널 ID
+                ///
+                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/path/channelId`.
+                public var channelId: Swift.String
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - channelId: 채널 ID
+                public init(channelId: Swift.String) {
+                    self.channelId = channelId
+                }
+            }
+            public var path: Operations.getChannelMessages.Input.Path
+            /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query`.
+            public struct Query: Sendable, Hashable {
+                /// 페이지네이션을 위한 다음 검색 시작 ID
+                ///
+                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query/next`.
+                public var next: Components.Parameters.NextQuery?
+                /// 반환할 최대 결과 수
+                ///
+                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/query/limit`.
+                public var limit: Components.Parameters.LimitQuery?
+                /// Creates a new `Query`.
+                ///
+                /// - Parameters:
+                ///   - next: 페이지네이션을 위한 다음 검색 시작 ID
+                ///   - limit: 반환할 최대 결과 수
+                public init(
+                    next: Components.Parameters.NextQuery? = nil,
+                    limit: Components.Parameters.LimitQuery? = nil
+                ) {
+                    self.next = next
+                    self.limit = limit
+                }
+            }
+            public var query: Operations.getChannelMessages.Input.Query
+            /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getChannelMessages.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getChannelMessages.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.getChannelMessages.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - query:
+            ///   - headers:
+            public init(
+                path: Operations.getChannelMessages.Input.Path,
+                query: Operations.getChannelMessages.Input.Query = .init(),
+                headers: Operations.getChannelMessages.Input.Headers = .init()
+            ) {
+                self.path = path
+                self.query = query
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/chat/channels/{channelId}/messages/GET/responses/200/content/application\/json`.
+                    case json(Components.Schemas.GetChannelMessagesResponse)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.GetChannelMessagesResponse {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getChannelMessages.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getChannelMessages.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// 메시지 목록 조회 성공
+            ///
+            /// - Remark: Generated from `#/paths//chat/channels/{channelId}/messages/get(getChannelMessages)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.getChannelMessages.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.getChannelMessages.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//chat/channels/{channelId}/messages/get(getChannelMessages)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//chat/channels/{channelId}/messages/get(getChannelMessages)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리소스를 찾을 수 없음
+            ///
+            /// - Remark: Generated from `#/paths//chat/channels/{channelId}/messages/get(getChannelMessages)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Components.Responses.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Components.Responses.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
                             response: self
                         )
                     }

@@ -16,9 +16,18 @@ public enum ServerType: String {
     var baseURL: String {
         switch self {
         case .dev:
-            return Secret.devBaseUrl
+            return "https://\(Secret.devBaseUrl)"
         case .prod:
-            return Secret.prodBaseUrl
+            return "https://\(Secret.prodBaseUrl)"
+        }
+    }
+    
+    var socketBaseUrl: String {
+        switch self {
+        case .dev:
+            return "wss://\(Secret.devBaseUrl)/ws"
+        case .prod:
+            return "wss://\(Secret.prodBaseUrl)/ws"
         }
     }
     

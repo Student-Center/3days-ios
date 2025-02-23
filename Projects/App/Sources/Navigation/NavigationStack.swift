@@ -10,6 +10,7 @@ import SwiftUI
 import CommonKit
 import SignUp
 import Home
+import Chat
 import DesignPreview
 
 extension PathType {
@@ -88,6 +89,14 @@ extension PathType {
                 EditDateProfileJobView(userInfo)
             case .distance(let userInfo):
                 EditDateProfileDistanceView(userInfo)
+            }
+            
+        case .chat(let subView):
+            switch subView {
+            case .stompTestBed:
+                StompTestView()
+            case .chat(let customToken):
+                ChatContainerView(token: customToken)
             }
         }
     }

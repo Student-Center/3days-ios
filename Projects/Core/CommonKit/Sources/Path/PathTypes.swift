@@ -28,10 +28,13 @@ public enum PathType: Hashable {
     case signUp(SignUpSubViewType)
     case editProfile(EditProfileViewType)
     case editDreamPartner(EditDreamPartnerViewType)
+    case chat(ChatViewType)
     
     #if STAGING || DEBUG
     public static var debugPreviewTypes: [PathType] = [
         .designPreview,
+        .chat(.stompTestBed),
+        .chat(.chat(customToken: "")),
         .authDebug,
         .intro,
         .signUp(.authPhoneInput),
@@ -101,6 +104,12 @@ public enum PathType: Hashable {
             case .ageRange: return "이상형 나이대 수정"
             case .jobOccupation: return "이상형 직군 수정"
             case .distance: return "이상형과의 거리 수정"
+            }
+            
+        case .chat(let subview):
+            switch subview {
+            case .stompTestBed: return "Stomp Test Bed"
+            case .chat: return "Chatting"
             }
         }
     }
@@ -177,4 +186,9 @@ public enum EditDreamPartnerViewType {
     case ageRange(UserInfo)
     case jobOccupation(UserInfo)
     case distance(UserInfo)
+}
+
+public enum ChatViewType {
+    case stompTestBed
+    case chat(customToken: String? = nil)
 }

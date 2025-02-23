@@ -11,7 +11,7 @@ struct ThreeDaysApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ZStack(alignment: .bottomLeading) {
+            ZStack(alignment: .topTrailing) {
                 rootView
                 #if STAGING || DEBUG
                 debugMenuPicker

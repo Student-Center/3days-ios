@@ -42,6 +42,10 @@ let package = Package(
         .package(
             url: "https://github.com/BastiaanJansen/toast-swift.git",
             exact: "2.1.2"
+        ),
+        .package(
+            url: "https://github.com/Romixery/SwiftStomp.git",
+            exact: "1.2.1"
         )
     ]
 )

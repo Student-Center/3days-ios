@@ -51,6 +51,13 @@ let project: Project = .make(
             dependencies: [
                 .project(target: .home)
             ]
+        ),
+        .make(
+            target: .chat,
+            dependencies: [
+                .project(target: .commonKit),
+                .project(target: .designCore)
+            ]
         )
     ]
 )

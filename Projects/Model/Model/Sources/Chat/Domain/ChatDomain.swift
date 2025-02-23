@@ -1,0 +1,304 @@
+//
+//  ChatDomain.swift
+//  Model
+//
+//  Created by 김지수 on 2/9/25.
+//  Copyright © 2025 com.weave. All rights reserved.
+//
+
+import UIKit
+import CoreKit
+import OpenapiGenerated
+
+public struct MessageList {
+    public var messages: [Message]
+    public var hasNext: Bool?
+    public var nextCursor: String?
+    
+    public var messageWithSections: [[Message]] {
+        return messages.toMessageSections
+    }
+    
+    public init(
+        messages: [Message],
+        hasNext: Bool?,
+        nextCursor: String?
+    ) {
+        self.messages = messages
+        self.hasNext = hasNext
+        self.nextCursor = nextCursor
+    }
+    
+    public init(from dto: Components.Schemas.GetChannelMessagesResponse) {
+        if let messages = dto.messages {
+            self.messages = messages.map { Message(from: $0) }
+        } else {
+            self.messages = []
+        }
+        self.hasNext = dto.next != nil
+        self.nextCursor = dto.next
+    }
+}
+
+public struct Message: Identifiable, Hashable, Equatable {
+    public static func == (lhs: Message, rhs: Message) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    public let id: String
+    public let senderUserId: String
+    public let content: MessageContent
+    public let type: ChatUserType
+    public let createdAt: Date?
+    public var bubbleType: ChatBubbleType = .normal
+    public var needShowAvatar: Bool = true
+    public var showTimeStamp: Bool = true
+    public var isLoading: Bool = false
+    
+    public var sendTime: String {
+        return DateConverter.dateToString(
+            date: createdAt,
+            format: "a h시 m분"
+        )
+    }
+    
+    public init(
+        id: String,
+        senderUserId: String,
+        content: MessageContent,
+        type: ChatUserType,
+        createdAt: Date?,
+        bubbleType: ChatBubbleType
+    ) {
+        self.id = id
+        self.senderUserId = senderUserId
+        self.content = content
+        self.type = type
+        self.createdAt = createdAt
+        self.bubbleType = bubbleType
+    }
+    
+    public init(message: String, type: ChatUserType) {
+        self.id = UUID().uuidString
+        self.content = .init(type: .text, text: message)
+        self.type = type
+        self.senderUserId = ""
+        self.createdAt = Date()
+    }
+    
+    public init(from dto: Components.Schemas.Message) {
+        self.id = dto.id
+        self.senderUserId = dto.senderUserId
+        self.createdAt = DateConverter.stringToDate(
+            string: dto.createdAt,
+            format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        )
+        self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
+        self.content = MessageContent(from: dto.content)
+    }
+    
+    public init(from dto: ChatSocketResponse) {
+        self.id = dto.id
+        self.senderUserId = dto.senderUserId
+        self.createdAt = DateConverter.stringToDate(string: dto.createdAt)
+        self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
+        self.content = MessageContent(from: dto.content)
+    }
+}
+
+extension Array where Element == Message {
+    public var toMessageSections: [[Message]] {
+        var result: [[Message]] = []
+        var currentGroup: [Message] = []
+        
+        for message in self {
+            /*
+             이전 메시지와 type 이 달라졌는지,
+             시간 차이가 벌어졌는지 ?
+             -> 섹션 분리
+             */
+            if let lastMessage = currentGroup.last,
+               lastMessage.type == message.type,
+               isIntervalDifferent(
+                date1: lastMessage.createdAt,
+                date2: message.createdAt
+               ) == false {
+                currentGroup.append(message)
+            } else {
+                if !currentGroup.isEmpty {
+                    result.append(updateBubbleTypes(for: currentGroup))
+                }
+                currentGroup = [message]
+            }
+        }
+
+        if !currentGroup.isEmpty {
+            result.append(updateBubbleTypes(for: currentGroup))
+        }
+
+        return result
+    }
+    
+    // interval 이상으로 date 간 간격이 벌어졌는지 체크
+    private func isIntervalDifferent(
+        date1: Date?,
+        date2: Date?,
+        intervalSecond: Int = 120
+    ) -> Bool {
+        guard let date1 = date1,
+              let date2 = date2 else {
+            return false
+        }
+        let secondsDiff = abs(date1.timeIntervalSince(date2))
+        return Int(secondsDiff) > intervalSecond
+    }
+    
+    private func updateBubbleTypes(for messages: [Message]) -> [Message] {
+        return messages.enumerated().map { index, message in
+            var updatedMessage = message
+            updatedMessage.bubbleType = getBubbleType(for: index, count: messages.count)
+            updatedMessage.needShowAvatar = needShowAvatar(for: index, count: messages.count)
+            switch updatedMessage.bubbleType {
+            case .normal, .bottom:
+                updatedMessage.showTimeStamp = true
+            case .middle, .top:
+                updatedMessage.showTimeStamp = false
+            }
+            return updatedMessage
+        }
+    }
+    
+    private func getBubbleType(for index: Int, count: Int) -> ChatBubbleType {
+        switch count {
+        case 1:
+            return .normal
+        case 2:
+            return index == 0 ? .top : .bottom
+        default:
+            if index == 0 {
+                return .top
+            } else if index == count - 1 {
+                return .bottom
+            } else {
+                return .middle
+            }
+        }
+    }
+    
+    private func needShowAvatar(for index: Int, count: Int) -> Bool {
+        switch count {
+        case 1:
+            return true
+        default:
+            return index == count - 1
+        }
+    }
+}
+
+public enum ChatBubbleType {
+    case top
+    case middle
+    case bottom
+    case normal
+}
+
+
+public struct MessageContent {
+    public enum ColorType {
+        case blue
+        case pink
+    }
+    
+    public enum `Type` {
+        case text
+        case card(ColorType)
+    }
+    
+    public let type: Type
+    public let text: String
+    
+    init(type: Type, text: String) {
+        self.type = type
+        self.text = text
+    }
+    
+    init(from dto: Components.Schemas.MessageContent) {
+        self.text = dto.text ?? ""
+        switch dto._type {
+        case .TEXT:
+            self.type = .text
+        case .CARD:
+            self.type = .card(dto.cardColor == "BLUE" ? .blue : .pink)
+        case .none:
+            self.type = .text
+        }
+    }
+    
+    init(from dto: ChatSocketResponse.Content) {
+        self.text = dto.text
+        switch dto.type {
+        case "TEXT":
+            self.type = .text
+        case "CARD":
+            self.type = .card(.blue)
+        default:
+            self.type = .text
+        }
+    }
+}
+
+public enum ChatUserType: Equatable {
+    case my
+    case other(OtherUser)
+}
+
+public struct OtherUser: Equatable {
+    public let id: String
+    
+    public init(id: String) {
+        self.id = id
+    }
+}
+
+extension Message {
+    public static var mock: [Message] {
+        return [
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)헤헤", type: .my),
+            .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
+            .init(message: "(mock)안녕", type: .my),
+            .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
+            .init(message: "(mock)하세요", type: .other(.init(id: "2")))
+            ]
+    }
+}
