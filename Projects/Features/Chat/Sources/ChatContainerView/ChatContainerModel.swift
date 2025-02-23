@@ -1,5 +1,5 @@
 //
-//  ChattingModel.swift
+//  ChatContainerModel.swift
 //  Chat
 //
 //  Created by 김지수 on 2/4/25.
@@ -11,7 +11,7 @@ import CommonKit
 import CoreKit
 import Model
 
-final class ChattingModel: ObservableObject {
+final class ChatContainerModel: ObservableObject {
     
     //MARK: Stateful
     protocol Stateful {
@@ -51,10 +51,10 @@ final class ChattingModel: ObservableObject {
     @Published var showErrorAlert: ErrorModel?
 }
 
-extension ChattingModel: ChattingModel.Stateful {}
+extension ChatContainerModel: ChatContainerModel.Stateful {}
 
 //MARK: - Actionable
-protocol ChattingModelActionable: AnyObject {
+protocol ChatContainerModelActionable: AnyObject {
     // content
     func setValidation(value: Bool)
     func setMessageList(message: MessageList)
@@ -72,7 +72,7 @@ protocol ChattingModelActionable: AnyObject {
     func resetError()
 }
 
-extension ChattingModel: ChattingModelActionable {
+extension ChatContainerModel: ChatContainerModelActionable {
     // content
     func setValidation(value: Bool) {
         isValidated = value

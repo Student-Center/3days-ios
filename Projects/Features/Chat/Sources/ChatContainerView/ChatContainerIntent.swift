@@ -1,5 +1,5 @@
 //
-//  ChattingIntent.swift
+//  ChatContainerIntent.swift
 //  Chat
 //
 //  Created by 김지수 on 2/4/25.
@@ -14,8 +14,8 @@ import NetworkKit
 import Model
 
 //MARK: - Intent
-class ChattingIntent {
-    private weak var model: ChattingModelActionable?
+class ChatContainerIntent {
+    private weak var model: ChatContainerModelActionable?
     private let input: DataModel
     private let stompClient = StompClient.shared
     private var subscriptions = [AnyCancellable]()
@@ -25,7 +25,7 @@ class ChattingIntent {
     
     // MARK: Life cycle
     init(
-        model: ChattingModelActionable,
+        model: ChatContainerModelActionable,
         input: DataModel,
         customToken: String? = TokenManager.accessToken,
         chatService: ChatServiceProtocol = ChatService.shared
@@ -39,7 +39,7 @@ class ChattingIntent {
 }
 
 //MARK: - Intentable
-extension ChattingIntent {
+extension ChatContainerIntent {
     protocol Intentable {
         // content
         func onTapNextButton()
@@ -55,7 +55,7 @@ extension ChattingIntent {
 }
 
 //MARK: - Intentable
-extension ChattingIntent: ChattingIntent.Intentable {
+extension ChatContainerIntent: ChatContainerIntent.Intentable {
     // default
     func onAppear() {
         print("onAppear, 연결시도")

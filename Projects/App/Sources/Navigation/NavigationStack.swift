@@ -96,7 +96,7 @@ extension PathType {
             case .stompTestBed:
                 StompTestView()
             case .chat(let customToken):
-                ChattingView(token: customToken)
+                ChatContainerView(token: customToken)
             }
         }
     }
