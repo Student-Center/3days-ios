@@ -83,7 +83,7 @@ public struct ChattingListView: View {
     @FocusState var isTextFieldFocused
     
     public var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             ScrollView {
                 LazyVStack(spacing: 10) {
                     
@@ -112,7 +112,7 @@ public struct ChattingListView: View {
                 .rotationEffect(Angle(degrees: 180))
                 .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
                 .padding(.horizontal, 18)
-                .padding(.vertical, 0)
+                .padding(.vertical, 8)
             }
             .rotationEffect(Angle(degrees: 180))
             .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
@@ -179,7 +179,7 @@ struct TextInputContainerView: View {
             )
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.bottom, 8)
         .background(.clear)
     }
 }
