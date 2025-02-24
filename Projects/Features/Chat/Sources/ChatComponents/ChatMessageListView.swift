@@ -36,16 +36,13 @@ public struct ChatMessageListView: View {
                             }
                     }
                     
-                    ForEach(messageDataSource.messageWithSections, id: \.self) { section in
+                    ForEach(messageDataSource.toSectionItmes) { section in
                         LazyVStack(spacing: 2) {
-                            ForEach(section) { model in
-                                ChatMessageItemView(
-                                    text: model.content.text,
-                                    userType: model.type,
-                                    bubbleType: model.bubbleType,
-                                    timeStamp: model.showTimeStamp ? model.sendTime : nil,
-                                    avatarVisible: model.needShowAvatar
-                                )
+                            switch section {
+                            case .dateSeperator(let date):
+                                dateSeperator(date)
+                            case .messages(let dataSource):
+                                messageSection(dataSource)
                             }
                         }
                     }
@@ -67,6 +64,47 @@ public struct ChatMessageListView: View {
                 isTextFieldFocused: _isTextFieldFocused,
                 sendAction: sendAction
             )
+        }
+    }
+    
+    //MARK: - Date Seperator: 날짜 구분 컴포넌트
+    @ViewBuilder
+    func dateSeperator(_ date: String) -> some View {
+        let tintColor = Color(hex: 0x534C44)
+        HStack(spacing: 10) {
+            Rectangle()
+                .frame(height: 1)
+                .foregroundStyle(tintColor.opacity(0.1))
+            Text(date)
+                .pretendard(weight: ._400, size: 12)
+                .foregroundColor(tintColor.opacity(0.5))
+                .padding(.vertical, 16)
+            Rectangle()
+                .frame(height: 1)
+                .foregroundStyle(tintColor.opacity(0.1))
+        }
+        .padding(.horizontal, 10)
+    }
+    
+    //MARK: - Message Section: 메시지 컴포넌트 (섹션별)
+    @ViewBuilder
+    func messageSection(_ dateSource: [Message]) -> some View {
+        ForEach(dateSource) { message in
+            ChatMessageItemView(
+                text: message.content.text,
+                userType: message.type,
+                bubbleType: message.bubbleType,
+                timeStamp: message.showTimeStamp ? message.sendTime : nil,
+                avatarVisible: message.needShowAvatar
+            )
+        }
+    }
+}
+
+#Preview {
+    NavigationView {
+        ZStack {
+            ChatContainerView()
         }
     }
 }
