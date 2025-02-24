@@ -15,8 +15,8 @@ public struct MessageList {
     public var hasNext: Bool?
     public var nextCursor: String?
     
-    public var messageWithSections: [[Message]] {
-        return messages.toMessageSections
+    public var toSectionItmes: [ChatMessageItemType] {
+        return messages.toMessageSectionItems
     }
     
     public init(
@@ -107,95 +107,6 @@ public struct Message: Identifiable, Hashable, Equatable {
         self.createdAt = DateConverter.stringToDate(string: dto.createdAt)
         self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
         self.content = MessageContent(from: dto.content)
-    }
-}
-
-extension Array where Element == Message {
-    public var toMessageSections: [[Message]] {
-        var result: [[Message]] = []
-        var currentGroup: [Message] = []
-        
-        for message in self {
-            /*
-             이전 메시지와 type 이 달라졌는지,
-             시간 차이가 벌어졌는지 ?
-             -> 섹션 분리
-             */
-            if let lastMessage = currentGroup.last,
-               lastMessage.type == message.type,
-               isIntervalDifferent(
-                date1: lastMessage.createdAt,
-                date2: message.createdAt
-               ) == false {
-                currentGroup.append(message)
-            } else {
-                if !currentGroup.isEmpty {
-                    result.append(updateBubbleTypes(for: currentGroup))
-                }
-                currentGroup = [message]
-            }
-        }
-
-        if !currentGroup.isEmpty {
-            result.append(updateBubbleTypes(for: currentGroup))
-        }
-
-        return result
-    }
-    
-    // interval 이상으로 date 간 간격이 벌어졌는지 체크
-    private func isIntervalDifferent(
-        date1: Date?,
-        date2: Date?,
-        intervalSecond: Int = 120
-    ) -> Bool {
-        guard let date1 = date1,
-              let date2 = date2 else {
-            return false
-        }
-        let secondsDiff = abs(date1.timeIntervalSince(date2))
-        return Int(secondsDiff) > intervalSecond
-    }
-    
-    private func updateBubbleTypes(for messages: [Message]) -> [Message] {
-        return messages.enumerated().map { index, message in
-            var updatedMessage = message
-            updatedMessage.bubbleType = getBubbleType(for: index, count: messages.count)
-            updatedMessage.needShowAvatar = needShowAvatar(for: index, count: messages.count)
-            switch updatedMessage.bubbleType {
-            case .normal, .bottom:
-                updatedMessage.showTimeStamp = true
-            case .middle, .top:
-                updatedMessage.showTimeStamp = false
-            }
-            return updatedMessage
-        }
-    }
-    
-    private func getBubbleType(for index: Int, count: Int) -> ChatBubbleType {
-        switch count {
-        case 1:
-            return .normal
-        case 2:
-            return index == 0 ? .top : .bottom
-        default:
-            if index == 0 {
-                return .top
-            } else if index == count - 1 {
-                return .bottom
-            } else {
-                return .middle
-            }
-        }
-    }
-    
-    private func needShowAvatar(for index: Int, count: Int) -> Bool {
-        switch count {
-        case 1:
-            return true
-        default:
-            return index == count - 1
-        }
     }
 }
 
