@@ -50,23 +50,26 @@ public struct WidgetSelectionView: View {
                 .padding(.top, 20)
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
-                    let totalWidgets = WidgetType.allCases
                     let userWidgets = AppCoordinator.shared.userInfo?.profileWidgets
                         .map { $0.widgetType } ?? []
-                    let availableWidgets = totalWidgets
-                        .filter { !userWidgets.contains($0) }
-                    
-                    ForEach(availableWidgets, id: \.self) { widget in
+                    ForEach(WidgetType.allCases, id: \.self) { widget in
+                        let isDisabled = userWidgets.contains { $0 == widget }
                         ProfileWidgetView(
                             title: widget.title + widget.emoji,
                             bodyText: widget.exampleText,
                             titleColor: widget.titleColor,
                             bodyColor: widget.bodyColor,
                             gradientColors: widget.gradationColors,
-                            iconType: .add
+                            iconType: nil,
+                            isDisabled: isDisabled
                         )
                         .onTapGesture {
+                            guard !isDisabled else {
+                                ToastHelper.show(message: "이미 등록된 위젯이에요")
+                                return
+                            }
                             intent.onTapWidget(widget)
+                            
                         }
                     }
                 }
