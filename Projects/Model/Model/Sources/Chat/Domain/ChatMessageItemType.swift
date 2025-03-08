@@ -77,7 +77,9 @@ extension Array where Element == Message {
                                 card: .init(
                                     id: message.id,
                                     message: message.content.text,
-                                    color: color
+                                    userType: message.type,
+                                    color: color,
+                                    createdAt: message.createdAt
                                 )
                             )
                         )

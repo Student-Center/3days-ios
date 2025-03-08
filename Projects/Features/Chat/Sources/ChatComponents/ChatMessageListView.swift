@@ -36,7 +36,7 @@ public struct ChatMessageListView: View {
                         case .systemMessage(let content):
                             systemMessage(content)
                         case .card(let card):
-                            Text(card.message)
+                            cardView(card)
                         }
                     }
                     .id(section.id)
@@ -113,6 +113,87 @@ public struct ChatMessageListView: View {
         }
     }
     
+    //MARK: - Card
+    @ViewBuilder
+    func cardView(_ content: ChatCard) -> some View {
+        if content.hasSent {
+            switch content.userType {
+            case .my:
+                HStack(alignment: .bottom, spacing: 4) {
+                    Spacer()
+                    ChatTimeStampView(timeStamp: content.sendTime)
+                    makeCard(
+                        color: content.color,
+                        userType: content.userType,
+                        hasRead: true
+                    )
+                }
+            case .other:
+                HStack(alignment: .bottom, spacing: 10) {
+                    DesignCore.Images.profileDefault.image
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .clipShape(Circle())
+                        .background {
+                            Circle()
+                                .stroke(.white, lineWidth: 1)
+                        }
+                    
+                    HStack(alignment: .bottom, spacing: 4) {
+                        makeCard(
+                            color: content.color,
+                            userType: content.userType,
+                            hasRead: true
+                        )
+                        
+                        ChatTimeStampView(timeStamp: content.sendTime)
+                    }
+                    Spacer()
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func makeCard(
+        color: MessageContent.ColorType,
+        userType: ChatUserType,
+        hasRead: Bool
+    ) -> some View {
+        ZStack {
+            color.cardImage
+                .resizable()
+            Circle()
+                .fill(.black.opacity(0.4))
+                .frame(width: 28, height: 28)
+            switch userType {
+            case .my:
+                DesignCore.Images.iconArrowLeft.image
+                    .resizable()
+                    .frame(width: 16, height: 16)
+            case .other:
+                DesignCore.Images.iconArrowRight.image
+                    .resizable()
+                    .frame(width: 16, height: 16)
+            }
+            if !hasRead {
+                HStack {
+                    Spacer()
+                    VStack {
+                        Circle()
+                            .fill(Color(hex: 0xF2597F))
+                            .stroke(Color.white, lineWidth: 1)
+                            .frame(width: 10, height: 10)
+                        Spacer()
+                    }
+                }
+                .padding(.all, 10)
+            }
+        }
+        .frame(width: 85, height: 121)
+        .shadow(.default)
+    }
+    
     //MARK: - System Message
     @ViewBuilder
     func systemMessage(_ content: ChatSystemMessage) -> some View {
@@ -127,6 +208,17 @@ public struct ChatMessageListView: View {
     NavigationView {
         ZStack {
             ChatContainerView()
+        }
+    }
+}
+
+extension MessageContent.ColorType {
+    var cardImage: Image {
+        switch self {
+        case .blue:
+            return DesignCore.Images.cardBlue.image
+        case .pink:
+            return DesignCore.Images.cardPink.image
         }
     }
 }
