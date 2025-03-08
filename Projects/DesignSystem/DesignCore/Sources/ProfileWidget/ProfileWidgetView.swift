@@ -29,6 +29,7 @@ public struct ProfileWidgetView: View {
     public let bodyColor: Color
     public let gradientColors: [Color]
     public var iconType: ProfileWidgetIconType?
+    public let isDisabled: Bool
     
     public init(
         title: String,
@@ -36,7 +37,8 @@ public struct ProfileWidgetView: View {
         titleColor: Color,
         bodyColor: Color,
         gradientColors: [Color],
-        iconType: ProfileWidgetIconType? = nil
+        iconType: ProfileWidgetIconType? = nil,
+        isDisabled: Bool = false
     ) {
         self.title = title
         self.bodyText = bodyText
@@ -44,6 +46,7 @@ public struct ProfileWidgetView: View {
         self.bodyColor = bodyColor
         self.gradientColors = gradientColors
         self.iconType = iconType
+        self.isDisabled = isDisabled
     }
     
     public var body: some View {
@@ -77,6 +80,15 @@ public struct ProfileWidgetView: View {
             }
             .scrollIndicators(.hidden)
             .padding(.all, 20)
+            
+            if isDisabled {
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(.white.opacity(0.45))
+                
+                DesignCore.Images.iconCheck.image
+                    .resizable()
+                    .frame(width: 64, height: 64)
+            }
         }
     }
 }
