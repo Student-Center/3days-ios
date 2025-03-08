@@ -13,6 +13,8 @@ import CoreKit
 public enum ChatMessageItemType {
     case dateSeperator(date: String)
     case messages(dateSource: [Message])
+    case card(card: ChatCard)
+    case systemMessage(content: ChatSystemMessage)
 }
 
 extension ChatMessageItemType: Identifiable {
@@ -24,6 +26,10 @@ extension ChatMessageItemType: Identifiable {
             return dataSource
                 .map { $0.id }
                 .joined()
+        case .systemMessage(let content):
+            return content.id
+        case .card(let card):
+            return card.id
         }
     }
 }
@@ -46,12 +52,47 @@ extension Array where Element == Message {
                 hasSameMinute(
                     date1: lastMessage.createdAt,
                     date2: message.createdAt
-                )
+                ) && message.content.contentType == .text
             {
                 currentGroup.insert(message, at: 0)
             }
             else
             {
+                // 텍스트 타입이 아닌 경우
+                if message.content.contentType != .text {
+                    if case let .systemMessage(systemMessage) = message.content.contentType {
+                        result.append(
+                            .systemMessage(
+                                content: .init(
+                                    id: message.id,
+                                    message: systemMessage
+                                )
+                            )
+                        )
+                    }
+                    
+                    if case let .card(color) = message.content.contentType {
+                        result.append(
+                            .card(
+                                card: .init(
+                                    id: message.id,
+                                    message: message.content.text,
+                                    color: color
+                                )
+                            )
+                        )
+                    }
+                    
+                    // date가 달라진 경우 구분 컴포넌트
+                    if let dateSeperatorText = dateSeperatorIfNeeded(
+                        previous: lastMessage?.createdAt,
+                        new: message.createdAt
+                    ) {
+                        result.append(.dateSeperator(date: dateSeperatorText))
+                    }
+                    continue
+                }
+                
                 // 이미 존재하던 그룹 append
                 if currentGroup.isNotEmpty {
                     let messageGroup = updateBubbleTypes(for: currentGroup)

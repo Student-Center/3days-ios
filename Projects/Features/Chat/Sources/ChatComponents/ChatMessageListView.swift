@@ -20,7 +20,6 @@ public struct ChatMessageListView: View {
     
     var sendAction: () -> Void
     var nextPageAction: () -> Void
-    @State var lastSectionId: String?
     
     @FocusState var isTextFieldFocused
     
@@ -34,12 +33,13 @@ public struct ChatMessageListView: View {
                             dateSeperator(date)
                         case .messages(let dataSource):
                             messageSection(dataSource)
+                        case .systemMessage(let content):
+                            systemMessage(content)
+                        case .card(let card):
+                            Text(card.message)
                         }
                     }
                     .id(section.id)
-                    .onAppear {
-                        self.lastSectionId = section.id
-                    }
                     .flippedUpsideDown()
                 }
                 .listRowBackground(Color.clear)
@@ -110,6 +110,15 @@ public struct ChatMessageListView: View {
                 timeStamp: message.showTimeStamp ? message.sendTime : nil,
                 avatarVisible: message.needShowAvatar
             )
+        }
+    }
+    
+    //MARK: - System Message
+    @ViewBuilder
+    func systemMessage(_ content: ChatSystemMessage) -> some View {
+        VStack {
+            Text(content.message)
+            Text(content.id)
         }
     }
 }
