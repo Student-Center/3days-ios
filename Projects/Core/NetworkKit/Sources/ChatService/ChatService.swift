@@ -40,7 +40,6 @@ extension ChatService: ChatServiceProtocol {
             )
         )
             .ok.body.json
-        response.messages?.reverse()
         return MessageList(from: response)
     }
 }

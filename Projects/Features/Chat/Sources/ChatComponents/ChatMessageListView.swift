@@ -20,51 +20,64 @@ public struct ChatMessageListView: View {
     
     var sendAction: () -> Void
     var nextPageAction: () -> Void
+    @State var lastSectionId: String?
     
     @FocusState var isTextFieldFocused
     
     public var body: some View {
         VStack(spacing: 0) {
-            ScrollView {
-                LazyVStack(spacing: 10) {
-                    
-                    // pagination
-                    if hasNextPage {
-                        ProgressView()
-                            .onAppear {
-                                nextPageAction()
-                            }
-                    }
-                    
-                    ForEach(messageDataSource.toSectionItmes) { section in
-                        LazyVStack(spacing: 2) {
-                            switch section {
-                            case .dateSeperator(let date):
-                                dateSeperator(date)
-                            case .messages(let dataSource):
-                                messageSection(dataSource)
-                            }
+            List {
+                ForEach(messageDataSource.toSectionItmes) { section in
+                    LazyVStack(spacing: 2) {
+                        switch section {
+                        case .dateSeperator(let date):
+                            dateSeperator(date)
+                        case .messages(let dataSource):
+                            messageSection(dataSource)
                         }
                     }
+                    .id(section.id)
+                    .onAppear {
+                        self.lastSectionId = section.id
+                    }
+                    .flippedUpsideDown()
                 }
-                .rotationEffect(Angle(degrees: 180))
-                .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
+                .listRowBackground(Color.clear)
+                .listRowInsets(.init())
+                .listRowSeparator(.hidden)
                 .padding(.horizontal, 18)
                 .padding(.vertical, 8)
+                
+                if hasNextPage {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
+                    .id(UUID().uuidString)
+                    .flippedUpsideDown()
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(.init())
+                    .listRowSeparator(.hidden)
+                    .onAppear {
+                        nextPageAction()
+                    }
+                }
             }
-            .rotationEffect(Angle(degrees: 180))
-            .scaleEffect(x: -1.0, y: 1.0, anchor: .center)
-            .scrollDismissesKeyboard(.interactively)
+            .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.immediately)
+            .listStyle(PlainListStyle())
+            .flippedUpsideDown()
             .onTapGesture {
                 isTextFieldFocused = false
             }
-            
-            ChatInputContainerView(
-                inputText: $inputText,
-                isTextFieldFocused: _isTextFieldFocused,
-                sendAction: sendAction
-            )
         }
+        
+        ChatInputContainerView(
+            inputText: $inputText,
+            isTextFieldFocused: _isTextFieldFocused,
+            sendAction: sendAction
+        )
     }
     
     //MARK: - Date Seperator: 날짜 구분 컴포넌트
