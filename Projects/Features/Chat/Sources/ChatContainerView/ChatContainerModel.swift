@@ -82,17 +82,19 @@ extension ChatContainerModel: ChatContainerModelActionable {
     }
     func appendMessageList(message: MessageList) {
         let oldMessages = messageDataSource.messages
-        var newMessages = message.messages
-        newMessages.append(contentsOf: oldMessages)
-        messageDataSource.messages = newMessages
-        messageDataSource.nextCursor = message.nextCursor
-        messageDataSource.hasNext = message.hasNext
+        var newMessages = oldMessages
+        newMessages.append(contentsOf: message.messages)
+        var newDataSource = messageDataSource
+        newDataSource.messages = newMessages
+        newDataSource.nextCursor = message.nextCursor
+        newDataSource.hasNext = message.hasNext
+        messageDataSource = newDataSource
     }
     func setSocketStatus(isConnected: Bool) {
         isSocketConnected = isConnected
     }
     func socketReceivedNewMessage(message: Message) {
-        messageDataSource.messages.append(message)
+        messageDataSource.messages.insert(message, at: 0)
     }
     
     // default

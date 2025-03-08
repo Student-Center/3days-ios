@@ -48,7 +48,7 @@ extension Array where Element == Message {
                     date2: message.createdAt
                 )
             {
-                currentGroup.append(message)
+                currentGroup.insert(message, at: 0)
             }
             else
             {
@@ -56,7 +56,7 @@ extension Array where Element == Message {
                 if currentGroup.isNotEmpty {
                     let messageGroup = updateBubbleTypes(for: currentGroup)
                     result.append(.messages(dateSource: messageGroup))
-                    lastMessage = currentGroup.last
+                    lastMessage = currentGroup.first
                     currentGroup = []
                 }
                 
@@ -74,8 +74,15 @@ extension Array where Element == Message {
         
         if currentGroup.isNotEmpty {
             result.append(.messages(dateSource: currentGroup))
+            if let lastDate = currentGroup.last?.createdAt {
+                let format = "M월 d일 (EEE)"
+                let seperator = DateConverter.dateToString(
+                    date: lastDate,
+                    format: format
+                )
+                result.append(.dateSeperator(date: seperator))
+            }
         }
-
         return result
     }
     
@@ -105,13 +112,8 @@ extension Array where Element == Message {
         new: Date?
     ) -> String? {
         let format = "M월 d일 (EEE)"
-        guard let new else { return nil }
-        guard let previous else {
-            return DateConverter.dateToString(
-                date: new,
-                format: format
-            )
-        }
+        guard let new,
+              let previous else { return nil }
         let previousDate = DateConverter.dateToString(
             date: previous,
             format: format
@@ -121,7 +123,7 @@ extension Array where Element == Message {
             format: format
         )
         if previousDate != newDate {
-            return newDate
+            return previousDate
         }
         return nil
     }
