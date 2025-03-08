@@ -63,7 +63,7 @@ public struct WidgetSelectionView: View {
                             titleColor: widget.titleColor,
                             bodyColor: widget.bodyColor,
                             gradientColors: widget.gradationColors,
-                            iconType: .add
+                            iconType: nil
                         )
                         .onTapGesture {
                             intent.onTapWidget(widget)
