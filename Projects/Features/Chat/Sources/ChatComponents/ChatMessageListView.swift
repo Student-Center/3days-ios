@@ -20,7 +20,6 @@ public struct ChatMessageListView: View {
     
     var sendAction: () -> Void
     var nextPageAction: () -> Void
-    @State var lastSectionId: String?
     
     @FocusState var isTextFieldFocused
     
@@ -34,12 +33,15 @@ public struct ChatMessageListView: View {
                             dateSeperator(date)
                         case .messages(let dataSource):
                             messageSection(dataSource)
+                        case .dateFlag(let dayNumber):
+                            dayNumberFlag(dayNumber)
+                        case .systemMessage(let content):
+                            systemMessage(content)
+                        case .card(let card):
+                            cardView(card)
                         }
                     }
                     .id(section.id)
-                    .onAppear {
-                        self.lastSectionId = section.id
-                    }
                     .flippedUpsideDown()
                 }
                 .listRowBackground(Color.clear)
@@ -112,12 +114,145 @@ public struct ChatMessageListView: View {
             )
         }
     }
+    
+    //MARK: - Card
+    @ViewBuilder
+    func cardView(_ content: ChatCard) -> some View {
+        if content.hasSent {
+            switch content.userType {
+            case .my:
+                HStack(alignment: .bottom, spacing: 4) {
+                    Spacer()
+                    ChatTimeStampView(timeStamp: content.sendTime)
+                    makeCard(
+                        color: content.color,
+                        userType: content.userType,
+                        hasRead: true
+                    )
+                }
+            case .other:
+                HStack(alignment: .bottom, spacing: 10) {
+                    DesignCore.Images.profileDefault.image
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .clipShape(Circle())
+                        .background {
+                            Circle()
+                                .stroke(.white, lineWidth: 1)
+                        }
+                    
+                    HStack(alignment: .bottom, spacing: 4) {
+                        makeCard(
+                            color: content.color,
+                            userType: content.userType,
+                            hasRead: true
+                        )
+                        
+                        ChatTimeStampView(timeStamp: content.sendTime)
+                    }
+                    Spacer()
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func makeCard(
+        color: MessageContent.ColorType,
+        userType: ChatUserType,
+        hasRead: Bool
+    ) -> some View {
+        ZStack {
+            color.cardImage
+                .resizable()
+            Circle()
+                .fill(.black.opacity(0.4))
+                .frame(width: 28, height: 28)
+            switch userType {
+            case .my:
+                DesignCore.Images.iconArrowLeft.image
+                    .resizable()
+                    .frame(width: 16, height: 16)
+            case .other:
+                DesignCore.Images.iconArrowRight.image
+                    .resizable()
+                    .frame(width: 16, height: 16)
+            }
+            if !hasRead {
+                HStack {
+                    Spacer()
+                    VStack {
+                        Circle()
+                            .fill(Color(hex: 0xF2597F))
+                            .stroke(Color.white, lineWidth: 1)
+                            .frame(width: 10, height: 10)
+                        Spacer()
+                    }
+                }
+                .padding(.all, 10)
+            }
+        }
+        .frame(width: 85, height: 121)
+        .shadow(.default)
+    }
+    
+    //MARK: - Day Flag
+    @ViewBuilder
+    func dayNumberFlag(_ dayNumber: Int) -> some View {
+        VStack {
+            switch dayNumber {
+            case 1:
+                DesignCore.Images.iconDay1.image
+                    .resizable()
+            case 2:
+                DesignCore.Images.iconDay2.image
+                    .resizable()
+            case 3:
+                DesignCore.Images.iconDay3.image
+                    .resizable()
+            default:
+                EmptyView()
+            }
+        }
+        .frame(width: 80, height: 48)
+        .padding(.top, 24)
+    }
+    
+    //MARK: - System Message
+    @ViewBuilder
+    func systemMessage(_ content: ChatSystemMessage) -> some View {
+        VStack(spacing: 16) {
+            DesignCore.Images.weavyProfile.image
+                .resizable()
+                .frame(width: 60, height: 60)
+            
+            Text(content.message)
+                .typography(.regular_15)
+                .multilineTextAlignment(.center)
+            
+            Divider()
+                .foregroundStyle(Color(hex: 0x534C44).opacity(0.1))
+                .padding(.horizontal, 16)
+        }
+        .padding(.vertical, 16)
+    }
 }
 
 #Preview {
     NavigationView {
         ZStack {
             ChatContainerView()
+        }
+    }
+}
+
+extension MessageContent.ColorType {
+    var cardImage: Image {
+        switch self {
+        case .blue:
+            return DesignCore.Images.cardBlue.image
+        case .pink:
+            return DesignCore.Images.cardPink.image
         }
     }
 }

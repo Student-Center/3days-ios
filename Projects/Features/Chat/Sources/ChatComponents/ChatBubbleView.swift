@@ -83,9 +83,7 @@ public struct ChatBubble: View {
     @ViewBuilder
     var timeStampView: some View {
         if let timeStamp {
-            Text(timeStamp)
-                .pretendard(weight: ._400, size: 10)
-                .foregroundStyle(Color(hex: 0x534C44).opacity(0.5))
+            ChatTimeStampView(timeStamp: timeStamp)
         }
     }
 }

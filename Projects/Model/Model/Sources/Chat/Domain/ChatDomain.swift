@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 import CoreKit
 import OpenapiGenerated
 
@@ -90,6 +91,14 @@ public struct Message: Identifiable, Hashable, Equatable {
         self.createdAt = Date()
     }
     
+    public init(conent: MessageContent.ContentType) {
+        self.id = UUID().uuidString
+        self.content = .init(type: conent, text: "")
+        self.type = .other(.init(id: ""))
+        self.senderUserId = ""
+        self.createdAt = Date()
+    }
+    
     public init(from dto: Components.Schemas.Message) {
         self.id = dto.id
         self.senderUserId = dto.senderUserId
@@ -124,41 +133,68 @@ public struct MessageContent {
         case pink
     }
     
-    public enum `Type` {
+    public enum ContentType: Equatable {
         case text
         case card(ColorType)
+        case dateFlag(Int)
+        case systemMessage(String)
+        
+        public static func == (lhs: MessageContent.ContentType, rhs: MessageContent.ContentType) -> Bool {
+            switch (lhs, rhs) {
+            case (.text, .text):
+                return true
+            case (.card(let lhsColor), .card(let rhsColor)):
+                return lhsColor == rhsColor
+            case (.dateFlag(let lhs), .dateFlag(let rhs)):
+                return lhs == rhs
+            case (.systemMessage(let lhs), .systemMessage(let rhs)):
+                return lhs == rhs
+            default:
+                return false
+            }
+        }
     }
     
-    public let type: Type
+    public let contentType: ContentType
     public let text: String
     
-    init(type: Type, text: String) {
-        self.type = type
+    init(type: ContentType, text: String) {
+        self.contentType = type
         self.text = text
     }
     
     init(from dto: Components.Schemas.MessageContent) {
         self.text = dto.text ?? ""
-        switch dto._type {
-        case .TEXT:
-            self.type = .text
-        case .CARD:
-            self.type = .card(dto.cardColor == "BLUE" ? .blue : .pink)
-        case .none:
-            self.type = .text
+        if dto.cardColor != nil {
+            self.contentType = .card(.blue)
+        } else {
+            self.contentType = .text
         }
+//        switch dto._type {
+//        case .TEXT:
+//            self.contentType = .text
+//        case .CARD:
+//            self.contentType = .card(dto.cardColor == "BLUE" ? .blue : .pink)
+//        case .none:
+//            self.contentType = .text
+//        }
     }
     
     init(from dto: ChatSocketResponse.Content) {
         self.text = dto.text
-        switch dto.type {
-        case "TEXT":
-            self.type = .text
-        case "CARD":
-            self.type = .card(.blue)
-        default:
-            self.type = .text
+        if dto.cardColor != nil {
+            self.contentType = .card(.blue)
+        } else {
+            self.contentType = .text
         }
+//        switch dto.type {
+//        case "TEXT":
+//            self.contentType = .text
+//        case "CARD":
+//            self.contentType = .card(.blue)
+//        default:
+//            self.contentType = .text
+//        }
     }
 }
 
@@ -184,6 +220,7 @@ extension Message {
             .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
             .init(message: "(mock)안녕", type: .my),
             .init(message: "(mock)님", type: .other(.init(id: "2"))),
+            .init(conent: .systemMessage("안녕하세요")),
             .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
             .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
             .init(message: "(mock)안녕", type: .my),
