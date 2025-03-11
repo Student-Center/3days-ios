@@ -13,6 +13,7 @@ import CoreKit
 public enum ChatMessageItemType {
     case dateSeperator(date: String)
     case messages(dateSource: [Message])
+    case dateFlag(dayNumber: Int)
     case card(card: ChatCard)
     case systemMessage(content: ChatSystemMessage)
 }
@@ -26,6 +27,8 @@ extension ChatMessageItemType: Identifiable {
             return dataSource
                 .map { $0.id }
                 .joined()
+        case .dateFlag(let dayNumber):
+            return "\(dayNumber)"
         case .systemMessage(let content):
             return content.id
         case .card(let card):
@@ -83,6 +86,10 @@ extension Array where Element == Message {
                                 )
                             )
                         )
+                    }
+                    
+                    if case let .dateFlag(dateFlag) = message.content.contentType {
+                        result.append(.dateFlag(dayNumber: dateFlag))
                     }
                     
                     // date가 달라진 경우 구분 컴포넌트

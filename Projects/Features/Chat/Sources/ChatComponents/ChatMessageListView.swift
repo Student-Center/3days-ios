@@ -33,6 +33,8 @@ public struct ChatMessageListView: View {
                             dateSeperator(date)
                         case .messages(let dataSource):
                             messageSection(dataSource)
+                        case .dateFlag(let dayNumber):
+                            dayNumberFlag(dayNumber)
                         case .systemMessage(let content):
                             systemMessage(content)
                         case .card(let card):
@@ -194,13 +196,45 @@ public struct ChatMessageListView: View {
         .shadow(.default)
     }
     
+    //MARK: - Day Flag
+    @ViewBuilder
+    func dayNumberFlag(_ dayNumber: Int) -> some View {
+        VStack {
+            switch dayNumber {
+            case 1:
+                DesignCore.Images.iconDay1.image
+                    .resizable()
+            case 2:
+                DesignCore.Images.iconDay2.image
+                    .resizable()
+            case 3:
+                DesignCore.Images.iconDay3.image
+                    .resizable()
+            default:
+                EmptyView()
+            }
+        }
+        .frame(width: 80, height: 48)
+        .padding(.top, 24)
+    }
+    
     //MARK: - System Message
     @ViewBuilder
     func systemMessage(_ content: ChatSystemMessage) -> some View {
-        VStack {
+        VStack(spacing: 16) {
+            DesignCore.Images.weavyProfile.image
+                .resizable()
+                .frame(width: 60, height: 60)
+            
             Text(content.message)
-            Text(content.id)
+                .typography(.regular_15)
+                .multilineTextAlignment(.center)
+            
+            Divider()
+                .foregroundStyle(Color(hex: 0x534C44).opacity(0.1))
+                .padding(.horizontal, 16)
         }
+        .padding(.vertical, 16)
     }
 }
 
