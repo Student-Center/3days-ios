@@ -91,9 +91,9 @@ public struct Message: Identifiable, Hashable, Equatable {
         self.createdAt = Date()
     }
     
-    public init(conent: MessageContent.ContentType) {
+    public init(content: MessageContent.ContentType) {
         self.id = UUID().uuidString
-        self.content = .init(type: conent, text: "")
+        self.content = .init(type: content, text: "")
         self.type = .other(.init(id: ""))
         self.senderUserId = ""
         self.createdAt = Date()
@@ -220,7 +220,7 @@ extension Message {
             .init(message: "(mock)안녕", type: .other(.init(id: "2"))),
             .init(message: "(mock)안녕", type: .my),
             .init(message: "(mock)님", type: .other(.init(id: "2"))),
-            .init(conent: .systemMessage("안녕하세요")),
+            .init(content: .systemMessage("안녕하세요")),
             .init(message: "(mock)3days는 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다. 3일 동안 딱 한 사람만 알아가는 신개념 소개팅 앱입니다.", type: .other(.init(id: "2"))),
             .init(message: "(mock)하세요", type: .other(.init(id: "2"))),
             .init(message: "(mock)안녕", type: .my),
