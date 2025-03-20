@@ -17,6 +17,8 @@ public struct ChatContainerView: View {
     @StateObject var container: MVIContainer<ChatContainerIntent.Intentable, ChatContainerModel.Stateful>
     
     @State private var inputText: String = ""
+    @State private var selectedCard: ChatCard?
+    @Namespace private var namespace
     
     private var intent: ChatContainerIntent.Intentable { container.intent }
     private var state: ChatContainerModel.Stateful { container.model }
@@ -50,9 +52,19 @@ public struct ChatContainerView: View {
                     intent.requestNextPage(
                         cursor: state.messageDataSource.nextCursor
                     )
-                }
+                },
+                cardTapHandler: { card in
+                    print(card)
+                    selectedCard = card
+                },
+                namespace: namespace
             )
         }
+        .sheet(
+            item: $selectedCard,
+            content: { card in
+                CardFullScreenView(card: card, namespace: namespace)
+        })
         .task {
             await intent.task()
         }

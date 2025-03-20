@@ -52,7 +52,7 @@ extension Target {
             product: product,
             productName: productName,
             bundleId: bundleId,
-            deploymentTargets: .iOS("17.0"),
+            deploymentTargets: .iOS("18.0"),
             infoPlist: infoPlist,
             sources: sources,
             resources: resources,
