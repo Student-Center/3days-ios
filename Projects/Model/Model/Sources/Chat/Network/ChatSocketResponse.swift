@@ -11,7 +11,7 @@ import Foundation
 public struct ChatSocketResponse: Codable {
     let id: String
     let channelId: String
-    let senderUserId: String
+    let senderUserId: String?
     let content: Content
     let createdAt: String
     

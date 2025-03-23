@@ -51,7 +51,7 @@ public struct Message: Identifiable, Hashable, Equatable {
     }
     
     public let id: String
-    public let senderUserId: String
+    public let senderUserId: String?
     public let content: MessageContent
     public let type: ChatUserType
     public let createdAt: Date?
@@ -106,7 +106,7 @@ public struct Message: Identifiable, Hashable, Equatable {
             string: dto.createdAt,
             format: "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
         )
-        self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
+        self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId ?? ""))
         self.content = MessageContent(from: dto.content)
     }
     
@@ -114,7 +114,7 @@ public struct Message: Identifiable, Hashable, Equatable {
         self.id = dto.id
         self.senderUserId = dto.senderUserId
         self.createdAt = DateConverter.stringToDate(string: dto.createdAt)
-        self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId))
+        self.type = senderUserId == TokenManager.userId ? .my : .other(.init(id: senderUserId ?? ""))
         self.content = MessageContent(from: dto.content)
     }
 }
@@ -164,37 +164,32 @@ public struct MessageContent {
     }
     
     init(from dto: Components.Schemas.MessageContent) {
-        self.text = dto.text ?? ""
-        if dto.cardColor != nil {
-            self.contentType = .card(.blue)
-        } else {
+        self.text = dto.text
+        switch dto._type {
+        case .TEXT:
             self.contentType = .text
+        case .CARD:
+            self.contentType = .card(
+                dto.cardColor == .BLUE ? .blue : .pink
+            )
+        case .SYSTEM:
+            self.contentType = .systemMessage(dto.text)
         }
-//        switch dto._type {
-//        case .TEXT:
-//            self.contentType = .text
-//        case .CARD:
-//            self.contentType = .card(dto.cardColor == "BLUE" ? .blue : .pink)
-//        case .none:
-//            self.contentType = .text
-//        }
     }
     
     init(from dto: ChatSocketResponse.Content) {
         self.text = dto.text
-        if dto.cardColor != nil {
-            self.contentType = .card(.blue)
-        } else {
+        switch dto.type {
+        case "TEXT":
+            self.contentType = .text
+        case "CARD":
+            let cardColor: ColorType = dto.cardColor == "BLUE" ? .blue : .pink
+            self.contentType = .card(cardColor)
+        case "SYSTEM":
+            self.contentType = .systemMessage(dto.text)
+        default:
             self.contentType = .text
         }
-//        switch dto.type {
-//        case "TEXT":
-//            self.contentType = .text
-//        case "CARD":
-//            self.contentType = .card(.blue)
-//        default:
-//            self.contentType = .text
-//        }
     }
 }
 
