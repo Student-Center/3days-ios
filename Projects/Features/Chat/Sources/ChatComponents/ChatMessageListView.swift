@@ -180,7 +180,6 @@ public struct ChatMessageListView: View {
         ZStack {
             color.cardImage
                 .resizable()
-                .id(id)
             Circle()
                 .fill(.black.opacity(0.4))
                 .frame(width: 28, height: 28)
@@ -209,15 +208,18 @@ public struct ChatMessageListView: View {
             }
         }
         .frame(width: 85, height: 121)
-        .shadow(.default)
         .contentShape(Rectangle())
-        .onTapGesture {
-            tapHandler()
-        }
+        .highPriorityGesture(
+            TapGesture()
+                .onEnded { _ in
+                    tapHandler()
+                }
+        )
         .matchedTransitionSource(
             id: id,
             in: namespace
         )
+        .shadow(.default)
     }
     
     //MARK: - Day Flag
