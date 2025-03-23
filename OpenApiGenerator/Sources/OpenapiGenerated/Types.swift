@@ -11,6 +11,13 @@ import struct Foundation.Date
 #endif
 /// A type that performs HTTP operations defined by the OpenAPI document.
 public protocol APIProtocol: Sendable {
+    /// 시스템 메시지 전송
+    ///
+    /// 특정 채널에 시스템 메시지를 전송합니다.
+    ///
+    /// - Remark: HTTP `POST /admin/chat/channels/{channelId}/system-message`.
+    /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)`.
+    func sendSystemMessage(_ input: Operations.sendSystemMessage.Input) async throws -> Operations.sendSystemMessage.Output
     /// SMS 인증 요청
     ///
     /// 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
@@ -155,6 +162,23 @@ public protocol APIProtocol: Sendable {
 
 /// Convenience overloads for operation inputs.
 extension APIProtocol {
+    /// 시스템 메시지 전송
+    ///
+    /// 특정 채널에 시스템 메시지를 전송합니다.
+    ///
+    /// - Remark: HTTP `POST /admin/chat/channels/{channelId}/system-message`.
+    /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)`.
+    public func sendSystemMessage(
+        path: Operations.sendSystemMessage.Input.Path,
+        headers: Operations.sendSystemMessage.Input.Headers = .init(),
+        body: Operations.sendSystemMessage.Input.Body
+    ) async throws -> Operations.sendSystemMessage.Output {
+        try await sendSystemMessage(Operations.sendSystemMessage.Input(
+            path: path,
+            headers: headers,
+            body: body
+        ))
+    }
     /// SMS 인증 요청
     ///
     /// 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
@@ -521,7 +545,7 @@ public enum Components {
             /// 사용자 상태 (신규 사용자 또는 기존 사용자)
             ///
             /// - Remark: Generated from `#/components/schemas/SendAuthCodeResponse/userStatus`.
-            @frozen public enum userStatusPayload: String, Codable, Hashable, Sendable {
+            @frozen public enum userStatusPayload: String, Codable, Hashable, Sendable, CaseIterable {
                 case NEW = "NEW"
                 case EXISTING = "EXISTING"
             }
@@ -887,6 +911,37 @@ public enum Components {
             }
             public enum CodingKeys: String, CodingKey {
                 case desiredPartner
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/SendSystemMessageRequest`.
+        public struct SendSystemMessageRequest: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/SendSystemMessageRequest/type`.
+            public var _type: Components.Schemas.SystemMessageType
+            /// - Remark: Generated from `#/components/schemas/SendSystemMessageRequest/text`.
+            public var text: Swift.String
+            /// Next card title (only for SYSTEM message with NEXT_CARD type)
+            ///
+            /// - Remark: Generated from `#/components/schemas/SendSystemMessageRequest/nextCardTitle`.
+            public var nextCardTitle: Swift.String?
+            /// Creates a new `SendSystemMessageRequest`.
+            ///
+            /// - Parameters:
+            ///   - _type:
+            ///   - text:
+            ///   - nextCardTitle: Next card title (only for SYSTEM message with NEXT_CARD type)
+            public init(
+                _type: Components.Schemas.SystemMessageType,
+                text: Swift.String,
+                nextCardTitle: Swift.String? = nil
+            ) {
+                self._type = _type
+                self.text = text
+                self.nextCardTitle = nextCardTitle
+            }
+            public enum CodingKeys: String, CodingKey {
+                case _type = "type"
+                case text
+                case nextCardTitle
             }
         }
         /// 사용자 프로필 정보
@@ -1336,21 +1391,21 @@ public enum Components {
         /// 사용자의 운영 체제 유형
         ///
         /// - Remark: Generated from `#/components/schemas/OSType`.
-        @frozen public enum OSType: String, Codable, Hashable, Sendable {
+        @frozen public enum OSType: String, Codable, Hashable, Sendable, CaseIterable {
             case IOS = "IOS"
             case AOS = "AOS"
         }
         /// 사용자의 성별
         ///
         /// - Remark: Generated from `#/components/schemas/Gender`.
-        @frozen public enum Gender: String, Codable, Hashable, Sendable {
+        @frozen public enum Gender: String, Codable, Hashable, Sendable, CaseIterable {
             case MALE = "MALE"
             case FEMALE = "FEMALE"
         }
         /// 직업군 분류
         ///
         /// - Remark: Generated from `#/components/schemas/JobOccupation`.
-        @frozen public enum JobOccupation: String, Codable, Hashable, Sendable {
+        @frozen public enum JobOccupation: String, Codable, Hashable, Sendable, CaseIterable {
             case BUSINESS_ADMIN = "BUSINESS_ADMIN"
             case SALES_MARKETING = "SALES_MARKETING"
             case RESEARCH_DEVELOPMENT = "RESEARCH_DEVELOPMENT"
@@ -1375,7 +1430,7 @@ public enum Components {
         /// 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
         ///
         /// - Remark: Generated from `#/components/schemas/PreferDistance`.
-        @frozen public enum PreferDistance: String, Codable, Hashable, Sendable {
+        @frozen public enum PreferDistance: String, Codable, Hashable, Sendable, CaseIterable {
             case ONLY_MY_AREA = "ONLY_MY_AREA"
             case INCLUDE_SURROUNDING_REGIONS = "INCLUDE_SURROUNDING_REGIONS"
             case ANYWHERE = "ANYWHERE"
@@ -1467,7 +1522,7 @@ public enum Components {
         /// 프로필 위젯 타입
         ///
         /// - Remark: Generated from `#/components/schemas/ProfileWidgetType`.
-        @frozen public enum ProfileWidgetType: String, Codable, Hashable, Sendable {
+        @frozen public enum ProfileWidgetType: String, Codable, Hashable, Sendable, CaseIterable {
             case HOBBY = "HOBBY"
             case STYLE = "STYLE"
             case MBTI = "MBTI"
@@ -1486,7 +1541,7 @@ public enum Components {
         /// 프로필 이미지 확장자
         ///
         /// - Remark: Generated from `#/components/schemas/ProfileImageExtension`.
-        @frozen public enum ProfileImageExtension: String, Codable, Hashable, Sendable {
+        @frozen public enum ProfileImageExtension: String, Codable, Hashable, Sendable, CaseIterable {
             case PNG = "PNG"
         }
         /// - Remark: Generated from `#/components/schemas/ProfileImage`.
@@ -1525,7 +1580,7 @@ public enum Components {
         /// 커넥션 활성화 상태
         ///
         /// - Remark: Generated from `#/components/schemas/ConnectionStatus`.
-        @frozen public enum ConnectionStatus: String, Codable, Hashable, Sendable {
+        @frozen public enum ConnectionStatus: String, Codable, Hashable, Sendable, CaseIterable {
             case ACTIVE = "ACTIVE"
             case INACTIVE = "INACTIVE"
         }
@@ -1561,7 +1616,7 @@ public enum Components {
             /// - Remark: Generated from `#/components/schemas/Message/channelId`.
             public var channelId: Swift.String
             /// - Remark: Generated from `#/components/schemas/Message/senderUserId`.
-            public var senderUserId: Swift.String
+            public var senderUserId: Swift.String?
             /// - Remark: Generated from `#/components/schemas/Message/content`.
             public var content: Components.Schemas.MessageContent
             /// - Remark: Generated from `#/components/schemas/Message/createdAt`.
@@ -1577,7 +1632,7 @@ public enum Components {
             public init(
                 id: Swift.String,
                 channelId: Swift.String,
-                senderUserId: Swift.String,
+                senderUserId: Swift.String? = nil,
                 content: Components.Schemas.MessageContent,
                 createdAt: Swift.String
             ) {
@@ -1598,36 +1653,71 @@ public enum Components {
         /// - Remark: Generated from `#/components/schemas/MessageContent`.
         public struct MessageContent: Codable, Hashable, Sendable {
             /// - Remark: Generated from `#/components/schemas/MessageContent/type`.
-            @frozen public enum _typePayload: String, Codable, Hashable, Sendable {
+            @frozen public enum _typePayload: String, Codable, Hashable, Sendable, CaseIterable {
                 case TEXT = "TEXT"
                 case CARD = "CARD"
+                case SYSTEM = "SYSTEM"
             }
             /// - Remark: Generated from `#/components/schemas/MessageContent/type`.
-            public var _type: Components.Schemas.MessageContent._typePayload?
+            public var _type: Components.Schemas.MessageContent._typePayload
             /// - Remark: Generated from `#/components/schemas/MessageContent/text`.
-            public var text: Swift.String?
+            public var text: Swift.String
+            /// Title for CARD type messages
+            ///
+            /// - Remark: Generated from `#/components/schemas/MessageContent/title`.
+            public var title: Swift.String?
             /// - Remark: Generated from `#/components/schemas/MessageContent/cardColor`.
-            public var cardColor: Swift.String?
+            @frozen public enum cardColorPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                case BLUE = "BLUE"
+                case PINK = "PINK"
+            }
+            /// - Remark: Generated from `#/components/schemas/MessageContent/cardColor`.
+            public var cardColor: Components.Schemas.MessageContent.cardColorPayload?
+            /// - Remark: Generated from `#/components/schemas/MessageContent/systemMessageType`.
+            public var systemMessageType: Components.Schemas.SystemMessageType?
+            /// Next card title (only for SYSTEM message with NEXT_CARD type)
+            ///
+            /// - Remark: Generated from `#/components/schemas/MessageContent/nextCardTitle`.
+            public var nextCardTitle: Swift.String?
             /// Creates a new `MessageContent`.
             ///
             /// - Parameters:
             ///   - _type:
             ///   - text:
+            ///   - title: Title for CARD type messages
             ///   - cardColor:
+            ///   - systemMessageType:
+            ///   - nextCardTitle: Next card title (only for SYSTEM message with NEXT_CARD type)
             public init(
-                _type: Components.Schemas.MessageContent._typePayload? = nil,
-                text: Swift.String? = nil,
-                cardColor: Swift.String? = nil
+                _type: Components.Schemas.MessageContent._typePayload,
+                text: Swift.String,
+                title: Swift.String? = nil,
+                cardColor: Components.Schemas.MessageContent.cardColorPayload? = nil,
+                systemMessageType: Components.Schemas.SystemMessageType? = nil,
+                nextCardTitle: Swift.String? = nil
             ) {
                 self._type = _type
                 self.text = text
+                self.title = title
                 self.cardColor = cardColor
+                self.systemMessageType = systemMessageType
+                self.nextCardTitle = nextCardTitle
             }
             public enum CodingKeys: String, CodingKey {
                 case _type = "type"
                 case text
+                case title
                 case cardColor
+                case systemMessageType
+                case nextCardTitle
             }
+        }
+        /// 시스템 메시지 타입
+        ///
+        /// - Remark: Generated from `#/components/schemas/SystemMessageType`.
+        @frozen public enum SystemMessageType: String, Codable, Hashable, Sendable, CaseIterable {
+            case INFO = "INFO"
+            case NEXT_CARD = "NEXT_CARD"
         }
     }
     /// Types generated from the `#/components/parameters` section of the OpenAPI document.
@@ -1868,6 +1958,223 @@ public enum Components {
 
 /// API operations, with input and output types, generated from `#/paths` in the OpenAPI document.
 public enum Operations {
+    /// 시스템 메시지 전송
+    ///
+    /// 특정 채널에 시스템 메시지를 전송합니다.
+    ///
+    /// - Remark: HTTP `POST /admin/chat/channels/{channelId}/system-message`.
+    /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)`.
+    public enum sendSystemMessage {
+        public static let id: Swift.String = "sendSystemMessage"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/admin/chat/channels/{channelId}/system-message/POST/path`.
+            public struct Path: Sendable, Hashable {
+                /// 채널 ID
+                ///
+                /// - Remark: Generated from `#/paths/admin/chat/channels/{channelId}/system-message/POST/path/channelId`.
+                public var channelId: Swift.String
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - channelId: 채널 ID
+                public init(channelId: Swift.String) {
+                    self.channelId = channelId
+                }
+            }
+            public var path: Operations.sendSystemMessage.Input.Path
+            /// - Remark: Generated from `#/paths/admin/chat/channels/{channelId}/system-message/POST/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.sendSystemMessage.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.sendSystemMessage.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.sendSystemMessage.Input.Headers
+            /// - Remark: Generated from `#/paths/admin/chat/channels/{channelId}/system-message/POST/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/admin/chat/channels/{channelId}/system-message/POST/requestBody/content/application\/json`.
+                case json(Components.Schemas.SendSystemMessageRequest)
+            }
+            public var body: Operations.sendSystemMessage.Input.Body
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            ///   - body:
+            public init(
+                path: Operations.sendSystemMessage.Input.Path,
+                headers: Operations.sendSystemMessage.Input.Headers = .init(),
+                body: Operations.sendSystemMessage.Input.Body
+            ) {
+                self.path = path
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Created: Sendable, Hashable {
+                /// Creates a new `Created`.
+                public init() {}
+            }
+            /// 메시지 전송 성공
+            ///
+            /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)/responses/201`.
+            ///
+            /// HTTP response code: `201 created`.
+            case created(Operations.sendSystemMessage.Output.Created)
+            /// 메시지 전송 성공
+            ///
+            /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)/responses/201`.
+            ///
+            /// HTTP response code: `201 created`.
+            public static var created: Self {
+                .created(.init())
+            }
+            /// The associated value of the enum case if `self` is `.created`.
+            ///
+            /// - Throws: An error if `self` is not `.created`.
+            /// - SeeAlso: `.created`.
+            public var created: Operations.sendSystemMessage.Output.Created {
+                get throws {
+                    switch self {
+                    case let .created(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "created",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 잘못된 요청
+            ///
+            /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Components.Responses.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Components.Responses.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 인증 실패 (토큰 만료 또는 유효하지 않은 토큰)
+            ///
+            /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Components.Responses.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Components.Responses.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 리소스를 찾을 수 없음
+            ///
+            /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Components.Responses.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Components.Responses.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// 서버 오류
+            ///
+            /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Components.Responses.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Components.Responses.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
     /// SMS 인증 요청
     ///
     /// 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
@@ -3055,6 +3362,14 @@ public enum Operations {
             ///
             /// HTTP response code: `204 noContent`.
             case noContent(Operations.deleteMyUser.Output.NoContent)
+            /// 회원 탈퇴 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/delete(deleteMyUser)/responses/204`.
+            ///
+            /// HTTP response code: `204 noContent`.
+            public static var noContent: Self {
+                .noContent(.init())
+            }
             /// The associated value of the enum case if `self` is `.noContent`.
             ///
             /// - Throws: An error if `self` is not `.noContent`.
@@ -3424,6 +3739,14 @@ public enum Operations {
             ///
             /// HTTP response code: `200 ok`.
             case ok(Operations.completeProfileImageUpload.Output.Ok)
+            /// 이미지 등록 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/profile-images/upload-complete/post(completeProfileImageUpload)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            public static var ok: Self {
+                .ok(.init())
+            }
             /// The associated value of the enum case if `self` is `.ok`.
             ///
             /// - Throws: An error if `self` is not `.ok`.
@@ -3601,6 +3924,14 @@ public enum Operations {
             ///
             /// HTTP response code: `204 noContent`.
             case noContent(Operations.deleteProfileImage.Output.NoContent)
+            /// 삭제 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/my/profile-images/{imageId}/delete(deleteProfileImage)/responses/204`.
+            ///
+            /// HTTP response code: `204 noContent`.
+            public static var noContent: Self {
+                .noContent(.init())
+            }
             /// The associated value of the enum case if `self` is `.noContent`.
             ///
             /// - Throws: An error if `self` is not `.noContent`.
@@ -4354,6 +4685,14 @@ public enum Operations {
             ///
             /// HTTP response code: `204 noContent`.
             case noContent(Operations.deleteProfileWidget.Output.NoContent)
+            /// 프로필 위젯 삭제 성공
+            ///
+            /// - Remark: Generated from `#/paths//users/profileWidgets/{type}/delete(deleteProfileWidget)/responses/204`.
+            ///
+            /// HTTP response code: `204 noContent`.
+            public static var noContent: Self {
+                .noContent(.init())
+            }
             /// The associated value of the enum case if `self` is `.noContent`.
             ///
             /// - Throws: An error if `self` is not `.noContent`.

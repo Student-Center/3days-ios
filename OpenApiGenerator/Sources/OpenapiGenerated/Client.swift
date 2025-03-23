@@ -38,6 +38,147 @@ public struct Client: APIProtocol {
     private var converter: Converter {
         client.converter
     }
+    /// 시스템 메시지 전송
+    ///
+    /// 특정 채널에 시스템 메시지를 전송합니다.
+    ///
+    /// - Remark: HTTP `POST /admin/chat/channels/{channelId}/system-message`.
+    /// - Remark: Generated from `#/paths//admin/chat/channels/{channelId}/system-message/post(sendSystemMessage)`.
+    public func sendSystemMessage(_ input: Operations.sendSystemMessage.Input) async throws -> Operations.sendSystemMessage.Output {
+        try await client.send(
+            input: input,
+            forOperation: Operations.sendSystemMessage.id,
+            serializer: { input in
+                let path = try converter.renderedPath(
+                    template: "/admin/chat/channels/{}/system-message",
+                    parameters: [
+                        input.path.channelId
+                    ]
+                )
+                var request: HTTPTypes.HTTPRequest = .init(
+                    soar_path: path,
+                    method: .post
+                )
+                suppressMutabilityWarning(&request)
+                converter.setAcceptHeader(
+                    in: &request.headerFields,
+                    contentTypes: input.headers.accept
+                )
+                let body: OpenAPIRuntime.HTTPBody?
+                switch input.body {
+                case let .json(value):
+                    body = try converter.setRequiredRequestBodyAsJSON(
+                        value,
+                        headerFields: &request.headerFields,
+                        contentType: "application/json; charset=utf-8"
+                    )
+                }
+                return (request, body)
+            },
+            deserializer: { response, responseBody in
+                switch response.status.code {
+                case 201:
+                    return .created(.init())
+                case 400:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.BadRequest.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .badRequest(.init(body: body))
+                case 401:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.Unauthorized.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .unauthorized(.init(body: body))
+                case 404:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.NotFound.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .notFound(.init(body: body))
+                case 500:
+                    let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
+                    let body: Components.Responses.InternalServerError.Body
+                    let chosenContentType = try converter.bestContentType(
+                        received: contentType,
+                        options: [
+                            "application/json"
+                        ]
+                    )
+                    switch chosenContentType {
+                    case "application/json":
+                        body = try await converter.getResponseBodyAsJSON(
+                            Components.Schemas.ErrorResponse.self,
+                            from: responseBody,
+                            transforming: { value in
+                                .json(value)
+                            }
+                        )
+                    default:
+                        preconditionFailure("bestContentType chose an invalid content type.")
+                    }
+                    return .internalServerError(.init(body: body))
+                default:
+                    return .undocumented(
+                        statusCode: response.status.code,
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
+                    )
+                }
+            }
+        )
+    }
     /// SMS 인증 요청
     ///
     /// 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
@@ -127,7 +268,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -263,7 +407,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -399,7 +546,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -546,7 +696,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -649,7 +802,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -783,7 +939,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -888,7 +1047,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1020,7 +1182,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1134,7 +1299,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1241,7 +1409,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1375,7 +1546,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1509,7 +1683,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1643,7 +1820,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1750,7 +1930,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1884,7 +2067,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -1965,7 +2151,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -2070,7 +2259,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -2172,7 +2364,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -2277,7 +2472,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
@@ -2418,7 +2616,10 @@ public struct Client: APIProtocol {
                 default:
                     return .undocumented(
                         statusCode: response.status.code,
-                        .init()
+                        .init(
+                            headerFields: response.headerFields,
+                            body: responseBody
+                        )
                     )
                 }
             }
