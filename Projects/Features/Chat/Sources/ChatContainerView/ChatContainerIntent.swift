@@ -22,6 +22,7 @@ class ChatContainerIntent {
     private let channelId: String = "33333333-3333-3333-3333-333333333333"
     private let tempUserId: String = "11111111-1111-1111-1111-111111111111"
     private let chatService: ChatServiceProtocol
+    private var hasFetched: Bool = false
     
     // MARK: Life cycle
     init(
@@ -115,10 +116,12 @@ extension ChatContainerIntent: ChatContainerIntent.Intentable {
                     nextCursor: nextCursor
                 )
                 if nextCursor == nil {
+                    guard !hasFetched else { return }
                     model?.setMessageList(message: messageList)
                 } else {
                     model?.appendMessageList(message: messageList)
                 }
+                hasFetched = true
             } catch {
                 print(error)
             }

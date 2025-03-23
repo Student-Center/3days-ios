@@ -20,6 +20,8 @@ public struct ChatMessageListView: View {
     
     var sendAction: () -> Void
     var nextPageAction: () -> Void
+    var cardTapHandler: (ChatCard) -> Void
+    var namespace: Namespace.ID
     
     @FocusState var isTextFieldFocused
     
@@ -38,7 +40,7 @@ public struct ChatMessageListView: View {
                         case .systemMessage(let content):
                             systemMessage(content)
                         case .card(let card):
-                            cardView(card)
+                            cardView(card, tapHandler: cardTapHandler)
                         }
                     }
                     .id(section.id)
@@ -117,7 +119,10 @@ public struct ChatMessageListView: View {
     
     //MARK: - Card
     @ViewBuilder
-    func cardView(_ content: ChatCard) -> some View {
+    func cardView(
+        _ content: ChatCard,
+        tapHandler: @escaping (ChatCard) -> Void
+    ) -> some View {
         if content.hasSent {
             switch content.userType {
             case .my:
@@ -125,9 +130,13 @@ public struct ChatMessageListView: View {
                     Spacer()
                     ChatTimeStampView(timeStamp: content.sendTime)
                     makeCard(
+                        id: content.id,
                         color: content.color,
                         userType: content.userType,
-                        hasRead: true
+                        hasRead: true,
+                        tapHandler: {
+                            tapHandler(content)
+                        }
                     )
                 }
             case .other:
@@ -143,9 +152,13 @@ public struct ChatMessageListView: View {
                     
                     HStack(alignment: .bottom, spacing: 4) {
                         makeCard(
+                            id: content.id,
                             color: content.color,
                             userType: content.userType,
-                            hasRead: true
+                            hasRead: true,
+                            tapHandler: {
+                                tapHandler(content)
+                            }
                         )
                         
                         ChatTimeStampView(timeStamp: content.sendTime)
@@ -158,9 +171,11 @@ public struct ChatMessageListView: View {
     
     @ViewBuilder
     func makeCard(
+        id: String,
         color: MessageContent.ColorType,
         userType: ChatUserType,
-        hasRead: Bool
+        hasRead: Bool,
+        tapHandler: @escaping () -> Void
     ) -> some View {
         ZStack {
             color.cardImage
@@ -193,6 +208,17 @@ public struct ChatMessageListView: View {
             }
         }
         .frame(width: 85, height: 121)
+        .contentShape(Rectangle())
+        .highPriorityGesture(
+            TapGesture()
+                .onEnded { _ in
+                    tapHandler()
+                }
+        )
+        .matchedTransitionSource(
+            id: id,
+            in: namespace
+        )
         .shadow(.default)
     }
     
@@ -253,6 +279,15 @@ extension MessageContent.ColorType {
             return DesignCore.Images.cardBlue.image
         case .pink:
             return DesignCore.Images.cardPink.image
+        }
+    }
+    
+    var cardColor: Color {
+        switch self {
+        case .blue:
+            return Color(hex: 0xDAE6F1)
+        case .pink:
+            return Color(hex: 0xF3DDE5)
         }
     }
 }

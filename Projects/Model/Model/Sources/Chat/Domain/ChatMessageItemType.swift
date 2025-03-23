@@ -61,6 +61,13 @@ extension Array where Element == Message {
             }
             else
             {
+                if currentGroup.isNotEmpty {
+                    let messageGroup = updateBubbleTypes(for: currentGroup)
+                    result.append(.messages(dateSource: messageGroup))
+                    lastMessage = currentGroup.first
+                    currentGroup = []
+                }
+                
                 // 텍스트 타입이 아닌 경우
                 if message.content.contentType != .text {
                     if case let .systemMessage(systemMessage) = message.content.contentType {
@@ -100,14 +107,6 @@ extension Array where Element == Message {
                         result.append(.dateSeperator(date: dateSeperatorText))
                     }
                     continue
-                }
-                
-                // 이미 존재하던 그룹 append
-                if currentGroup.isNotEmpty {
-                    let messageGroup = updateBubbleTypes(for: currentGroup)
-                    result.append(.messages(dateSource: messageGroup))
-                    lastMessage = currentGroup.first
-                    currentGroup = []
                 }
                 
                 // date가 달라진 경우 구분 컴포넌트

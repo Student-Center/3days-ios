@@ -9,7 +9,7 @@
 import Foundation
 import CoreKit
 
-public struct ChatCard {
+public struct ChatCard: Identifiable {
     public let id: String
     public let message: String
     public let userType: ChatUserType
@@ -21,6 +21,18 @@ public struct ChatCard {
         return DateConverter.dateToString(
             date: createdAt,
             format: "a h시 m분"
+        )
+    }
+}
+
+extension ChatCard {
+    public static var mock: ChatCard {
+        return .init(
+            id: UUID().uuidString,
+            message: "안녕하세요\n잘 부탁드려요!",
+            userType: .my,
+            color: .pink,
+            createdAt: Date()
         )
     }
 }
