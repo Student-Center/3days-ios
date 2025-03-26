@@ -138,6 +138,7 @@ public struct MessageContent {
         case card(ColorType)
         case dateFlag(Int)
         case systemMessage(String)
+        case nextCard(String, ColorType)
         
         public static func == (lhs: MessageContent.ContentType, rhs: MessageContent.ContentType) -> Bool {
             switch (lhs, rhs) {
@@ -157,14 +158,18 @@ public struct MessageContent {
     
     public let contentType: ContentType
     public let text: String
+    public let title: String?
     
     init(type: ContentType, text: String) {
         self.contentType = type
         self.text = text
+        self.title = nil
     }
     
     init(from dto: Components.Schemas.MessageContent) {
         self.text = dto.text
+        self.title = dto.title
+        
         switch dto._type {
         case .TEXT:
             self.contentType = .text
@@ -173,12 +178,19 @@ public struct MessageContent {
                 dto.cardColor == .BLUE ? .blue : .pink
             )
         case .SYSTEM:
-            self.contentType = .systemMessage(dto.text)
+            if let nextCardTitle = dto.nextCardTitle,
+               dto.systemMessageType == .NEXT_CARD {
+                let cardColor: ColorType = dto.cardColor == .BLUE ? .blue : .pink
+                self.contentType = .nextCard(nextCardTitle, cardColor)
+            } else {
+                self.contentType = .systemMessage(dto.text)
+            }
         }
     }
     
     init(from dto: ChatSocketResponse.Content) {
         self.text = dto.text
+        self.title = dto.title
         switch dto.type {
         case "TEXT":
             self.contentType = .text

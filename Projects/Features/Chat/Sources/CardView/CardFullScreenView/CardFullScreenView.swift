@@ -58,7 +58,7 @@ public struct CardFullScreenView: View {
                     .overlay {
                         ZStack {
                             VStack {
-                                Text("첫 인사 보내기")
+                                Text(card.title)
                                     .typography(.semibold_14)
                                     .foregroundStyle(DesignCore.Colors.pink500)
                                     .padding(.top, 22)
@@ -67,7 +67,7 @@ public struct CardFullScreenView: View {
                             
                             Text(card.message)
                                 .multilineTextAlignment(.center)
-                                .pretendard(weight: ._400, size: 20)
+                                .typography(.regular_20)
                                 .lineSpacing(10)
                                 .foregroundStyle(DesignCore.Colors.grey500)
                         }

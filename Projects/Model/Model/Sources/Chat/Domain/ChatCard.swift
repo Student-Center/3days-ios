@@ -11,6 +11,7 @@ import CoreKit
 
 public struct ChatCard: Identifiable {
     public let id: String
+    public let title: String
     public let message: String
     public let userType: ChatUserType
     public let color: MessageContent.ColorType
@@ -29,6 +30,7 @@ extension ChatCard {
     public static var mock: ChatCard {
         return .init(
             id: UUID().uuidString,
+            title: "할말?",
             message: "안녕하세요\n잘 부탁드려요!",
             userType: .my,
             color: .pink,

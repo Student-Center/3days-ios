@@ -21,6 +21,7 @@ public struct ChatMessageListView: View {
     var sendAction: () -> Void
     var nextPageAction: () -> Void
     var cardTapHandler: (ChatCard) -> Void
+    var nextCardTapHandler: (NextCard) -> Void
     var namespace: Namespace.ID
     
     @FocusState var isTextFieldFocused
@@ -41,6 +42,8 @@ public struct ChatMessageListView: View {
                             systemMessage(content)
                         case .card(let card):
                             cardView(card, tapHandler: cardTapHandler)
+                        case .nextCard(let nextCard):
+                            nextCardView(nextCard, tapHandler: nextCardTapHandler)
                         }
                     }
                     .id(section.id)
@@ -222,6 +225,37 @@ public struct ChatMessageListView: View {
         .shadow(.default)
     }
     
+    @ViewBuilder
+    func nextCardView(
+        _ card: NextCard,
+        tapHandler: @escaping (NextCard) -> Void
+    ) -> some View {
+        ZStack {
+            card.cardColor.cardImage
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+            Text(card.nextCardTitle)
+                .typography(.semibold_20)
+                .foregroundStyle(card.cardColor.textColor)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 60)
+        }
+        .frame(width: Device.width - 136)
+        .contentShape(Rectangle())
+        .highPriorityGesture(
+            TapGesture()
+                .onEnded { _ in
+                    tapHandler(card)
+                }
+        )
+        .matchedTransitionSource(
+            id: card.id,
+            in: namespace
+        )
+        .shadow(.default)
+        .padding(.vertical, 20)
+    }
+    
     //MARK: - Day Flag
     @ViewBuilder
     func dayNumberFlag(_ dayNumber: Int) -> some View {
@@ -250,7 +284,7 @@ public struct ChatMessageListView: View {
         VStack(spacing: 16) {
             DesignCore.Images.weavyProfile.image
                 .resizable()
-                .frame(width: 60, height: 60)
+                .frame(width: 50, height: 50)
             
             Text(content.message)
                 .typography(.regular_15)
@@ -260,7 +294,7 @@ public struct ChatMessageListView: View {
                 .foregroundStyle(Color(hex: 0x534C44).opacity(0.1))
                 .padding(.horizontal, 16)
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, 8)
     }
 }
 
@@ -288,6 +322,15 @@ extension MessageContent.ColorType {
             return Color(hex: 0xDAE6F1)
         case .pink:
             return Color(hex: 0xF3DDE5)
+        }
+    }
+    
+    var textColor: Color {
+        switch self {
+        case .blue:
+            DesignCore.Colors.blue500
+        case .pink:
+            DesignCore.Colors.pink500
         }
     }
 }

@@ -18,6 +18,7 @@ public struct ChatContainerView: View {
     
     @State private var inputText: String = ""
     @State private var selectedCard: ChatCard?
+    @State private var nextSelectedCard: NextCard?
     @Namespace private var namespace
     
     private var intent: ChatContainerIntent.Intentable { container.intent }
@@ -54,8 +55,10 @@ public struct ChatContainerView: View {
                     )
                 },
                 cardTapHandler: { card in
-                    print(card)
                     selectedCard = card
+                },
+                nextCardTapHandler: { card in
+                    nextSelectedCard = card
                 },
                 namespace: namespace
             )
@@ -64,6 +67,17 @@ public struct ChatContainerView: View {
             item: $selectedCard,
             content: { card in
                 CardFullScreenView(card: card, namespace: namespace)
+        })
+        .sheet(
+            item: $nextSelectedCard,
+            content: { card in
+                card.cardColor.cardImage
+                    .navigationTransition(
+                        .zoom(
+                            sourceID: card.id,
+                            in: namespace
+                        )
+                    )
         })
         .task {
             await intent.task()

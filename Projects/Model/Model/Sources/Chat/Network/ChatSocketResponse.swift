@@ -17,6 +17,7 @@ public struct ChatSocketResponse: Codable {
     
     public struct Content: Codable {
         let type: String
+        let title: String?
         let text: String
         let cardColor: String?
     }

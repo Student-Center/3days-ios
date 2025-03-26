@@ -25,6 +25,7 @@ public enum Typography: CaseIterable {
     case medium_14
     
     // Pretendard - regular
+    case regular_20
     case regular_15
     case regular_14
     case regular_12
@@ -42,6 +43,7 @@ extension Typography {
         case .semibold_14: return 14
         case .medium_16: return 16
         case .medium_14: return 14
+        case .regular_20: return 20
         case .regular_15: return 15
         case .regular_14: return 14
         case .regular_12: return 12
@@ -69,7 +71,7 @@ extension Typography {
         case .medium_16, .medium_14:
             return ._500
             
-        case .regular_15, .regular_14, .regular_12:
+        case .regular_20, .regular_15, .regular_14, .regular_12:
             return ._400
         }
     }

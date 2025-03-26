@@ -15,6 +15,7 @@ public enum ChatMessageItemType {
     case messages(dateSource: [Message])
     case dateFlag(dayNumber: Int)
     case card(card: ChatCard)
+    case nextCard(card: NextCard)
     case systemMessage(content: ChatSystemMessage)
 }
 
@@ -27,6 +28,8 @@ extension ChatMessageItemType: Identifiable {
             return dataSource
                 .map { $0.id }
                 .joined()
+        case .nextCard(let card):
+            return card.id
         case .dateFlag(let dayNumber):
             return "\(dayNumber)"
         case .systemMessage(let content):
@@ -86,10 +89,23 @@ extension Array where Element == Message {
                             .card(
                                 card: .init(
                                     id: message.id,
+                                    title: message.content.title ?? "",
                                     message: message.content.text,
                                     userType: message.type,
                                     color: color,
                                     createdAt: message.createdAt
+                                )
+                            )
+                        )
+                    }
+                    
+                    if case let .nextCard(title, color) = message.content.contentType {
+                        result.append(
+                            .nextCard(
+                                card: .init(
+                                    id: message.id,
+                                    nextCardTitle: title,
+                                    cardColor: color
                                 )
                             )
                         )
